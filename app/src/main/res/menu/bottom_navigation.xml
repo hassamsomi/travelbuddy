@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_chat"
+        android:icon="@drawable/chat_icon"
+        android:title="Chat"/>
+    <item
+        android:id="@+id/nav_friend"
+        android:icon="@drawable/friend_icon"
+        android:title="Friends"/>
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/search_icon"
+        android:title="Search"/>
+<!--    <item-->
+<!--        android:id="@+id/nav_profiler"-->
+<!--        android:icon="@drawable/profiler_icon"-->
+<!--        android:title="Activity"/>-->
+<!--    -->
+
+
+</menu>

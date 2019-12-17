@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/ThemeOverlay.AppCompat.ActionBar"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_centerInParent="true"
+            android:id="@+id/textaccount"
+            />
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_width="20dp"
+            android:layout_height="24dp"
+            android:src="@drawable/logout_icon"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:id="@+id/logout_btn"
+            />
+        <ImageView
+            android:layout_marginRight="40dp"
+            android:id="@+id/btn_Settings"
+            android:scaleType="fitXY"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/account_setting_ic"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+
+            />
+        <ImageView
+
+            android:id="@+id/btn_users"
+            android:scaleType="fitXY"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_nearby_people"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+
+            />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
+
+
+
+

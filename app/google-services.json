@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "16014775040",
+    "firebase_url": "https://travellingbuddy-9f8d5.firebaseio.com",
+    "project_id": "travellingbuddy-9f8d5",
+    "storage_bucket": "travellingbuddy-9f8d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16014775040:android:28eacfbbf2d53fd58459e5",
+        "android_client_info": {
+          "package_name": "com.hassam.travellingbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16014775040-ogoo7k4q0p4ummr1245cs4sj1mucg4bl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hassam.travellingbuddy",
+            "certificate_hash": "9bf3b1a6f28454fba5dd0d2af7d10e42c050f6ec"
+          }
+        },
+        {
+          "client_id": "16014775040-ev33jb1muniuiql2c69o8nem25cimig7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVi0s7Fr5uU7ZZlKX3PEbvjiR8IJwnIos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16014775040-ev33jb1muniuiql2c69o8nem25cimig7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/grand_parent"
+    android:background="@color/background_color"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".LoginActivity"
+
+        >
+
+        <ImageView
+            android:layout_marginTop="40pt"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="140dp"
+            android:layout_marginRight="140dp"
+            android:layout_height="65pt"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/logo"
+            android:src="@drawable/applogo"
+            android:scaleType="fitCenter"
+            />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="20pt"
+            android:layout_width="120pt"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/logo"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/username"
+            android:textColorHint="@color/silver"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Email or Username"
+                android:id="@+id/txtUsername"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:inputType="textEmailAddress"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/username"
+            app:layout_constraintRight_toRightOf="@id/username"
+            android:id="@+id/password"
+            app:layout_constraintTop_toBottomOf="@id/username"
+            android:textColorHint="@color/silver"
+
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                  android:layout_marginTop="10pt"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:id="@+id/txtPass"
+                android:scrollHorizontally="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/username"
+            app:layout_constraintRight_toRightOf="@id/username"
+            app:layout_constraintTop_toBottomOf="@id/password"
+            android:layout_marginTop="10pt"
+            android:layout_marginStart="25pt"
+            android:layout_marginEnd="25pt"
+            android:text="Login"
+            android:id="@+id/btnLogin"
+            android:background="@drawable/button_color"
+            android:textColor="@color/cardview_light_background"
+            />
+        <TextView
+            app:layout_constraintHorizontal_chainStyle="packed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnLogin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Don't have Account? "
+            android:layout_marginTop="3pt"
+            android:layout_marginBottom="10pt"
+            android:id="@+id/txtAccount"
+            app:layout_constraintRight_toLeftOf="@id/createone"
+            />
+        <TextView
+            android:textColor="@color/holo_blue_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/txtAccount"
+            android:text="Create one"
+            app:layout_constraintTop_toTopOf="@id/txtAccount"
+            android:id="@+id/createone"
+            app:layout_constraintBottom_toBottomOf="@id/txtAccount"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

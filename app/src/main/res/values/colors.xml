@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2F2FA3</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#000000</color>
+    <color name="holo_blue_light">#2133EB</color>
+    <color name="nav_bar_color">#ECF0F1</color>
+    <color name="silver">#776969</color>
+    <color name="background_color">#F0EDED</color>
+    <color name="button_color">#000000</color>
+</resources>

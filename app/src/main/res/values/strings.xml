@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Travelling Buddy</string>
+    <string name="log_out">Log Out</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="status">Hi there!</string>
+    <string name="default_name">Display Name</string>
+</resources>

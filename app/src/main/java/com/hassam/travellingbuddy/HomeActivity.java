@@ -1,0 +1,127 @@
+package com.hassam.travellingbuddy;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
+public class HomeActivity extends AppCompatActivity {
+
+    private ImageView settings;
+    private ImageView sign_out;
+    private FirebaseAuth mAuth;
+    private TextView appBarTitle;
+    private ImageView btnUsers;
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+         super.onCreateOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ChatFragment()).commit();
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnNavigationItemSelectedListener(navlistener);
+        settings = findViewById(R.id.btn_Settings);
+        sign_out = findViewById(R.id.logout_btn);
+        btnUsers = findViewById(R.id.btn_users);
+        appBarTitle = findViewById(R.id.textaccount);
+        mAuth = FirebaseAuth.getInstance();
+
+        btnUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, UsersActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
+        sign_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
+                startActivity(intent);
+                finish();
+
+
+            }
+        });
+
+
+
+
+
+
+
+    }
+
+    public void changetitle(String title){
+
+        appBarTitle.setText(title);
+}
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navlistener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    Fragment selectedFragment = null;
+
+
+                    switch (menuItem.getItemId())
+                    {
+                        case R.id.nav_chat:
+                            selectedFragment = new ChatFragment();
+                            break;
+                        case R.id.nav_friend:
+                            selectedFragment = new FriendsFragment();
+                            break;
+//                        case R.id.nav_profiler:
+//                            selectedFragment = new ActivityFragment();
+//                            break;
+                        case R.id.nav_search:
+                            selectedFragment = new SearchFragment();
+                            break;
+                    }
+
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
+
+
+                    return true;
+                }
+            };
+
+
+
+
+}
