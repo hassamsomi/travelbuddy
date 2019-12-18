@@ -76,7 +76,7 @@ public class UsersActivity extends AppCompatActivity {
                 holder.aboutMe.setText(model.aboutMe);
 
 
-                final String user_id = getRef(position).getKey();
+                final String current_userID = getRef(position).getKey();
 
 
                 holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +84,7 @@ public class UsersActivity extends AppCompatActivity {
                     public void onClick(View view) {
 
                         Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
-                        profile_intent.putExtra("user_id",user_id);
+                        profile_intent.putExtra("current_userID",current_userID);
                         startActivity(profile_intent);
 
                     }

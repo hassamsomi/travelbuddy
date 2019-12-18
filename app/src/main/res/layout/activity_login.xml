@@ -28,6 +28,7 @@
             android:id="@+id/logo"
             android:src="@drawable/applogo"
             android:scaleType="fitCenter"
+            android:tint="@color/button_color"
             />
         <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="20pt"
