@@ -1,6 +1,7 @@
 package com.hassam.travellingbuddy;
 
 import android.app.DownloadManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,8 @@ public class UsersActivity extends AppCompatActivity {
                  snapshot.child("name").getValue(String.class),
                         snapshot.child("image").getValue(String.class),
                 snapshot.child("aboutMe").getValue(String.class)
+
+
                 );
             }
         }).build();
@@ -62,6 +65,8 @@ public class UsersActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.users_single_layout,parent,false);
                 return new UsersViewHolder(view);
 
+
+
             }
 
             @Override
@@ -70,11 +75,32 @@ public class UsersActivity extends AppCompatActivity {
                 Picasso.get().load(model.image).placeholder(R.drawable.profile_image).into(holder.image);
                 holder.aboutMe.setText(model.aboutMe);
 
+
+                final String user_id = getRef(position).getKey();
+
+
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
+                        profile_intent.putExtra("user_id",user_id);
+                        startActivity(profile_intent);
+
+                    }
+                });
+
             }
+
+
+
         };
 
         mUsersList.setAdapter(adapter);
         adapter.startListening();
+
+
+
 
     }
 
