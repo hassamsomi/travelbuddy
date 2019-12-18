@@ -1,15 +1,15 @@
 package com.hassam.travellingbuddy;
 
-public class Users {
+public class User {
     public String name;
     public String image;
     public String aboutMe;
 
-    public Users(){
+    public User(){
 
     }
 
-    public Users(String name, String image, String aboutMe) {
+    public User(String name, String image, String aboutMe) {
         this.name = name;
         this.image = image;
         this.aboutMe = aboutMe;
