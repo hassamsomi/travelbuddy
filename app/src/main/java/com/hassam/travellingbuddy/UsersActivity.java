@@ -78,13 +78,12 @@ public class UsersActivity extends AppCompatActivity {
 
                 final String current_userID = getRef(position).getKey();
 
-
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
-                        profile_intent.putExtra("current_userID",current_userID);
+                        profile_intent.putExtra("current_userID", current_userID);
                         startActivity(profile_intent);
 
                     }

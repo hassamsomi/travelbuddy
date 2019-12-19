@@ -9,13 +9,14 @@
     >
 
     <ImageView
+        android:background="#000"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:maxHeight="350dp"
         android:src="@drawable/profile_avatar"
-        app:layout_constraintBottom_toTopOf="@id/profile_name"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/profileimage"
-        android:scaleType="fitXY"
         />
 
     <TextView

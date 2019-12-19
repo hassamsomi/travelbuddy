@@ -31,8 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        String current_UserID = getIntent().getStringExtra("current_UserID");
-
+        String current_UserID = getIntent().getStringExtra("current_userID");
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_UserID);
 
 
