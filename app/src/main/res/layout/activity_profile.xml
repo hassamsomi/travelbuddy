@@ -50,7 +50,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_status"
         android:id="@+id/profile_totalFriends"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
         />
     <Button
         android:layout_width="200dp"
@@ -65,6 +65,20 @@
         android:layout_marginTop="15dp"
         android:padding="5dp"
         android:id="@+id/btnSendReq"
+        />
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Decline Request"
+        android:textSize="15dp"
+        android:background="@drawable/button_color"
+        android:textColor="@color/cardview_light_background"
+        app:layout_constraintLeft_toLeftOf="@id/profile_totalFriends"
+        app:layout_constraintRight_toRightOf="@id/profile_totalFriends"
+        app:layout_constraintTop_toBottomOf="@id/btnSendReq"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:id="@+id/btnDeclineReq"
         />
 
 
