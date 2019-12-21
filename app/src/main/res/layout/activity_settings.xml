@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:text="@string/status"
             android:gravity="right"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textColor="@color/cardview_dark_background"
             android:background="@android:color/transparent"
             android:layout_marginRight="8dp"
