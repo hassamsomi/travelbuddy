@@ -31,8 +31,9 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        String current_UserID = getIntent().getStringExtra("current_userID");
-        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_UserID);
+        String current_userID = getIntent().getStringExtra("current_userID");
+
+        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
 
 
 
@@ -56,12 +57,12 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 String profile_name = dataSnapshot.child("name").getValue().toString();
-                String user_status = dataSnapshot.child("aboutMe").getValue().toString();
                 String profile_image = dataSnapshot.child("image").getValue().toString();
+                String user_status = dataSnapshot.child("aboutMe").getValue().toString();
 
                 mProfileName.setText(profile_name);
+                Picasso.get().load(profile_image).placeholder(R.drawable.profile_image).into(mProfileImage);
                 mProfileStatus.setText(user_status);
-                Picasso.get().load(profile_image).placeholder(R.drawable.profile_avatar).into(mProfileImage);
                 mProgressDialog.dismiss();
 
             }

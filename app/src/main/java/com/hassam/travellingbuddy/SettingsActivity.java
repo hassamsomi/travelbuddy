@@ -140,8 +140,9 @@ public class SettingsActivity extends AppCompatActivity {
                 mName.setText(name);
                 mAbout_Me.setText(about_me);
                 tempStatus = about_me;
-                Picasso.get().load(image).placeholder(R.drawable.profile_image).error(android.R.drawable.stat_notify_error).into(mImage);
-
+                if(!image.equals("Default")) {
+                    Picasso.get().load(image).placeholder(R.drawable.profile_image).error(android.R.drawable.stat_notify_error).into(mImage);
+                }
             }
 
             @Override

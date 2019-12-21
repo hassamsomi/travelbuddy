@@ -45,5 +45,7 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.firebaseui:firebase-ui-database:6.2.0'
+    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.2'
+    implementation 'id.zelory:compressor:2.1.0'
 
 }
