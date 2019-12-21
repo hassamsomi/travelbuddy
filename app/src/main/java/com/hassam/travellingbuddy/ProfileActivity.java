@@ -10,7 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,21 +30,28 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mProfileName,mProfileStatus,mProfileFriends;
     private Button mBtnSendReq;
     private DatabaseReference mUsersDatabase;
-    private ProgressDialog mProgressDialog;
     private int mCurrentState;
-
+    private FirebaseUser mCurrentUser;
+    private DatabaseReference mFriendReqDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        String current_userID = getIntent().getStringExtra("current_userID");
+        final String current_userID = getIntent().getStringExtra("current_userID");
 
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
+        mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_req");
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         mCurrentState = 0;
 
+        final ProgressDialog mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Please Wait");
+        mProgressDialog.setMessage("Please wait while we refresh userlist");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
 
         mProfileImage = findViewById(R.id.profileimage);
         mProfileName = findViewById(R.id.profile_name);
@@ -48,11 +60,6 @@ public class ProfileActivity extends AppCompatActivity {
         mBtnSendReq = findViewById(R.id.btnSendReq);
 
 
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle("Loading User Data");
-        mProgressDialog.setMessage("Please wait while we load the user data.");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
 
 
 
@@ -77,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        DatabaseReference mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Request");
+        final DatabaseReference mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Request");
 
         mBtnSendReq.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +92,33 @@ public class ProfileActivity extends AppCompatActivity {
 
 
                 if(mCurrentState == 0){
+
+                    mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).child("Request_type").setValue("Sent")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if(task.isSuccessful()){
+
+                                        mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).child("Request_type")
+                                                .setValue("Received").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                Toast.makeText(ProfileActivity.this,"Request Sent Successfully.",Toast.LENGTH_LONG).show();
+
+                                            }
+                                        });
+
+                                    }
+                                    else{
+
+                                        Toast.makeText(ProfileActivity.this, "Failure Sending Request.",Toast.LENGTH_LONG).show();
+                                    }
+
+                                }
+                            });
+
 
                 }
 

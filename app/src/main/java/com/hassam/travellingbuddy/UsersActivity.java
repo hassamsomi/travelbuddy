@@ -1,6 +1,7 @@
 package com.hassam.travellingbuddy;
 
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ public class UsersActivity extends AppCompatActivity {
 
     private RecyclerView mUsersList;
     private FirebaseRecyclerAdapter adapter;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +38,17 @@ public class UsersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_users);
 
 
+
         mUsersList = findViewById(R.id.userslist);
         mUsersList.setHasFixedSize(true);
         mUsersList.setLayoutManager(new LinearLayoutManager(this));
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Please wait");
+        mProgressDialog.setMessage("Please wait we are loading user's list");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+
 
 
         Query query = FirebaseDatabase.getInstance().getReference().child("UserInfo");
@@ -74,7 +84,7 @@ public class UsersActivity extends AppCompatActivity {
                 holder.name.setText(model.name);
                 Picasso.get().load(model.image).placeholder(R.drawable.profile_image).into(holder.image);
                 holder.aboutMe.setText(model.aboutMe);
-
+                mProgressDialog.dismiss();
 
                 final String current_userID = getRef(position).getKey();
 
