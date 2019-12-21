@@ -26,7 +26,6 @@ public class ProfileActivity extends AppCompatActivity {
     private Button mBtnSendReq;
     private DatabaseReference mUsersDatabase;
     private ProgressDialog mProgressDialog;
-
     private int mCurrentState;
 
 
@@ -78,11 +77,18 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
+        DatabaseReference mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Request");
 
         mBtnSendReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+                if(mCurrentState == 0){
+
+                }
+
+
 
             }
         });
