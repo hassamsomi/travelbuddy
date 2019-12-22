@@ -42,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Req");
+        //Progress Dialog
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Please wait");
         mProgressDialog.setMessage("Please wait we are loading user's list");
@@ -78,8 +79,10 @@ public class ProfileActivity extends AppCompatActivity {
                 mProfileName.setText(profile_name);
                 Picasso.get().load(profile_image).placeholder(R.drawable.profile_image).into(mProfileImage);
                 mProfileStatus.setText(user_status);
+                mProgressDialog.dismiss();
 
-                        //Friend List Feature
+
+                //Friend List Feature
                 mFriendReqDatabase.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -103,7 +106,6 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 
 
-                        mProgressDialog.dismiss();
 
                     }
 
