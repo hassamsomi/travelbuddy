@@ -92,6 +92,11 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+
+                mBtnSendReq.setEnabled(false);
+
+                // Not Friend State
+
                 if(mCurrentState.equals("not_friends")){
 
                     mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).child("request_type")
@@ -106,6 +111,9 @@ public class ProfileActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
 
+                                        mBtnSendReq.setEnabled(true);
+                                        mCurrentState= "req_sent";
+                                        mBtnSendReq.setText("Cancel Friend Request");
                                         Toast.makeText(ProfileActivity.this,"Request Sent Successfully.",Toast.LENGTH_LONG).show();
 
                                     }
@@ -121,6 +129,9 @@ public class ProfileActivity extends AppCompatActivity {
                     });
 
                 }
+                //Friend State
+
+
 
             }
         });
