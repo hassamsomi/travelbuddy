@@ -16,7 +16,6 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ProfileActivity"
             android:screenOrientation="portrait"
-
             />
         <activity android:name=".UsersActivity"
             android:screenOrientation="portrait"
