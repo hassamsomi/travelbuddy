@@ -178,7 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
                             mBtnSendReq.setEnabled(true);
                             mCurrentState= "not_friends";
                             mBtnSendReq.setText("Send Friend Request");
-
+                            mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).removeValue();
 
                         }
                     });
