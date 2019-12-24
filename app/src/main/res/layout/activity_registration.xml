@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:id="@+id/grand_parent"
     android:background="@color/background_color"
+
     >
     <ScrollView
         android:layout_height="wrap_content"
@@ -151,7 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@color/button_color"
+                android:background="@drawable/button_color"
                 android:text="Create Account"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintLeft_toLeftOf="parent"
