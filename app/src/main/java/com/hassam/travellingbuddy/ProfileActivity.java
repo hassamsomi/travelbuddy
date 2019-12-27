@@ -152,7 +152,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                             if (task.isSuccessful()) {
 
-                                mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid())
+                                mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).child("request_type")
                                         .setValue("Received").addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -227,7 +227,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                                     mBtnSendReq.setEnabled(true);
                                                     mCurrentState = "friends";
-                                                    mBtnSendReq.setText("Send Friend Request");
+                                                    mBtnSendReq.setText("Unfriend This Person");
 
                                                 }
                                             });
