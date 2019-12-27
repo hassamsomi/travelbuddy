@@ -91,10 +91,7 @@ public class ProfileActivity extends AppCompatActivity {
                 mProgressDialog.dismiss();
 
 
-                //Friend List Feature
-
-
-
+                //-----------------------------FRIEND LIST FEATURE--------------------------
                 mFriendReqDatabase.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -138,7 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Not Friend State
+        //---------------------NOT FRIEND STATE-----------------------
 
         mBtnSendReq.setOnClickListener(new View.OnClickListener() {
             @Override
