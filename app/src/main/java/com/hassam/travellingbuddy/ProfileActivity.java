@@ -152,7 +152,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                             if (task.isSuccessful()) {
 
-                                mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).setValue("Received").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid())
+                                        .setValue("Received").addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
 
@@ -177,7 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 }
 
-                // Cancel Request State
+                //---------------------CANCEL FRIEND REQUEST STATE----------------------------
 
                 if (mCurrentState.equals("req_sent")) {
 
@@ -202,7 +203,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
                 }
-                //Request Received State
+                //---------------REQUEST RECEIVED STATE----------------------
 
 
                 if (mCurrentState.equals("req_received")) {
@@ -225,7 +226,7 @@ public class ProfileActivity extends AppCompatActivity {
                                                 public void onSuccess(Void aVoid) {
 
                                                     mBtnSendReq.setEnabled(true);
-                                                    mCurrentState = "not_friends";
+                                                    mCurrentState = "friends";
                                                     mBtnSendReq.setText("Send Friend Request");
 
                                                 }
