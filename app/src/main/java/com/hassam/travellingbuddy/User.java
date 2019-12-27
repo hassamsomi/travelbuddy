@@ -14,7 +14,6 @@ public class User {
         this.image = image;
         this.aboutMe = aboutMe;
     }
-
     public String getName() {
         return name;
     }

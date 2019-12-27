@@ -39,11 +39,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    //Firebase Realtime Database
     private DatabaseReference mUserDatabase;
     private  FirebaseUser mCurrentUser;
-
-    //Android Layout
     private CircleImageView mImage;
     private TextView mName;
     private ImageView mBtnConfirmStat;
@@ -53,16 +50,9 @@ public class SettingsActivity extends AppCompatActivity {
     private Button btnChangeImage;
     private View layout;
     private Uri ImageUri;
-
-    //Gallery Picker Variable
     private static final int GALLERY_PICK = 1;
-
-    //Storage firebase
     private StorageReference mImageStorage;
-
-    //Progress Dialogue
     private ProgressDialog mProgressDialogue;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,21 +62,19 @@ public class SettingsActivity extends AppCompatActivity {
 
         final View layout = findViewById(R.id.grand_parent);
 
-        //Linking Layout
+        //------------------LINKING LAYOUT---------------
         mName = findViewById(R.id.display_text);
         mImage = findViewById(R.id.display_image);
         mBtnConfirmStat = findViewById(R.id.btn_confirm_status);
         mBtnCancelStat = findViewById(R.id.btn_cancel_status);
         mAbout_Me = findViewById(R.id.about_text);
         btnChangeImage = findViewById(R.id.btnChange_image);
+
         mImageStorage = FirebaseStorage.getInstance().getReference();
-
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-
         final String current_userID =  mCurrentUser.getUid();
 
-        //Edit Status Button
-
+        //---------------EDIT STATUS BUTTON----------------
         mBtnConfirmStat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,13 +132,11 @@ public class SettingsActivity extends AppCompatActivity {
                     Picasso.get().load(image).placeholder(R.drawable.profile_image).error(android.R.drawable.stat_notify_error).into(mImage);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-
         //Cancel Status Button
         mBtnCancelStat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,20 +159,15 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent gallery_intent = new Intent();
                 gallery_intent.setType("image/*");
                 gallery_intent.setAction(Intent.ACTION_GET_CONTENT);
-
                 startActivityForResult(Intent.createChooser(gallery_intent,"Select Image"),GALLERY_PICK);
-
-
 // start picker to get image for cropping and then use the image in cropping activity
 //                 CropImage.activity()
 //                        .setGuidelines(CropImageView.Guidelines.ON)
 //                        .start(SettingsActivity.this);
 
-
             }
         });
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -197,18 +178,12 @@ public class SettingsActivity extends AppCompatActivity {
 //                    .setGuidelines(CropImageView.Guidelines.ON)
 //                    .start(this);
 
-
-
-
-
             Uri imageUri = data.getData();
             CropImage.activity(imageUri)
                     .setAspectRatio(1,1)
                     .start(SettingsActivity.this);
-
-
         }
-
+        //----------------REQUEST CODE IS USED HERE FOR PHOTO PICKER---------------
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -227,61 +202,44 @@ public class SettingsActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
                 String current_userID =  mCurrentUser.getUid();
 
+                final StorageReference filepath = mImageStorage.child("profile_images").child(current_userID+".jpg");
 
-            final StorageReference filepath = mImageStorage.child("profile_images").child(current_userID+".jpg");
-
-            filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                    if(task.isSuccessful()){
-
-
-                        Task<Uri> uri =  filepath.getDownloadUrl();
-
-                        uri.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if(task.isSuccessful()) {
-                                    mImage.setImageBitmap(bitmap[0]);
-                                    String url = task.getResult().toString();
-                                    mUserDatabase.child("image").setValue(url).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            mProgressDialogue.dismiss();
-                                            Toast .makeText(SettingsActivity.this,"Successfully uploaded.",Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-
+                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Task<Uri> uri =  filepath.getDownloadUrl();
+                            uri.addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if(task.isSuccessful()) {
+                                        mImage.setImageBitmap(bitmap[0]);
+                                        String url = task.getResult().toString();
+                                        mUserDatabase.child("image").setValue(url).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                mProgressDialogue.dismiss();
+                                                Toast .makeText(SettingsActivity.this,"Successfully uploaded.",Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                        else{
 
-
+                            Toast.makeText(SettingsActivity.this,"Error in uploading.",Toast.LENGTH_LONG).show();
+                            mProgressDialogue.dismiss();
+                        }
                     }
-
-                    else{
-
-                        Toast.makeText(SettingsActivity.this,"Error in uploading.",Toast.LENGTH_LONG).show();
-                        mProgressDialogue.dismiss();
-               }
-
-
-                }
-            });
-
-
+                });
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
 
                 Exception error = result.getError();
-
             }
         }
-
     }
 }
 

@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity {
 
         //referencing with elements
         LoginBtn = (Button) findViewById(R.id.btnLogin);
-
         user_name = findViewById(R.id.txtUsername);
         pass = findViewById(R.id.txtPass);
         mLoginProgress = new ProgressDialog(this);
@@ -62,16 +61,11 @@ public class LoginActivity extends AppCompatActivity {
 
 //                Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
 //                startActivity(intent);
-
                 //Progress Dialog Show Here
                 mLoginProgress.setTitle("Logging In");
                 mLoginProgress.setMessage("Please wait while we check your information.");
                 mLoginProgress.setCanceledOnTouchOutside(false);
                 mLoginProgress.show();
-
-
-
-
                 //Authorization and checking user login
                 mAuth.signInWithEmailAndPassword(user_name.getText().toString(),pass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -91,13 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-
-
 //        getWindow().setBackgroundDrawableResource(R.drawable.logindisplay);
-
     }
-
-
-
-
 }

@@ -23,10 +23,9 @@ public class HomeActivity extends AppCompatActivity {
     private TextView appBarTitle;
     private ImageView btnUsers;
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-         super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
         return true;
     }
 
@@ -39,6 +38,8 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ChatFragment()).commit();
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navlistener);
+
+
         settings = findViewById(R.id.btn_Settings);
         sign_out = findViewById(R.id.logout_btn);
         btnUsers = findViewById(R.id.btn_users);
@@ -52,9 +53,6 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,8 +61,6 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
-
-
         sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,30 +68,18 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
                 startActivity(intent);
                 finish();
-
-
             }
         });
-
-
-
-
-
-
-
     }
 
     public void changetitle(String title){
-
         appBarTitle.setText(title);
-}
-
+    }
     private BottomNavigationView.OnNavigationItemSelectedListener navlistener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment selectedFragment = null;
-
 
                     switch (menuItem.getItemId())
                     {
@@ -113,15 +97,8 @@ public class HomeActivity extends AppCompatActivity {
                             break;
                     }
 
-
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
-
-
                     return true;
                 }
             };
-
-
-
-
 }

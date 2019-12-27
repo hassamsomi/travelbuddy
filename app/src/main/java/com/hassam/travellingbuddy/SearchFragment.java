@@ -23,11 +23,7 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ( (HomeActivity) getActivity()).changetitle("Search");
 
-
         mAuth = FirebaseAuth.getInstance();
-
-
-
         View view = inflater.inflate(R.layout.fragment_search,container,false);
 
         //Settings Button
@@ -64,15 +60,6 @@ public class SearchFragment extends Fragment {
 //            }
 //        });
 //
-
-
         return view;
-
-
     }
-
-
-
-
-
 }

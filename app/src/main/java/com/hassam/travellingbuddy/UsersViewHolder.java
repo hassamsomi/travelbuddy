@@ -24,11 +24,5 @@ class UsersViewHolder extends RecyclerView.ViewHolder{
         name = itemView.findViewById(R.id.username);
         aboutMe = itemView.findViewById(R.id.status);
         image = itemView.findViewById(R.id.profileimage);
-
-
-
     }
-
-
-
 }

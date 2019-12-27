@@ -30,10 +30,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private Button CreateAccount;
     private FirebaseAuth mAuth;
     private View layout;
-
     private ProgressDialog mRegDialogue;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +38,14 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         layout = findViewById(R.id.grand_parent);
 //        getWindow().setBackgroundDrawableResource(R.drawable.logindisplay);
-
         mAuth = FirebaseAuth.getInstance();
-
         mRegDialogue = new ProgressDialog(this);
-
-
         Fullname= findViewById(R.id.txtFullName);
         Email= findViewById(R.id.txtEmail);
         Password= findViewById(R.id.txtPassword);
         Phonenumber= findViewById(R.id.txtPhoneNumber);
         ConPassword= findViewById(R.id.txtConfirmPassword);
         CreateAccount= findViewById(R.id.btnCreateAccount);
-
-
 
         CreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +64,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     final String Pass=Password.getText().toString();
                     final String Con_Pass=ConPassword.getText().toString();
 
-
+                    //-----------------HASHMAP USED FOR DATA INSERTION------------
                     mAuth.createUserWithEmailAndPassword(E_mail,Pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -93,7 +84,6 @@ public class RegistrationActivity extends AppCompatActivity {
                                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
                                 String userID = mAuth.getUid();
-
                                 reference.child("UserInfo").child(userID).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -102,39 +92,21 @@ public class RegistrationActivity extends AppCompatActivity {
                                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                                             startActivity(intent);
                                             finish();
-
                                         }
                                         else {
                                             mRegDialogue.hide();
                                             CreateAccount.setEnabled(true);
                                             Snackbar.make(layout,"Connection Failed.",Snackbar.LENGTH_LONG).show();
                                         }
-
                                     }
                                 });
-
-
                             }
                             else {
                                 CreateAccount.setEnabled(true);
                                 Snackbar.make(layout,"Task Not Successful",Snackbar.LENGTH_LONG).show();
                             }
-
-
                         }
                     });
-
-
-
-
-
-
-
-
-
-
-
-
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -143,16 +115,5 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
         });
-
-
-
-
-
     }
-
-
-
-
-
-
 }

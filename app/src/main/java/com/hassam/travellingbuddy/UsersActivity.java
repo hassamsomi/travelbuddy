@@ -37,36 +37,34 @@ public class UsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
 
-
-
+        //------------RECYCLER VIEW IDENTITY
         mUsersList = findViewById(R.id.userslist);
         mUsersList.setHasFixedSize(true);
         mUsersList.setLayoutManager(new LinearLayoutManager(this));
 
+        //------------PROGRESS DIALOG-----------
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Please wait");
         mProgressDialog.setMessage("Please wait we are loading user's list");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
 
-
-
+        //------------INSERTING DATA IN FIREBASE STORAGE
         Query query = FirebaseDatabase.getInstance().getReference().child("UserInfo");
-
         FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, new SnapshotParser<User>() {
             @NonNull
             @Override
             public User parseSnapshot(@NonNull DataSnapshot snapshot) {
                 return new User (
 
-                 snapshot.child("name").getValue(String.class),
+                        snapshot.child("name").getValue(String.class),
                         snapshot.child("image").getValue(String.class),
-                snapshot.child("aboutMe").getValue(String.class)
-
-
+                        snapshot.child("aboutMe").getValue(String.class)
                 );
             }
         }).build();
+
+        //------------HOLDER TO LOAD FILES
         adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options){
 
             @NonNull
@@ -74,9 +72,6 @@ public class UsersActivity extends AppCompatActivity {
             public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.users_single_layout,parent,false);
                 return new UsersViewHolder(view);
-
-
-
             }
 
             @Override
@@ -95,30 +90,11 @@ public class UsersActivity extends AppCompatActivity {
                         Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
                         profile_intent.putExtra("current_userID", current_userID);
                         startActivity(profile_intent);
-
                     }
                 });
-
             }
-
-
-
         };
-
         mUsersList.setAdapter(adapter);
         adapter.startListening();
-
-
-
-
     }
-
-
-
-
-
-
 }
-
-
-

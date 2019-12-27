@@ -46,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        //Progress Dialog
+        //------------------PROGRESS DIALOG---------------
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Please wait");
         mProgressDialog.setMessage("Please wait we are loading user's list");
@@ -95,7 +95,6 @@ public class ProfileActivity extends AppCompatActivity {
                 mFriendReqDatabase.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                         if(dataSnapshot.hasChild(current_userID)){
 
                             String req_type = dataSnapshot.child(current_userID).child("request_type").getValue().toString();
@@ -111,18 +110,11 @@ public class ProfileActivity extends AppCompatActivity {
                                 mBtnSendReq.setText("Cancel Friend Request");
 
                             }
-
                         }
-
-
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
-
-
 
                     }
                 });
@@ -167,44 +159,30 @@ public class ProfileActivity extends AppCompatActivity {
 
                             } else {
                                 Toast.makeText(ProfileActivity.this, "Failed Sending Request.", Toast.LENGTH_LONG).show();
-
-
                             }
                             mBtnSendReq.setEnabled(true);
-
-
                         }
                     });
 
                 }
-
                 //---------------------CANCEL FRIEND REQUEST STATE----------------------------
 
                 if (mCurrentState.equals("req_sent")) {
-
                     mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-
                                     mBtnSendReq.setEnabled(true);
                                     mCurrentState = "not_friends";
                                     mBtnSendReq.setText("Send Friend Request");
-
                                 }
                             });
-
                         }
                     });
-
-
-
-
                 }
                 //---------------REQUEST RECEIVED STATE----------------------
-
 
                 if (mCurrentState.equals("req_received")) {
 
@@ -231,13 +209,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                                                 }
                                             });
-
                                         }
                                     });
                                 }
                             });
-
-
                         }
                     });
                 }
