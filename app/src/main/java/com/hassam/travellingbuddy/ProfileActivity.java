@@ -108,7 +108,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 mCurrentState = "req_received";
                                 mBtnSendReq.setText("Accept Friend Request");
 
-                            }else if(req_type.equals("Received")){
+                            }else if(req_type.equals("Sent")){
 
                                 mCurrentState = "req_sent";
                                 mBtnSendReq.setText("Cancel Friend Request");
