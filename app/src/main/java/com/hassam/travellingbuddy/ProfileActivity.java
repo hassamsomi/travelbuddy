@@ -88,7 +88,6 @@ public class ProfileActivity extends AppCompatActivity {
                 mProfileName.setText(profile_name);
                 Picasso.get().load(profile_image).placeholder(R.drawable.profile_avatar).into(mProfileImage);
                 mProfileStatus.setText(user_status);
-                mProgressDialog.dismiss();
 
 
                 //-----------------------------FRIEND LIST FEATURE--------------------------
@@ -110,7 +109,36 @@ public class ProfileActivity extends AppCompatActivity {
                                 mBtnSendReq.setText("Cancel Friend Request");
 
                             }
+                            mProgressDialog.dismiss();
                         }
+                        else {
+
+                            mFriendDatabase.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                    if(dataSnapshot.hasChild(current_userID)){
+
+                                        mCurrentState = "friends";
+                                        mBtnSendReq.setText("Unfriend This Person");
+
+
+                                    }
+
+                                    mProgressDialog.dismiss();
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    mProgressDialog.dismiss();
+
+                                }
+                            });
+
+                        }
+
                     }
 
                     @Override
