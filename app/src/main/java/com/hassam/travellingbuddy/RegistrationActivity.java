@@ -15,8 +15,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -31,6 +33,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private View layout;
     private ProgressDialog mRegDialogue;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
                             if(task.isSuccessful())
                             {
+
+                                String userID = mAuth.getCurrentUser().getUid();
+
+                                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+
+
                                 HashMap<String,Object> data=new HashMap<>();
                                 data.put("name",full_name);
                                 data.put("email",E_mail);
@@ -80,10 +91,10 @@ public class RegistrationActivity extends AppCompatActivity {
                                 data.put("image","Default");
                                 data.put("aboutMe","I'm using Travel Assistant App.");
                                 data.put("thumbImage","Default");
+                                data.put("device_token",deviceToken);
 
                                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-                                String userID = mAuth.getUid();
                                 reference.child("UserInfo").child(userID).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
