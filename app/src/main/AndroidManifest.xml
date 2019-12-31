@@ -26,7 +26,13 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="com.hassam.travellingbuddy_TARGET_NOTIFICATION"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+
+            </intent-filter>
+        </activity>
         <activity
             android:name=".UsersActivity"
             android:screenOrientation="portrait" />

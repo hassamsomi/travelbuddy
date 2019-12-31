@@ -2,6 +2,8 @@ package com.hassam.travellingbuddy;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -15,10 +17,33 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        String click_action = remoteMessage.getNotification().getClickAction();
+        String notification_title = remoteMessage.getNotification().getTitle();
+        String notification_message = remoteMessage.getNotification().getBody();
+        String from_user_id = remoteMessage.getData().get("from_user_id");
+
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle("New Friend Request")
-                .setContentText("You have received a new Friend Request");
+                .setContentTitle(notification_title)
+                .setContentText(notification_message);
+
+
+        Intent resultintent = new Intent(click_action);
+        resultintent.putExtra("current_userID", from_user_id);
+
+
+        PendingIntent resultPendingIntent = PendingIntent
+                .getActivity(this,
+                        0,
+                        resultintent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+
+
+
 
         //Sets an ID for the notification
         int mNotificationId = (int) System.currentTimeMillis();
