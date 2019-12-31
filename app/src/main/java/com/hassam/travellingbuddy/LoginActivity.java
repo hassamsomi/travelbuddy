@@ -10,11 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class LoginActivity extends AppCompatActivity {
     //Members used
@@ -24,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText pass;
     private View layout;
     private ProgressDialog mLoginProgress;
+    private DatabaseReference mUserDatabase;
+
 
 
     @Override
@@ -51,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         user_name = findViewById(R.id.txtUsername);
         pass = findViewById(R.id.txtPass);
         mLoginProgress = new ProgressDialog(this);
-
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo");
 
         //Login Click Event
         LoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -71,10 +77,24 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-//                            mLoginProgress.dismiss();
-                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+
+                            mLoginProgress.dismiss();
+
+
+                            String current_userID = mAuth.getCurrentUser().getUid();
+                            String deviceToken = FirebaseInstanceId.getInstance().getToken();
+
+                            mUserDatabase.child(current_userID).child("device_token").setValue(deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+
+                                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+
                         }
                         else
                         {
