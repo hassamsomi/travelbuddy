@@ -1,6 +1,7 @@
 package com.hassam.travellingbuddy;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -27,6 +28,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -42,6 +44,8 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView mProfileImage;
     private DatabaseReference mFriendDatabase;
     private Button mBtnDeclineReq;
+    private DatabaseReference mRootRef;
+
 
 
     @Override
@@ -58,6 +62,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         final String current_userID = getIntent().getStringExtra("current_userID");
 
+
+        mRootRef = FirebaseDatabase.getInstance().getReference();
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
         mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Req");
         mFriendDatabase = FirebaseDatabase.getInstance().getReference().child("Friends");
@@ -74,6 +80,9 @@ public class ProfileActivity extends AppCompatActivity {
         mBtnSendReq = findViewById(R.id.btnSendReq);
         mBtnDeclineReq = findViewById(R.id.btnDeclineReq);
         mProfileImage = findViewById(R.id.profile_image);
+
+        mBtnDeclineReq.setVisibility(View.INVISIBLE);
+        mBtnDeclineReq.setEnabled(false);
 
 
 
@@ -179,50 +188,32 @@ public class ProfileActivity extends AppCompatActivity {
 
                 if (mCurrentState.equals("not_friends")) {
 
-                    mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).child("request_type")
-                            .setValue("Sent").addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                    DatabaseReference newNotificationRef = mRootRef.child("notification").child(current_userID).push();
+                    String newNotificationID = newNotificationRef.getKey();
+
+                    HashMap<String, String> notificationData = new HashMap<>();
+                    notificationData.put("from",mCurrentUser.getUid());
+                    notificationData.put("type","request");
+
+                    Map requestMap = new HashMap();
+                    requestMap.put("Friend_Req/"+mCurrentUser.getUid() +"/"+current_userID+"/request_type","Sent");
+                    requestMap.put("Friend_Req/"+current_userID+"/"+mCurrentUser.getUid()+"/request_type","Received");
+                    requestMap.put("notification/"+current_userID+"/"+newNotificationID,notificationData);
+
+
+                    mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
-                            if (task.isSuccessful()) {
+                            if(databaseError != null){
 
-                                mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).child("request_type")
-                                        .setValue("Received").addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                                Toast.makeText(ProfileActivity.this,"There was some error in sending request",Toast.LENGTH_LONG).show();
 
-
-                                        HashMap<String, String> notificationData = new HashMap<>();
-                                        notificationData.put("from",mCurrentUser.getUid());
-                                        notificationData.put("type","request");
-
-                                        mNotificationDatabase.child(current_userID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-
-                                                mCurrentState = "req_sent";
-                                                mBtnSendReq.setText("Cancel Friend Request");
-
-                                                mBtnDeclineReq.setVisibility(View.INVISIBLE);
-                                                mBtnDeclineReq.setEnabled(false);
-
-                                                Toast.makeText(ProfileActivity.this, "Request Sent Successfully.", Toast.LENGTH_LONG).show();
-
-
-                                            }
-                                        });
-
-
-
-
-                                    }
-                                });
-
-
-                            } else {
-                                Toast.makeText(ProfileActivity.this, "Failed Sending Request.", Toast.LENGTH_LONG).show();
                             }
+
                             mBtnSendReq.setEnabled(true);
+                            
                         }
                     });
 
