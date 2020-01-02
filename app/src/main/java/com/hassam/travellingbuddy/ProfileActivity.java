@@ -213,7 +213,10 @@ public class ProfileActivity extends AppCompatActivity {
                             }
 
                             mBtnSendReq.setEnabled(true);
-                            
+                            mCurrentState = "req_sent";
+                            mBtnSendReq.setText("Cancel Friend Request");
+
+
                         }
                     });
 
@@ -245,34 +248,35 @@ public class ProfileActivity extends AppCompatActivity {
 
                     final String currentDate = DateFormat.getDateInstance().format(new Date());
 
-                    mFriendDatabase.child(current_userID).child(mCurrentUser.getUid()).setValue(currentDate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    Map friendsMap = new HashMap();
+                    friendsMap.put("Friends/"+mCurrentUser.getUid()+"/"+current_userID+"/date",currentDate);
+                    friendsMap.put("Friends/"+current_userID+"/"+mCurrentUser.getUid()+"/date",currentDate);
+
+                    friendsMap.put("Friend_Req"+mCurrentUser.getUid()+"/"+current_userID,null);
+                    friendsMap.put("Friend_Req"+current_userID+"/"+mCurrentUser.getUid(),null);
+
+                    mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            mFriendDatabase.child(mCurrentUser.getUid()).child(current_userID).
-                                    setValue(currentDate).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
-                                    mFriendReqDatabase.child(current_userID).child(mCurrentUser.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            mFriendReqDatabase.child(mCurrentUser.getUid()).child(current_userID).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
+                            if(databaseError == null){
 
-                                                    mBtnSendReq.setEnabled(true);
-                                                    mCurrentState = "friends";
-                                                    mBtnSendReq.setText("Unfriend This Person");
+                                mBtnSendReq.setEnabled(true);
+                                mCurrentState = "friends";
+                                mBtnSendReq.setText("Unfriend this person");
 
-                                                    mBtnDeclineReq.setVisibility(View.INVISIBLE);
-                                                    mBtnDeclineReq.setEnabled(false);
+                                mBtnDeclineReq.setVisibility(View.INVISIBLE);
+                                mBtnDeclineReq.setEnabled(false);
 
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
+                            }else {
+
+                                String error = databaseError.getMessage();
+
+                                Toast.makeText(ProfileActivity.this,error,Toast.LENGTH_LONG).show();
+
+                            }
+
+
                         }
                     });
                 }
