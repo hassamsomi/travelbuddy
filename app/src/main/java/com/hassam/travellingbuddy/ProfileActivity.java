@@ -280,6 +280,45 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     });
                 }
+//                ------------------------UNFRIENDS STATE-----------------
+                if(mCurrentState.equals("friends")){
+
+                    Map unfriendMap = new HashMap();
+                    unfriendMap.put("Friends/"+mCurrentUser.getUid()+"/"+current_userID,null);
+                    unfriendMap.put("Friends/"+current_userID+"/"+mCurrentUser.getUid(),null);
+
+                    mRootRef.updateChildren(unfriendMap, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                            if(databaseError == null){
+
+                                mCurrentState = "not_friends";
+                                mBtnSendReq.setText("Send Friend Request");
+
+                                mBtnDeclineReq.setVisibility(View.INVISIBLE);
+                                mBtnDeclineReq.setEnabled(false);
+
+                            }else {
+
+                                String error = databaseError.getMessage();
+
+                                Toast.makeText(ProfileActivity.this,error,Toast.LENGTH_LONG).show();
+
+                            }
+                            mBtnSendReq.setEnabled(true);
+
+
+                        }
+                    });
+
+                }
+
+
+
+
+
+
             }
         });
     }
