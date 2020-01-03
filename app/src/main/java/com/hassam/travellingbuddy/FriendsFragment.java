@@ -31,17 +31,17 @@ public class FriendsFragment extends Fragment {
 
     private String current_userID;
     private View mMainView;
+    private FirebaseRecyclerAdapter adapter;
 
-
-    public FriendsFragment(){
+    public FriendsFragment() {
         //Required empty public constructor
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ( (HomeActivity) getActivity()).changetitle("Friends");
+        ((HomeActivity) getActivity()).changetitle("Friends");
 
-        mMainView = inflater.inflate(R.layout.fragment_friends,container,false);
+        mMainView = inflater.inflate(R.layout.fragment_friends, container, false);
 
         mFriendsList = mMainView.findViewById(R.id.friendlist);
         mAuth = FirebaseAuth.getInstance();
@@ -52,43 +52,32 @@ public class FriendsFragment extends Fragment {
         mFriendsList.setHasFixedSize(true);
         mFriendsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-//      Inflate the layout for this fragment
-        return mMainView;
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Query query = FirebaseDatabase.getInstance().getReference().child("UserInfo");
-        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, new SnapshotParser<User>() {
+        Query query = FirebaseDatabase.getInstance().getReference().child("Friends");
+        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, new SnapshotParser<Friends>() {
             @NonNull
             @Override
-            public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                return new User (
+            public Friends parseSnapshot(@NonNull DataSnapshot snapshot) {
+                return new Friends(
+                        snapshot.child("date").getValue(String.class)
 
-                        snapshot.child("name").getValue(String.class),
-                        snapshot.child("image").getValue(String.class),
-                        snapshot.child("aboutMe").getValue(String.class)
                 );
             }
         }).build();
 
-        //------------HOLDER TO LOAD FILES
-        FirebaseRecyclerAdapter<User, FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<User, FriendsViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
 
             @NonNull
             @Override
             public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.users_single_layout, parent, false);
                 return new FriendsViewHolder(view);
+
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull FriendsViewHolder holder, int position, @NonNull User model) {
-                holder.name.setText(model.name);
-                Picasso.get().load(model.image).placeholder(R.drawable.profile_image).into(holder.image);
-                holder.aboutMe.setText(model.aboutMe);
+            protected void onBindViewHolder(@NonNull FriendsViewHolder holder, int position, @NonNull Friends model) {
+                holder.mAboutMe.setText(model.date);
 
                 final String current_userID = getRef(position).getKey();
 
@@ -101,14 +90,19 @@ public class FriendsFragment extends Fragment {
                         startActivity(profile_intent);
                     }
                 });
+
+
+//      Inflate the layout for this fragment
+
+
             }
+
+
         };
         mFriendsList.setAdapter(adapter);
         adapter.startListening();
 
+        return mMainView;
 
     }
-
-
-
 }

@@ -11,18 +11,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 class FriendsViewHolder extends RecyclerView.ViewHolder{
 
     View mView;
+    TextView mAboutMe;
 
-    TextView name;
-    TextView aboutMe;
-    CircleImageView image;
 
     public FriendsViewHolder(@NonNull View itemView) {
         super(itemView);
 
         mView = itemView;
 
-        name = itemView.findViewById(R.id.username);
-        aboutMe = itemView.findViewById(R.id.status);
-        image = itemView.findViewById(R.id.profileimage);
+        mAboutMe = itemView.findViewById(R.id.status);
+
     }
+
 }
