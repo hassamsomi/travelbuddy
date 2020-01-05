@@ -192,6 +192,9 @@ public class ProfileActivity extends AppCompatActivity {
                     DatabaseReference newNotificationRef = mRootRef.child("notification").child(current_userID).push();
                     String newNotificationID = newNotificationRef.getKey();
 
+//                    DatabaseReference name = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("name");
+//                    DatabaseReference mImage = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("image");
+
                     HashMap<String, String> notificationData = new HashMap<>();
                     notificationData.put("from",mCurrentUser.getUid());
                     notificationData.put("type","request");
@@ -199,6 +202,8 @@ public class ProfileActivity extends AppCompatActivity {
                     Map requestMap = new HashMap();
                     requestMap.put("Friend_Req/"+mCurrentUser.getUid() +"/"+current_userID+"/request_type","Sent");
                     requestMap.put("Friend_Req/"+current_userID+"/"+mCurrentUser.getUid()+"/request_type","Received");
+
+
                     requestMap.put("notification/"+current_userID+"/"+newNotificationID,notificationData);
 
 
@@ -248,12 +253,23 @@ public class ProfileActivity extends AppCompatActivity {
 
                     final String currentDate = DateFormat.getDateInstance().format(new Date());
 
+//                    DatabaseReference name = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("name");
+//                    DatabaseReference mImage = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("image");
+
+
+
                     Map friendsMap = new HashMap();
                     friendsMap.put("Friends/"+mCurrentUser.getUid()+"/"+current_userID+"/date",currentDate);
                     friendsMap.put("Friends/"+current_userID+"/"+mCurrentUser.getUid()+"/date",currentDate);
 
+
+
+
+
+
                     friendsMap.put("Friend_Req"+mCurrentUser.getUid()+"/"+current_userID,null);
                     friendsMap.put("Friend_Req"+current_userID+"/"+mCurrentUser.getUid(),null);
+
 
                     mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
                         @Override
@@ -283,9 +299,15 @@ public class ProfileActivity extends AppCompatActivity {
 //                ------------------------UNFRIENDS STATE-----------------
                 if(mCurrentState.equals("friends")){
 
+                    DatabaseReference name = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("name");
+                    DatabaseReference mImage = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("image");
+
+
                     Map unfriendMap = new HashMap();
                     unfriendMap.put("Friends/"+mCurrentUser.getUid()+"/"+current_userID,null);
                     unfriendMap.put("Friends/"+current_userID+"/"+mCurrentUser.getUid(),null);
+                    unfriendMap.put("Friends/"+mCurrentUser.getUid()+"/name",name);
+                    unfriendMap.put("Friends/"+mCurrentUser.getUid()+"/image",mImage);
 
                     mRootRef.updateChildren(unfriendMap, new DatabaseReference.CompletionListener() {
                         @Override

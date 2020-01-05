@@ -6,12 +6,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 class FriendsViewHolder extends RecyclerView.ViewHolder{
 
     View mView;
     TextView mAboutMe;
+    TextView mName;
+    CircleImageView mImage;
 
 
     public FriendsViewHolder(@NonNull View itemView) {
@@ -20,6 +24,8 @@ class FriendsViewHolder extends RecyclerView.ViewHolder{
         mView = itemView;
 
         mAboutMe = itemView.findViewById(R.id.status);
+        mName = itemView.findViewById(R.id.username);
+        mImage = itemView.findViewById(R.id.profileimage);
 
     }
 
