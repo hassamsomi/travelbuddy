@@ -1,6 +1,8 @@
 package com.hassam.travellingbuddy;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,6 @@ public class FriendsFragment extends Fragment {
 
     private String current_userID;
     private View mMainView;
-    private FirebaseRecyclerAdapter adapter;
 
 
     public FriendsFragment() {
@@ -57,7 +58,7 @@ public class FriendsFragment extends Fragment {
 
         current_userID = mAuth.getCurrentUser().getUid();
         mFriendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_userID);
-        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
+        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo");
 
         mFriendsList.setHasFixedSize(true);
         mFriendsList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -66,56 +67,23 @@ public class FriendsFragment extends Fragment {
         final Query query = FirebaseDatabase.getInstance().getReference().child("Friends");
 
 
-        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, new SnapshotParser<Friends>() {
-            @NonNull
+        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(mFriendsDatabase, Friends.class).build();
+
+        final  FirebaseRecyclerAdapter<Friends, FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
+
             @Override
-            public Friends parseSnapshot(@NonNull DataSnapshot snapshot) {
-                return new Friends(
-                        snapshot.child("date").getValue(String.class)
+            protected void onBindViewHolder(@NonNull FriendsViewHolder holder, int position, @NonNull Friends model) {
 
-                );
+
             }
-        }).build();
-
-        adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
-
             @NonNull
             @Override
             public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.users_single_layout, parent, false);
-                return new FriendsViewHolder(view);
-
-
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+                FriendsViewHolder holder = new FriendsViewHolder(view);
+                return holder;
             }
-
-            @Override
-            protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
-                holder.mAboutMe.setText(model.date);
-
-                String list_user_id = getRef(position).getKey();
-                mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-//      Inflate the layout for this fragment
-
-
-            }
-
-
         };
-        mFriendsList.setAdapter(adapter);
-        adapter.startListening();
-
         return mMainView;
 
     }
