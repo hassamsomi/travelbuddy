@@ -72,9 +72,48 @@ public class FriendsFragment extends Fragment {
         final  FirebaseRecyclerAdapter<Friends, FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
 
             @Override
-            protected void onBindViewHolder(@NonNull FriendsViewHolder holder, int position, @NonNull Friends model) {
+            protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
+                String friends_list_id = getRef(position).getKey();
+                mFriendsDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChild("date")){
+                            String addedDate = dataSnapshot.child("date").getValue().toString();
+                            holder.mAboutMe.setText(addedDate);
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
 
+
+
+                holder.mAboutMe.setText(model.date);
+                mUsersDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild("name")){
+
+                            String userName = dataSnapshot.child("name").getValue().toString();
+                            String userImage = dataSnapshot.child("image").getValue().toString();
+
+                            holder.mName.setText(userName);
+                            Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.mImage);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
             @NonNull
             @Override
@@ -84,6 +123,8 @@ public class FriendsFragment extends Fragment {
                 return holder;
             }
         };
+        mFriendsList.setAdapter(adapter);
+        adapter.startListening();
         return mMainView;
 
     }
