@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray"
-    tools:context=".ChatActivity">
+    tools:context=".ChatActivity"
+    android:backgroundTint="@color/chat_bar_color"
+    >
 
     <include
         android:id="@+id/chat_toolbar"
@@ -14,15 +16,6 @@
     </include>
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/private_messages_list_of_users"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/chat_toolbar"
-        android:layout_above="@+id/chat_linear_layout"
-        android:layout_marginBottom="6dp"
-        >
-    </android.support.v7.widget.RecyclerView>
 
 
     <RelativeLayout

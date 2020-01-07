@@ -53,27 +53,27 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        if(mAuth.getCurrentUser() != null) {
+            mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
+            mUserDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        mUserDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
 
-                if(dataSnapshot != null) {
+                        mUserDatabase.child("online").onDisconnect().setValue(false);
+                        mUserDatabase.child("online").setValue(true);
+                    }
 
-                    mUserDatabase.child("online").onDisconnect().setValue(false);
-                    mUserDatabase.child("online").setValue(true);
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+                }
+            });
+        }
         //referencing with elements
         LoginBtn = (Button) findViewById(R.id.btnLogin);
         user_name = findViewById(R.id.txtUsername);

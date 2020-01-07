@@ -16,6 +16,7 @@ public class Friends {
         this.date = date;
         this.name = name;
         this.image = image;
+        this.online = online;
     }
     public String getDate() {
         return date;
@@ -41,4 +42,7 @@ public class Friends {
         this.image = image;
     }
 
+    public String getOnline() {return online; }
+
+    public void setOnline(String online) {this.online = online; }
 }

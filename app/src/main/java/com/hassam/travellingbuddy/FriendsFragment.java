@@ -100,29 +100,10 @@ public class FriendsFragment extends Fragment {
                                 }
 
                                 if(i==1){
+
                                     final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
                                     chatIntent.putExtra("chatScreen",friends_list_id);
-
-                                    mUsersDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                            String userName = dataSnapshot.child("name").getValue().toString();
-                                            chatIntent.putExtra("UserName",userName);
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
                                     startActivity(chatIntent);
-
-
-
-
-
 
                                 }
                             }
@@ -151,26 +132,54 @@ public class FriendsFragment extends Fragment {
                 mUsersDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        try {
+                            if (dataSnapshot.hasChild("name")) {
 
-                        if(dataSnapshot.hasChild("name")){
+                                final String userName = dataSnapshot.child("name").getValue().toString();
+                                String userImage = dataSnapshot.child("image").getValue().toString();
+                                holder.mName.setText(userName);
+                                Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.mImage);
 
-                            final String userName = dataSnapshot.child("name").getValue().toString();
-                            String userImage = dataSnapshot.child("image").getValue().toString();
-                            holder.mName.setText(userName);
-                            Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.mImage);
-
-//                            String onlineState = dataSnapshot.child("online").getValue().toString();
-//                            if(onlineState.equals("true")){
-//                                holder.mOnline.setVisibility(View.VISIBLE);
-//                            }
-//                            else{
-//                                holder.mOnline.setVisibility(View.INVISIBLE);
-//                            }
+                            }
                         }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            if(dataSnapshot.hasChild("online")){
+
+                            String onlineState = dataSnapshot.child("online").getValue().toString();
+                            try {
+                                if (onlineState.equals("true")) {
+                                    holder.mOnline.setVisibility(View.VISIBLE);
+                                } else {
+
+                                    holder.mOnline.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                            catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+                        }
+                            else {
+
+                                holder.mOnline.setVisibility(View.INVISIBLE);
+
+                            }
+                        }
+                        catch (Exception e) {
+                        e.printStackTrace();
+                        }
+
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
+
+
 
                     }
                 });
