@@ -1,5 +1,8 @@
 package com.hassam.travellingbuddy;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Layout;
@@ -17,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -67,14 +71,67 @@ public class FriendsFragment extends Fragment {
         final Query query = FirebaseDatabase.getInstance().getReference().child("Friends");
 
 
-        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(mFriendsDatabase, Friends.class).build();
+        final FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(mFriendsDatabase, Friends.class).build();
 
         final  FirebaseRecyclerAdapter<Friends, FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
 
             @Override
             protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
-                String friends_list_id = getRef(position).getKey();
+                final String friends_list_id = getRef(position).getKey();
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        CharSequence options[] = new CharSequence[]{"Open Profile","Send Message"};
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Select Options");
+                        builder.setItems(options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                if(i==0 ){
+
+                                    Intent profile_intent = new Intent(getContext(), ProfileActivity.class);
+                                    profile_intent.putExtra("current_userID", friends_list_id);
+                                    startActivity(profile_intent);
+
+                                }
+
+                                if(i==1){
+                                    final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
+                                    chatIntent.putExtra("chatScreen",friends_list_id);
+
+                                    mUsersDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            String userName = dataSnapshot.child("name").getValue().toString();
+                                            chatIntent.putExtra("UserName",userName);
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                    startActivity(chatIntent);
+
+
+
+
+
+
+                                }
+                            }
+                        });
+                        builder.show();
+                    }
+                });
                 mFriendsDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
+
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.hasChild("date")){
@@ -90,10 +147,6 @@ public class FriendsFragment extends Fragment {
 
                     }
                 });
-
-
-
-
                 holder.mAboutMe.setText(model.date);
                 mUsersDatabase.child(friends_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -101,11 +154,18 @@ public class FriendsFragment extends Fragment {
 
                         if(dataSnapshot.hasChild("name")){
 
-                            String userName = dataSnapshot.child("name").getValue().toString();
+                            final String userName = dataSnapshot.child("name").getValue().toString();
                             String userImage = dataSnapshot.child("image").getValue().toString();
-
                             holder.mName.setText(userName);
                             Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.mImage);
+
+//                            String onlineState = dataSnapshot.child("online").getValue().toString();
+//                            if(onlineState.equals("true")){
+//                                holder.mOnline.setVisibility(View.VISIBLE);
+//                            }
+//                            else{
+//                                holder.mOnline.setVisibility(View.INVISIBLE);
+//                            }
                         }
                     }
 
@@ -114,6 +174,8 @@ public class FriendsFragment extends Fragment {
 
                     }
                 });
+
+
             }
             @NonNull
             @Override

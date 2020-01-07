@@ -33,11 +33,9 @@ import java.util.Map;
 public class ProfileActivity extends AppCompatActivity {
 
 
-    private TextView mProfileName,mProfileStatus,mProfileFriends;
+    private TextView mProfileName,mProfileStatus;
     private Button mBtnSendReq;
-    private DatabaseReference mUsersDatabase;
     private DatabaseReference mFriendReqDatabase;
-    private DatabaseReference mNotificationDatabase;
     private String mCurrentState;
     private FirebaseUser mCurrentUser;
     private ProgressDialog mProgressDialog;
@@ -45,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
     private DatabaseReference mFriendDatabase;
     private Button mBtnDeclineReq;
     private DatabaseReference mRootRef;
+    private DatabaseReference mNotificationDatabase;
 
 
 
@@ -64,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         mRootRef = FirebaseDatabase.getInstance().getReference();
-        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
+        DatabaseReference mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID);
         mFriendReqDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_Req");
         mFriendDatabase = FirebaseDatabase.getInstance().getReference().child("Friends");
         mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notification");
@@ -76,7 +75,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mProfileName = findViewById(R.id.profile_name);
         mProfileStatus = findViewById(R.id.profile_status);
-        mProfileFriends = findViewById(R.id.profile_totalFriends);
+        TextView mProfileFriends = findViewById(R.id.profile_totalFriends);
         mBtnSendReq = findViewById(R.id.btnSendReq);
         mBtnDeclineReq = findViewById(R.id.btnDeclineReq);
         mProfileImage = findViewById(R.id.profile_image);

@@ -22,51 +22,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mAuth = FirebaseAuth.getInstance();
-        mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
 
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //It will check if user signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser == null){
-
-            sendtoStart();
-
-        }
-        else{
-            mUserRef.child("online").setValue(true);
-
-        }
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        mUserRef.child("online").setValue(false);
-    }
-
-    private void sendtoStart(){
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 FirebaseUser currentUser = mAuth.getCurrentUser();
-                if(currentUser == null){
-                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                if (currentUser == null) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
-                }
-                else {
-                    Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                } else {
+                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -75,5 +45,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-}
 
+}

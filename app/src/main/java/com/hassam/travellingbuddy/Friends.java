@@ -4,6 +4,7 @@ public class Friends {
     public String date;
     public String name;
     public String image;
+    public String online;
 
 
     public Friends(){
@@ -15,7 +16,6 @@ public class Friends {
         this.date = date;
         this.name = name;
         this.image = image;
-
     }
     public String getDate() {
         return date;
@@ -40,4 +40,5 @@ public class Friends {
     public void setImage(String image) {
         this.image = image;
     }
-    }
+
+}

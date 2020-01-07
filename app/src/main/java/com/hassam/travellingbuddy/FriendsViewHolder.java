@@ -1,6 +1,7 @@
 package com.hassam.travellingbuddy;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ class FriendsViewHolder extends RecyclerView.ViewHolder{
     TextView mAboutMe;
     TextView mName;
     CircleImageView mImage;
+    ImageView mOnline;
 
 
     public FriendsViewHolder(@NonNull View itemView) {
@@ -26,6 +28,10 @@ class FriendsViewHolder extends RecyclerView.ViewHolder{
         mAboutMe = itemView.findViewById(R.id.status);
         mName = itemView.findViewById(R.id.username);
         mImage = itemView.findViewById(R.id.profileimage);
+        mOnline = (ImageView) itemView.findViewById(R.id.onlinePNG);
+
+
+
 
     }
 

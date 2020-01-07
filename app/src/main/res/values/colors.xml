@@ -8,4 +8,5 @@
     <color name="silver">#776969</color>
     <color name="background_color">#F0EDED</color>
     <color name="button_color">#000000</color>
+    <color name="chat_bar_color">#FFFFFF</color>
 </resources>

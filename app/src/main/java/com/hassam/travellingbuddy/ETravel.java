@@ -36,25 +36,7 @@ public class ETravel {
             Picasso.setSingletonInstance(built);
 
             mAuth = FirebaseAuth.getInstance();
-            mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
 
-            mUserDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if(dataSnapshot != null) {
-
-                        mUserDatabase.child("online").onDisconnect().setValue(false);
-                        mUserDatabase.child("online").setValue(true);
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
 
         }
     }
