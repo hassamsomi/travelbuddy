@@ -1,52 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/ThemeOverlay.AppCompat.ActionBar"
-    android:id="@+id/custom_chat_bar"
-    android:background="@color/chat_bar_color"
-    >
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/layoutConstraint"
-    android:layout_marginTop="5sp"
-    >
+    android:background="@color/chat_bar_color">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/custom_profile_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:src="@drawable/profile_image"
-        android:id="@+id/chatProfImage"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/chatProfImage"
-        android:text="@string/display_text"
-        app:layout_constraintTop_toTopOf="@id/chatProfImage"
+        android:cropToPadding="true"
         android:layout_marginStart="10dp"
-        android:textSize="20sp"
-        android:textColor="@color/colorAccent"
-        android:id="@+id/custom_bar_title"
         />
+
     <TextView
+        android:id="@+id/custom_profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="@id/custom_bar_title"
-        app:layout_constraintTop_toBottomOf="@id/custom_bar_title"
-        android:text="@string/last_sceen"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@id/chatProfImage"
+        android:layout_toEndOf="@id/custom_profile_image"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="4dp"
+        android:text="@string/display_username"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
         />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.appcompat.widget.Toolbar>
+    <TextView
+        android:id="@+id/custom_user_last_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/custom_profile_name"
+        android:layout_marginStart="4dp"
+        android:layout_toEndOf="@id/custom_profile_image"
+        android:text="@string/last_seen"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp"
+        android:layout_marginTop="3sp"
+        />
 
 
+</RelativeLayout>

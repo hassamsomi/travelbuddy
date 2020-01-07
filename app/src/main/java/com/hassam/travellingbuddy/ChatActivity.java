@@ -38,7 +38,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mToolbar = findViewById(R.id.custom_chat_bar);
+        mToolbar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(mToolbar);
 
         ActionBar actionBar = getSupportActionBar();
