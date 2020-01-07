@@ -8,4 +8,7 @@
     <string name="display_name">Display Name</string>
     <string name="title">Title</string>
     <string name="explore">Explore</string>
+    <string name="display_text">Display Text</string>
+    <string name="last_sceen">Last Sceen</string>
+    <string name="type_your_message_here">Type your message here.</string>
 </resources>

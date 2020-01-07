@@ -12,22 +12,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layoutConstraint"
+    android:layout_marginTop="5sp"
     >
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:src="@drawable/profile_image"
         android:id="@+id/chatProfImage"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/chatProfImage"
+        android:text="@string/display_text"
+        app:layout_constraintTop_toTopOf="@id/chatProfImage"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorAccent"
+        android:id="@+id/custom_bar_title"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/custom_bar_title"
+        app:layout_constraintTop_toBottomOf="@id/custom_bar_title"
+        android:text="@string/last_sceen"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/chatProfImage"
+        />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
 </androidx.appcompat.widget.Toolbar>
 
 
