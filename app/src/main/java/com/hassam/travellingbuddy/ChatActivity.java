@@ -24,12 +24,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ChatActivity extends AppCompatActivity {
 
     private String mChatUser;
-    private TextView mTitle;
+    private TextView mDisplayUserName, mLastSeenView;
     private DatabaseReference mRef;
     private Toolbar mToolbar;
+    private CircleImageView mProfileImage;
 
 
     @Override
@@ -45,14 +48,23 @@ public class ChatActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
+        mRef = FirebaseDatabase.getInstance().getReference();
+
         mChatUser = getIntent().getStringExtra("chatScreen");
         String userName = getIntent().getStringExtra("UserName");
-        getSupportActionBar().setTitle(userName);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View action_bar_view = inflater.inflate(R.layout.chat_custom_bar,null);
         actionBar.setCustomView(action_bar_view);
 
+//----------------------Custom Action Bar Items-------------------
+        mDisplayUserName = findViewById(R.id.custom_profile_name);
+        mLastSeenView = findViewById(R.id.custom_user_last_seen);
+        mProfileImage = findViewById(R.id.custom_profile_image);
+
+        mDisplayUserName.setText(userName);
+
+        mRef.child("UserInfo");
 
     }
 }
