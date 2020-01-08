@@ -13,9 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,22 +40,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private String mChatUser;
+    private String mChatUser, mCurrentUserID;
     private TextView mDisplayUserName, mLastSeenView;
     private DatabaseReference mRef;
     private CircleImageView mProfileImage;
     private FirebaseAuth mAuth;
-    private String mCurrentUserID;
+
+    private ImageButton mChatAddButton, mChatSendButton;
+    private EditText messageBox;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
-
-
-
 
 
         mRef = FirebaseDatabase.getInstance().getReference();
@@ -62,12 +64,14 @@ public class ChatActivity extends AppCompatActivity {
 
         mChatUser = getIntent().getStringExtra("chatScreen");
 
-
-
-//----------------------Custom Action Bar Items-------------------
+//      CHAT SCREEN LAYOUT ELEMENTS
         mDisplayUserName = findViewById(R.id.custom_profile_name);
         mLastSeenView = findViewById(R.id.custom_user_last_seen);
         mProfileImage = findViewById(R.id.custom_profile_image);
+
+        mChatAddButton = findViewById(R.id.send_files_btn);
+        mChatSendButton = findViewById(R.id.send_message_btn);
+        messageBox = findViewById(R.id.input_message);
 
 
         mRef.child("UserInfo").child(mChatUser).addValueEventListener(new ValueEventListener() {
@@ -142,6 +146,57 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        mChatSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                sendMessage();
+
+            }
+        });
 
     }
+
+    private void sendMessage(){
+
+        String message = messageBox.getText().toString();
+
+        if(!TextUtils.isEmpty(message)){
+
+            String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
+            String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+
+            DatabaseReference user_message_push = mRef.child("messages")
+                    .child(mCurrentUserID).child(mChatUser).push();
+
+            String push_id = user_message_push.getKey();
+
+            Map messageMap = new HashMap();
+            messageMap.put("message",message);
+            messageMap.put("seen",false);
+            messageMap.put("type","text");
+            messageMap.put("time",ServerValue.TIMESTAMP);
+
+            Map messageUserMap = new HashMap();
+            messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
+            messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+
+            mRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                    if(databaseError != null){
+
+                        Log.d( "CHAT_LOG",databaseError.getMessage().toString());
+
+                    }
+
+                }
+            });
+
+
+        }
+
+    }
+
 }
