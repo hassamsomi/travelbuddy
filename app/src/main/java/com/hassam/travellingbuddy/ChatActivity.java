@@ -181,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 Messages message = dataSnapshot.getValue(Messages.class);
-
+//
                 messagesList.add(message);
                 mAdapter.notifyDataSetChanged();
 
