@@ -6,6 +6,21 @@ public class Messages
     long time;
     boolean seen;
 
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    String from;
+
+    public Messages(String from) {
+        this.from = from;
+    }
+
+
     public Messages(String pMessage, String pType, long pTime, boolean pSeen) {
         message = pMessage;
         type = pType;
