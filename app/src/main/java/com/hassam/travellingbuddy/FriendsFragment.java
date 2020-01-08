@@ -118,6 +118,7 @@ public class FriendsFragment extends Fragment {
                         if(dataSnapshot.hasChild("date")){
                             String addedDate = dataSnapshot.child("date").getValue().toString();
                             holder.mAboutMe.setText(addedDate);
+                            holder.mOnline.setVisibility(View.INVISIBLE);
 
                         }
 
@@ -172,6 +173,7 @@ public class FriendsFragment extends Fragment {
                         catch (Exception e) {
                         e.printStackTrace();
                         }
+                        holder.mOnline.setVisibility(View.INVISIBLE);
 
 
                     }
@@ -191,6 +193,8 @@ public class FriendsFragment extends Fragment {
             public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
                 FriendsViewHolder holder = new FriendsViewHolder(view);
+                holder.mOnline.setVisibility(View.INVISIBLE);
+
                 return holder;
             }
         };

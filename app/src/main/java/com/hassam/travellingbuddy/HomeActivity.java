@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,11 +18,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private ImageView settings;
-    private ImageView sign_out;
+    private ImageButton settings;
+    private ImageButton sign_out;
     private FirebaseAuth mAuth;
     private TextView appBarTitle;
-    private ImageView btnUsers;
+    private ImageButton btnUsers;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

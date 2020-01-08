@@ -16,38 +16,43 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_centerInParent="true"
             android:id="@+id/textaccount"
+            android:layout_toEndOf="@id/btn_users"
+            android:layout_toStartOf="@id/btn_Settings"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
             />
-        <ImageView
-            android:scaleType="fitXY"
+        <ImageButton
             android:layout_width="20dp"
-            android:layout_height="24dp"
+            android:layout_height="28dp"
             android:src="@drawable/logout_icon"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:id="@+id/logout_btn"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/white"
             />
-        <ImageView
-            android:layout_marginRight="40dp"
+        <ImageButton
+            android:layout_marginEnd="40dp"
             android:id="@+id/btn_Settings"
-            android:scaleType="fitXY"
             android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_height="28dp"
             android:src="@drawable/account_setting_ic"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/white"
+            android:layout_toStartOf="@id/logout_btn"
             />
-        <ImageView
-
+        <ImageButton
+            android:tint="@color/colorPrimaryDark"
             android:id="@+id/btn_users"
-            android:scaleType="fitXY"
             android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_height="28dp"
             android:src="@drawable/ic_nearby_people"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-
+            android:backgroundTint="@android:color/white"
             />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -13,4 +13,7 @@
     <string name="type_your_message_here">Type your message here.</string>
     <string name="last_seen">Last Seen</string>
     <string name="display_username">Display UserName</string>
+    <string name="friends">Friends</string>
+    <string name="search">Search</string>
+    <string name="chat">Chat</string>
 </resources>

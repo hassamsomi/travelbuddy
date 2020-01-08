@@ -1,10 +1,14 @@
 package com.hassam.travellingbuddy;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -97,6 +101,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String profile_name = dataSnapshot.child("name").getValue().toString();
                 String profile_image = dataSnapshot.child("image").getValue().toString();
                 String user_status = dataSnapshot.child("aboutMe").getValue().toString();
+
 
                 mProfileName.setText(profile_name);
                 Picasso.get().load(profile_image).placeholder(R.drawable.profile_avatar).into(mProfileImage);
