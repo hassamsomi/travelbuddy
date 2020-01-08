@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 public class ProfileActivity extends AppCompatActivity {
 
 
