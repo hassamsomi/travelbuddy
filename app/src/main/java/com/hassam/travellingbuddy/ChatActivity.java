@@ -49,6 +49,9 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton mChatAddButton, mChatSendButton;
     private EditText messageBox;
 
+    private RecyclerView mMessagesList;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,7 @@ public class ChatActivity extends AppCompatActivity {
         mDisplayUserName = findViewById(R.id.custom_profile_name);
         mLastSeenView = findViewById(R.id.custom_user_last_seen);
         mProfileImage = findViewById(R.id.custom_profile_image);
+        mMessagesList = findViewById(R.id.messages_list);
 
         mChatAddButton = findViewById(R.id.send_files_btn);
         mChatSendButton = findViewById(R.id.send_message_btn);

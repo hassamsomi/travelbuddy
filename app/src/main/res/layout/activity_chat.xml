@@ -20,11 +20,24 @@
         android:layout_below="@id/chat_toolbar"
         android:layout_above="@id/chatSection"
         >
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/messages_list"
+            >
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+
+
+
         <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         >
+
     </ScrollView>
 
     </RelativeLayout>
