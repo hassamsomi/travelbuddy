@@ -3,38 +3,36 @@ package com.hassam.travellingbuddy;
 import
         androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import
         androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -42,7 +40,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private String mChatUser, mCurrentUserID;
     private TextView mDisplayUserName, mLastSeenView;
-    private DatabaseReference mRef;
+    private DatabaseReference mRootRef;
     private CircleImageView mProfileImage;
     private FirebaseAuth mAuth;
 
@@ -51,6 +49,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private RecyclerView mMessagesList;
 
+    private List<Messages> messagesList = new ArrayList<>();
+    private LinearLayoutManager mLinearLayout;
+    private MessageAdapter mAdapter;
 
 
     @Override
@@ -60,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
 
-        mRef = FirebaseDatabase.getInstance().getReference();
+        mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
         mCurrentUserID = mAuth.getCurrentUser().getUid();
@@ -71,14 +72,24 @@ public class ChatActivity extends AppCompatActivity {
         mDisplayUserName = findViewById(R.id.custom_profile_name);
         mLastSeenView = findViewById(R.id.custom_user_last_seen);
         mProfileImage = findViewById(R.id.custom_profile_image);
-        mMessagesList = findViewById(R.id.messages_list);
 
         mChatAddButton = findViewById(R.id.send_files_btn);
         mChatSendButton = findViewById(R.id.send_message_btn);
         messageBox = findViewById(R.id.input_message);
 
+        mAdapter = new MessageAdapter(messagesList);
 
-        mRef.child("UserInfo").child(mChatUser).addValueEventListener(new ValueEventListener() {
+        mMessagesList = findViewById(R.id.messages_list);
+        mLinearLayout = new LinearLayoutManager(this);
+
+        mMessagesList.setHasFixedSize(true);
+        mMessagesList.setLayoutManager(mLinearLayout);
+        mMessagesList.setAdapter(mAdapter);
+
+        loadMessage();
+
+
+        mRootRef.child("UserInfo").child(mChatUser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -112,7 +123,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        mRef.child("Chat").child(mCurrentUserID).addValueEventListener(new ValueEventListener() {
+        mRootRef.child("Chat").child(mCurrentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -125,7 +136,7 @@ public class ChatActivity extends AppCompatActivity {
                     Map chatUserMap = new HashMap();
                     chatUserMap.put("Chat/"+mCurrentUserID+"/"+mChatUser,chatAddMap);
 
-                    mRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
+                    mRootRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
@@ -161,6 +172,44 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    private void loadMessage() {
+
+        DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserID).child(mChatUser);
+
+        messageRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                Messages message = dataSnapshot.getValue(Messages.class);
+
+                messagesList.add(message);
+                mAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     private void sendMessage(){
 
         String message = messageBox.getText().toString();
@@ -170,7 +219,7 @@ public class ChatActivity extends AppCompatActivity {
             String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
             String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
 
-            DatabaseReference user_message_push = mRef.child("messages")
+            DatabaseReference user_message_push = mRootRef.child("messages")
                     .child(mCurrentUserID).child(mChatUser).push();
 
             String push_id = user_message_push.getKey();
@@ -185,7 +234,7 @@ public class ChatActivity extends AppCompatActivity {
             messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
             messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
 
-            mRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+            mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 

@@ -1,16 +1,27 @@
 package com.hassam.travellingbuddy;
 
-public class Messages {
+public class Messages
+{
+    private String from, message, type, to, messageID, time, date, name;
 
-    private String message, seen, time, type;
-
-    public Messages(String message, String seen, String time, String type) {
+    public Messages(String from, String message, String type, String to, String messageID, String time, String date, String name) {
+        this.from = from;
         this.message = message;
-        this.seen = seen;
-        this.time = time;
         this.type = type;
+        this.to = to;
+        this.messageID = messageID;
+        this.time = time;
+        this.date = date;
+        this.name = name;
     }
 
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
     public String getMessage() {
         return message;
@@ -20,12 +31,28 @@ public class Messages {
         this.message = message;
     }
 
-    public String getSeen() {
-        return seen;
+    public String getType() {
+        return type;
     }
 
-    public void setSeen(String seen) {
-        this.seen = seen;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
     }
 
     public String getTime() {
@@ -36,11 +63,22 @@ public class Messages {
         this.time = time;
     }
 
-    public String getType() {
-        return type;
+    public String getDate() {
+        return date;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Messages(){
+
     }
 }
