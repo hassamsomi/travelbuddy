@@ -16,4 +16,5 @@
     <string name="friends">Friends</string>
     <string name="search">Search</string>
     <string name="chat">Chat</string>
+    <string name="dispay_user_name">Dispay User Name</string>
 </resources>

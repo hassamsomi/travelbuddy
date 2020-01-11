@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,17 +17,40 @@
         />
 
     <TextView
-        android:id="@+id/message_text_layout"
+        android:id="@+id/user_text_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/message_profile_layout"
-        android:layout_alignBottom="@id/message_profile_layout"
         android:layout_marginStart="13dp"
+        android:layout_alignTop="@id/message_profile_layout"
         android:layout_toEndOf="@id/message_profile_layout"
-        android:background="@drawable/message_text_background"
-        android:padding="15dp"
-        android:text="TextView"
-        android:textColor="@color/chat_bar_color"
+        android:padding="2dp"
+        android:text="@string/dispay_user_name"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_text_layout"
+        android:id="@+id/message_text_layout"
+        android:padding="2dp"
+        android:layout_marginStart="13sp"
+        android:textSize="12sp"
+        android:text="@string/display_text"
+        android:textColor="@color/chat_bar_color"
+        android:background="@drawable/message_text_background"
+        android:layout_toEndOf="@id/message_profile_layout"
+        />
+<!--    <ImageView-->
+<!--        android:layout_width="160dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src=""-->
+<!--        android:layout_toEndOf="@id/message_profile_layout"-->
+<!--        android:layout_below="@id/message_text_layout"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:layout_marginTop="5sp"-->
+<!--        android:layout_marginStart="13sp"-->
+<!--        android:id="@+id/message_image_layout"-->
+<!--        tools:ignore="ContentDescription" />-->
 
 </RelativeLayout>

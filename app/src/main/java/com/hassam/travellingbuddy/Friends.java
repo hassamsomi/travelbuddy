@@ -11,7 +11,7 @@ public class Friends {
 
     }
 
-    public Friends(String date) {
+    public Friends(String date, String name, String image, String online) {
 
         this.date = date;
         this.name = name;

@@ -16,8 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
-        android:name=".ETravel"
         >
+<!--        android:name=".ETravel"-->
 
         <service android:name=".FirebaseMessagingService">
             <intent-filter>
