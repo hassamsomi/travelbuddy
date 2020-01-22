@@ -220,13 +220,12 @@ public class ProfileActivity extends AppCompatActivity {
 
                                 Toast.makeText(ProfileActivity.this,"There was some error in sending request",Toast.LENGTH_LONG).show();
 
+                            }else {
+
+                                mCurrentState = "req_sent";
+                                mBtnSendReq.setText("Cancel Friend Request");
                             }
-
                             mBtnSendReq.setEnabled(true);
-                            mCurrentState = "req_sent";
-                            mBtnSendReq.setText("Cancel Friend Request");
-
-
                         }
                     });
 

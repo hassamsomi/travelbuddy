@@ -15,7 +15,6 @@ class ConvViewHolder extends RecyclerView.ViewHolder{
 
     TextView userStatusView,userNameView;
     CircleImageView userImageView;
-    ImageView userOnlineView;
 
     public ConvViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -25,7 +24,6 @@ class ConvViewHolder extends RecyclerView.ViewHolder{
         userNameView = itemView.findViewById(R.id.username);
         userStatusView = itemView.findViewById(R.id.status);
         userImageView = itemView.findViewById(R.id.profileimage);
-        userOnlineView = itemView.findViewById(R.id.onlinePNG);
 
     }
 }
