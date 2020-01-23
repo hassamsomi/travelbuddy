@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,7 +61,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             messageText = itemView.findViewById(R.id.message_text_layout);
             profileImage = itemView.findViewById(R.id.message_profile_layout);
             displaytext = itemView.findViewById(R.id.user_text_layout);
-//            messageImage = itemView.findViewById(R.id.message_image_layout);
+            messageImage = itemView.findViewById(R.id.message_image_layout);
 
 
         }
@@ -95,19 +96,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 }
             });
 
-            if(fromUserType.equals("text")){
+            if(fromUserType.equals("text"))
+            {
 
                 holder.messageText.setText(c.getMessage());
-                holder.messageImage.setVisibility(View.INVISIBLE);
+                holder.messageText.setVisibility(View.VISIBLE);
 
             }
-            else{
+            else if(fromUserType.equals("image"))
+            {
 
-                holder.messageText.setVisibility(View.INVISIBLE);
-                Picasso.get().load(c.getMessage()).placeholder(R.drawable.profile_image).into(holder.messageImage);
+                holder.messageImage.setVisibility(View.VISIBLE);
+                Picasso.get().load(c.getMessage()).into(holder.messageImage);
 
             }
-
 
     }
     @Override
