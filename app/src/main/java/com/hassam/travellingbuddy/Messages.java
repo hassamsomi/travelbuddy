@@ -1,24 +1,42 @@
 package com.hassam.travellingbuddy;
 
+import com.google.firebase.database.DatabaseReference;
+
 public class Messages
 {
     public String message,type;
+    public DatabaseReference mUserDatabase;
     long time;
     boolean seen;
+
 
     public String getFrom() {
         return from;
     }
 
+
     public void setFrom(String from) {
         this.from = from;
     }
 
+
     String from;
+
 
     public Messages(String from) {
         this.from = from;
     }
+
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    String to;
 
 
     public Messages(String pMessage, String pType, long pTime, boolean pSeen) {

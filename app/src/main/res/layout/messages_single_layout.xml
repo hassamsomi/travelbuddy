@@ -13,20 +13,20 @@
         android:id="@+id/receiver_username"
         android:layout_width="160sp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="13dp"
         android:padding="2dp"
         android:text="@string/dispay_user_name"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="14sp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/receiver_username"
         android:id="@+id/receiver_text_layout"
-        android:padding="5sp"
-        android:layout_marginStart="13sp"
-        android:textSize="12sp"
+        android:padding="10sp"
+        android:textSize="14sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
@@ -38,31 +38,31 @@
         android:layout_below="@id/receiver_text_layout"
         android:scaleType="centerCrop"
         android:layout_marginTop="5sp"
-        android:layout_marginStart="13sp"
         android:id="@+id/receiver_image_layout"
         android:src="@android:color/transparent"
+        android:visibility="gone"
         />
+
+
+
 <!--RECEIVER USER LAYOUT-->
     <TextView
         android:id="@+id/sender_username"
-        android:layout_width="160sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="13dp"
-        android:layout_alignParentEnd="true"
         android:padding="2dp"
-        android:textAlignment="textEnd"
         android:text="@string/dispay_user_name"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="14sp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sender_username"
         android:id="@+id/sender_text_layout"
-        android:padding="5sp"
-        android:layout_marginEnd="13sp"
-        android:layout_alignParentEnd="true"
-        android:textSize="12sp"
+        android:padding="10sp"
+        android:textSize="14sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
@@ -73,10 +73,10 @@
         android:layout_below="@id/sender_text_layout"
         android:scaleType="centerCrop"
         android:layout_marginTop="5sp"
-        android:layout_marginEnd="13sp"
-        android:layout_alignParentEnd="true"
         android:id="@+id/sender_image_layout"
         android:src="@android:color/transparent"
+        android:visibility="gone"
         />
+
 
 </RelativeLayout>

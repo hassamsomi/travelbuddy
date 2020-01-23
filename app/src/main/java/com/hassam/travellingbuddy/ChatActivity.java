@@ -96,9 +96,10 @@ public class ChatActivity extends AppCompatActivity {
         mChatSendButton = findViewById(R.id.send_message_btn);
         messageBox = findViewById(R.id.input_message);
 
-        mAdapter = new MessageAdapter(messagesList);
+        mAdapter = new MessageAdapter(messagesList, mChatUser);
 
         mMessagesList = findViewById(R.id.messages_list);
+
         mRefreshLayout = findViewById(R.id.message_swipe_layout);
 
         mLinearLayout = new LinearLayoutManager(this);
