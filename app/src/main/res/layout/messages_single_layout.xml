@@ -8,21 +8,12 @@
     android:padding="10dp"
     android:id="@+id/message_single_layout"
     >
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="56sp"
-        android:layout_height="56sp"
-        android:src="@drawable/profile_image"
-        android:id="@+id/message_profile_layout"
-        />
-
+<!--CURRENT USER LAYOUT-->
     <TextView
-        android:id="@+id/user_text_layout"
-        android:layout_width="wrap_content"
+        android:id="@+id/receiver_username"
+        android:layout_width="160sp"
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
-        android:layout_alignTop="@id/message_profile_layout"
-        android:layout_toEndOf="@id/message_profile_layout"
         android:padding="2dp"
         android:text="@string/dispay_user_name"
         android:textColor="@color/colorPrimaryDark"
@@ -31,27 +22,61 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/user_text_layout"
-        android:id="@+id/message_text_layout"
-        android:padding="2dp"
+        android:layout_below="@id/receiver_username"
+        android:id="@+id/receiver_text_layout"
+        android:padding="5sp"
         android:layout_marginStart="13sp"
         android:textSize="12sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
-        android:layout_toEndOf="@id/message_profile_layout"
         />
+
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/message_profile_layout"
-        android:layout_below="@id/message_text_layout"
+        android:layout_width="160sp"
+        android:layout_height="160sp"
+        android:layout_below="@id/receiver_text_layout"
         android:scaleType="centerCrop"
         android:layout_marginTop="5sp"
         android:layout_marginStart="13sp"
-        android:id="@+id/message_image_layout"
-         android:src="@drawable/profile_image"
+        android:id="@+id/receiver_image_layout"
+        android:src="@android:color/transparent"
         />
-
+<!--RECEIVER USER LAYOUT-->
+    <TextView
+        android:id="@+id/sender_username"
+        android:layout_width="160sp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="13dp"
+        android:layout_alignParentEnd="true"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        android:text="@string/dispay_user_name"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sender_username"
+        android:id="@+id/sender_text_layout"
+        android:padding="5sp"
+        android:layout_marginEnd="13sp"
+        android:layout_alignParentEnd="true"
+        android:textSize="12sp"
+        android:text="@string/display_text"
+        android:textColor="@color/chat_bar_color"
+        android:background="@drawable/message_text_background"
+        />
+    <ImageView
+        android:layout_width="160sp"
+        android:layout_height="160sp"
+        android:layout_below="@id/sender_text_layout"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="5sp"
+        android:layout_marginEnd="13sp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/sender_image_layout"
+        android:src="@android:color/transparent"
+        />
 
 </RelativeLayout>
