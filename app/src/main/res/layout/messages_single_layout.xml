@@ -18,6 +18,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:visibility="gone"
         />
 
     <TextView
@@ -30,6 +31,7 @@
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
+        android:visibility="gone"
         />
 
     <ImageView
@@ -42,10 +44,35 @@
         android:src="@android:color/transparent"
         android:visibility="gone"
         />
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_play"
+        android:id="@+id/senderbtnPlay"
+        android:layout_below="@id/sender_username"
+        android:visibility="gone"
+        />
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_pause"
+        android:id="@+id/senderbtnPause"
+        android:layout_below="@id/sender_username"
+        android:visibility="gone"
+        />
+    <SeekBar
+        android:layout_width="180sp"
+        android:layout_height="24sp"
+        android:id="@+id/senderSeekBar"
+        android:visibility="gone"
+        android:layout_toEndOf="@id/senderbtnPlay"
+        android:layout_below="@id/sender_username"
+        />
 
 
 
-<!--RECEIVER USER LAYOUT-->
+
+    <!--RECEIVER USER LAYOUT-->
     <TextView
         android:id="@+id/sender_username"
         android:layout_width="wrap_content"
@@ -55,6 +82,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:visibility="gone"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -66,6 +94,7 @@
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
+        android:visibility="gone"
         />
     <ImageView
         android:layout_width="160sp"
@@ -75,6 +104,31 @@
         android:layout_marginTop="5sp"
         android:id="@+id/sender_image_layout"
         android:src="@android:color/transparent"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_play"
+        android:id="@+id/receiverbtnPlay"
+        android:layout_below="@id/receiver_username"
+        android:visibility="gone"
+        />
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_pause"
+        android:id="@+id/receiverbtnPause"
+        android:layout_below="@id/receiver_username"
+        android:visibility="gone"
+        />
+    <SeekBar
+        android:layout_width="180sp"
+        android:layout_height="24sp"
+        android:id="@+id/receiverSeekBar"
+        android:layout_toEndOf="@id/receiverbtnPlay"
+        android:layout_below="@id/sender_username"
         android:visibility="gone"
         />
 

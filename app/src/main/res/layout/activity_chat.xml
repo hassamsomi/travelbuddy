@@ -53,42 +53,62 @@
             >
 
 
-        <ImageButton
-            android:id="@+id/send_files_btn"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
-            android:layout_alignParentStart="true"
-            android:backgroundTint="@android:color/white"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="2sp"
-            android:tint="@color/colorPrimaryDark"
+            <ImageButton
+                android:id="@+id/send_files_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/camera"
+                android:layout_alignParentStart="true"
+                android:backgroundTint="@android:color/white"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="4dp"
+                android:tint="@color/colorPrimaryDark"
+                android:scaleType="fitXY"
+                android:padding="8dp"
+                />
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/mic"
+                android:id="@+id/btnMic"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="4dp"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                android:layout_toEndOf="@id/send_files_btn"
+                android:backgroundTint="@android:color/white"
+                />
 
-            />
+
+            <EditText
+                android:id="@+id/input_message"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Type your message here..."
+                android:maxLines="5"
+                android:padding="15dp"
+                tools:ignore="HardcodedText"
+                android:layout_toEndOf="@id/btnMic"
+                android:layout_toStartOf="@id/send_message_btn"
+                android:textAlignment="viewStart"
+                android:textIsSelectable="true"
+                android:textStyle="normal"
+                />
 
 
-        <EditText
-            android:id="@+id/input_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Type your message here..."
-            android:padding="15dp"
-            android:maxLines="5"
-            android:layout_toEndOf="@+id/send_files_btn"
-            android:layout_toStartOf="@+id/send_message_btn"
-            />
-
-
-        <ImageButton
-            android:id="@+id/send_message_btn"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            android:layout_alignParentEnd="true"
-            android:backgroundTint="@android:color/white"
-            android:tint="@color/colorPrimaryDark"
-            />
-</RelativeLayout>
+            <ImageButton
+                android:id="@+id/send_message_btn"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_send"
+                android:layout_alignParentEnd="true"
+                android:backgroundTint="@android:color/white"
+                android:tint="@color/colorPrimaryDark"
+                android:layout_marginTop="4dp"
+                android:padding="8dp"
+                />
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     private int mCurrentPage = 1;
     private ImageView mImage;
 
-    private ImageButton mChatAddButton, mChatSendButton;
+    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
     private EditText messageBox;
 
     private RecyclerView mMessagesList;
@@ -94,6 +94,7 @@ public class ChatActivity extends AppCompatActivity {
 
         mChatAddButton = findViewById(R.id.send_files_btn);
         mChatSendButton = findViewById(R.id.send_message_btn);
+        mChatMicButton = findViewById(R.id.btnMic);
         messageBox = findViewById(R.id.input_message);
 
         mAdapter = new MessageAdapter(messagesList, mChatUser);
