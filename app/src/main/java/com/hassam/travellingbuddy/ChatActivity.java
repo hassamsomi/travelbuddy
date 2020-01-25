@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,7 +50,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatActivity extends AppCompatActivity {
 
     private String mChatUser, mCurrentUserID;
-    private TextView mDisplayUserName, mLastSeenView;
+    private TextView mDisplayUserName, mLastSeenView, mConversionTextView;
     private DatabaseReference mRootRef;
     private CircleImageView mProfileImage;
     private FirebaseAuth mAuth;
@@ -58,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
     private EditText messageBox;
+    private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
     private RecyclerView mMessagesList;
 
@@ -218,6 +221,35 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+        mChatMicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speak();
+            }
+        });
+
+    }
+
+    private void speak() {
+
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Hi speak something");
+
+        try{
+
+            startActivityForResult(intent,REQUEST_CODE_SPEECH_INPUT);
+
+        }
+        catch(Exception e)
+        {
+
+            Toast.makeText(this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+
+        }
+
 
     }
 
@@ -304,6 +336,24 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
         }
+
+//
+
+                if(requestCode == RESULT_OK && null!=data && requestCode == REQUEST_CODE_SPEECH_INPUT){
+
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mConversionTextView.setText(result.get(0));
+
+                }
+                else {
+
+                    Toast.makeText(this,"Error",Toast.LENGTH_LONG).show();
+
+                }
+
+
+
+
 
     }
 
@@ -472,5 +522,8 @@ public class ChatActivity extends AppCompatActivity {
 
 
     }
+
+
+
 
 }
