@@ -156,7 +156,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                         ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     }
             }
-//
+
     }
     @Override
     public int getItemCount(){
