@@ -1,11 +1,11 @@
 package com.hassam.travellingbuddy;
 
-import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -29,10 +30,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private List<Messages> mMessageList;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
+    String receiverId;
 
-    public MessageAdapter(List<Messages>mMessageList){
+    public MessageAdapter(List<Messages>mMessageList, String receiverId){
         this.mMessageList = mMessageList;
-
+        this.receiverId = receiverId;
     }
 
     @NonNull
@@ -48,25 +50,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
 
+
     public class MessageViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView messageText, displaytext;
-        public CircleImageView profileImage;
-        public ImageView messageImage;
+        public TextView senderText, senderUserName, receiverText, receiverUserName;
+        public ImageView senderImage, receiverImage;
 
         public MessageViewHolder (@NonNull View itemView){
 
             super(itemView);
-            messageText = itemView.findViewById(R.id.message_text_layout);
-            profileImage = itemView.findViewById(R.id.message_profile_layout);
-            displaytext = itemView.findViewById(R.id.user_text_layout);
-//            messageImage = itemView.findViewById(R.id.message_image_layout);
-
-
+//          SENDER LAYOUT
+            senderText = itemView.findViewById(R.id.sender_text_layout);
+            senderUserName = itemView.findViewById(R.id.sender_username);
+            senderImage = itemView.findViewById(R.id.sender_image_layout);
+//          RECEIVER LAYOUT
+            receiverText = itemView.findViewById(R.id.receiver_text_layout);
+            receiverUserName = itemView.findViewById(R.id.receiver_username);
+            receiverImage = itemView.findViewById(R.id.receiver_image_layout);
         }
     }
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i) {
+
+
+            String messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
 
             Messages c = mMessageList.get(i);
@@ -76,16 +83,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
 
+
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
             mUserDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     String name = dataSnapshot.child("name").getValue().toString();
-                    String image = dataSnapshot.child("image").getValue().toString();
-
-                    holder.displaytext.setText(name);
-                    Picasso.get().load(image).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                    holder.senderUserName.setText(name);
 
                 }
 
@@ -94,21 +100,63 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 }
             });
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    holder.receiverUserName.setText(name);
+                }
 
-            if(fromUserType.equals("text")){
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                holder.messageText.setText(c.getMessage());
-                holder.messageImage.setVisibility(View.INVISIBLE);
+                }
+            });
 
+            holder.receiverImage.setVisibility(View.GONE);
+            holder.receiverUserName.setVisibility(View.GONE);
+            holder.receiverText.setVisibility(View.INVISIBLE);
+            holder.senderImage.setVisibility(View.GONE);
+            holder.senderText.setVisibility(View.GONE);
+            holder.senderUserName.setVisibility(View.GONE);
+
+            if(fromUserType.equals("text"))
+            {
+                if(fromUserID.equals(messageSenderID)) {
+                    holder.senderUserName.setVisibility(View.VISIBLE);
+                    ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                    holder.senderText.setText(c.getMessage());
+                    ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                    holder.senderText.setVisibility(View.VISIBLE);
+                }
+                else
+                    {
+                        holder.receiverText.setVisibility(View.VISIBLE);
+                        holder.receiverText.setText(c.getMessage());
+                        ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                        holder.receiverUserName.setVisibility(View.VISIBLE);
+                        holder.receiverUserName.setText(c.getMessage());
+                        ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    }
             }
-            else{
-
-                holder.messageText.setVisibility(View.INVISIBLE);
-                Picasso.get().load(c.getMessage()).placeholder(R.drawable.profile_image).into(holder.messageImage);
-
+            else if(fromUserType.equals("image")) {
+                if (fromUserID.equals(messageSenderID)) {
+                    holder.senderUserName.setVisibility(View.VISIBLE);
+                    ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                    holder.senderImage.setVisibility(View.VISIBLE);
+                    Picasso.get().load(c.getMessage()).into(holder.senderImage);
+                    ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                }
+                else
+                    {
+                        holder.receiverUserName.setVisibility(View.VISIBLE);
+                        ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                        holder.receiverImage.setVisibility(View.VISIBLE);
+                        Picasso.get().load(c.getMessage()).into(holder.receiverImage);
+                        ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    }
             }
-
-
+//
     }
     @Override
     public int getItemCount(){
