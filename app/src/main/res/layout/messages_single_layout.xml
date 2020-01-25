@@ -8,129 +8,49 @@
     android:padding="10dp"
     android:id="@+id/message_single_layout"
     >
-<!--CURRENT USER LAYOUT-->
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="56sp"
+        android:layout_height="56sp"
+        android:src="@drawable/profile_image"
+        android:id="@+id/message_profile_layout"
+        />
+
     <TextView
-        android:id="@+id/receiver_username"
-        android:layout_width="160sp"
+        android:id="@+id/user_text_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:layout_alignTop="@id/message_profile_layout"
+        android:layout_toEndOf="@id/message_profile_layout"
         android:padding="2dp"
         android:text="@string/dispay_user_name"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        />
+        android:textSize="14sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/receiver_username"
-        android:id="@+id/receiver_text_layout"
-        android:padding="10sp"
-        android:textSize="14sp"
-        android:text="@string/display_text"
-        android:textColor="@color/chat_bar_color"
-        android:background="@drawable/message_text_background"
-        android:visibility="gone"
-        />
-
-    <ImageView
-        android:layout_width="160sp"
-        android:layout_height="160sp"
-        android:layout_below="@id/receiver_text_layout"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="5sp"
-        android:id="@+id/receiver_image_layout"
-        android:src="@android:color/transparent"
-        android:visibility="gone"
-        />
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_play"
-        android:id="@+id/senderbtnPlay"
-        android:layout_below="@id/sender_username"
-        android:visibility="gone"
-        />
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_pause"
-        android:id="@+id/senderbtnPause"
-        android:layout_below="@id/sender_username"
-        android:visibility="gone"
-        />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/senderSeekBar"
-        android:visibility="gone"
-        android:layout_toEndOf="@id/senderbtnPlay"
-        android:layout_below="@id/sender_username"
-        />
-
-
-
-
-    <!--RECEIVER USER LAYOUT-->
-    <TextView
-        android:id="@+id/sender_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@id/user_text_layout"
+        android:id="@+id/message_text_layout"
         android:padding="2dp"
-        android:text="@string/dispay_user_name"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sender_username"
-        android:id="@+id/sender_text_layout"
-        android:padding="10sp"
-        android:textSize="14sp"
+        android:layout_marginStart="13sp"
+        android:textSize="12sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
-        android:visibility="gone"
+        android:layout_toEndOf="@id/message_profile_layout"
         />
-    <ImageView
-        android:layout_width="160sp"
-        android:layout_height="160sp"
-        android:layout_below="@id/sender_text_layout"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="5sp"
-        android:id="@+id/sender_image_layout"
-        android:src="@android:color/transparent"
-        android:visibility="gone"
-        />
-
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_play"
-        android:id="@+id/receiverbtnPlay"
-        android:layout_below="@id/receiver_username"
-        android:visibility="gone"
-        />
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_pause"
-        android:id="@+id/receiverbtnPause"
-        android:layout_below="@id/receiver_username"
-        android:visibility="gone"
-        />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/receiverSeekBar"
-        android:layout_toEndOf="@id/receiverbtnPlay"
-        android:layout_below="@id/sender_username"
-        android:visibility="gone"
-        />
-
+<!--    <ImageView-->
+<!--        android:layout_width="160dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src=""-->
+<!--        android:layout_toEndOf="@id/message_profile_layout"-->
+<!--        android:layout_below="@id/message_text_layout"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:layout_marginTop="5sp"-->
+<!--        android:layout_marginStart="13sp"-->
+<!--        android:id="@+id/message_image_layout"-->
+<!--        tools:ignore="ContentDescription" />-->
 
 </RelativeLayout>
