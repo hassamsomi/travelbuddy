@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +46,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,13 +60,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatActivity extends AppCompatActivity {
 
     private String mChatUser, mCurrentUserID;
-    private TextView mDisplayUserName, mLastSeenView, mConversionTextView;
+    private TextView mDisplayUserName, mLastSeenView;
+    private EditText mConversionTextView;
     private DatabaseReference mRootRef;
     private CircleImageView mProfileImage;
     private FirebaseAuth mAuth;
     private static final int TOTAL_ITEMS_TO_LOAD = 10;
     private int mCurrentPage = 1;
     private ImageView mImage;
+    private TextToSpeech textToSpeech;
+
 
     private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
     private EditText messageBox;
@@ -99,6 +112,7 @@ public class ChatActivity extends AppCompatActivity {
         mChatSendButton = findViewById(R.id.send_message_btn);
         mChatMicButton = findViewById(R.id.btnMic);
         messageBox = findViewById(R.id.input_message);
+        mConversionTextView = findViewById(R.id.converterTextView);
 
         mAdapter = new MessageAdapter(messagesList, mChatUser);
 
@@ -191,7 +205,10 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                sendMessage();
+
+                listen();
+
+//                sendMessage();
 
             }
         });
@@ -204,6 +221,21 @@ public class ChatActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent,"Select Image"),438);
+
+            }
+        });
+
+//        TEXT TO SPEECH FUNCTIONALITY
+
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+                if(i!=TextToSpeech.ERROR){
+
+                    textToSpeech.setLanguage(Locale.getDefault());
+
+                }
 
             }
         });
@@ -224,7 +256,12 @@ public class ChatActivity extends AppCompatActivity {
         mChatMicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 speak();
+
+
+
+
             }
         });
 
@@ -235,7 +272,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.ENGLISH);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Hi speak something");
 
         try{
@@ -253,9 +290,27 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
+        switch (requestCode){
+            case REQUEST_CODE_SPEECH_INPUT:{
+                if(resultCode == RESULT_OK && data!=null){
+
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mConversionTextView.setText(result.get(0));
+                    translate("en","ur",mConversionTextView.getText().toString());
+                }
+                break;
+            }
+
+        }
+
+
 
         if(requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData()!=null)
         {
@@ -288,74 +343,61 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 })
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if(task.isSuccessful())
-                        {
-                            Uri downloadUrl = task.getResult();
-                            myUrl = downloadUrl.toString();
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if(task.isSuccessful())
+                                {
+                                    Uri downloadUrl = task.getResult();
+                                    myUrl = downloadUrl.toString();
 
-                            Map<String, Object> messageMap = new HashMap<>();
-                            messageMap.put("message",myUrl);
-                            messageMap.put("name",fileUri.getLastPathSegment());
-                            messageMap.put("seen",false);
-                            messageMap.put("type","image");
-                            messageMap.put("time",ServerValue.TIMESTAMP);
-                            messageMap.put("from",mCurrentUserID);
-                            messageMap.put("to",mChatUser);
-                            messageMap.put("messageID",push_id);
+                                    Map<String, Object> messageMap = new HashMap<>();
+                                    messageMap.put("message",myUrl);
+                                    messageMap.put("name",fileUri.getLastPathSegment());
+                                    messageMap.put("seen",false);
+                                    messageMap.put("type","image");
+                                    messageMap.put("time",ServerValue.TIMESTAMP);
+                                    messageMap.put("from",mCurrentUserID);
+                                    messageMap.put("to",mChatUser);
+                                    messageMap.put("messageID",push_id);
 
-                            Map<String, Object> messageUserMap = new HashMap<>();
-                            messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
-                            messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+                                    Map<String, Object> messageUserMap = new HashMap<>();
+                                    messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
+                                    messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
 
-                            messageBox.setText("");
+                                    messageBox.setText("");
 
-                            mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
-                                    if(databaseError != null){
+                                            if(databaseError != null){
 
-                                        Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                                                Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
 
-                                    }
+                                            }
+
+                                        }
+                                    });
 
                                 }
-                            });
-
-                        }
-                    }
-                });
+                            }
+                        });
 
 
             }
             else
-                {
-                    Toast.makeText(this,"Nothing Selected, Error.", Toast.LENGTH_LONG).show();
-                }
+            {
+                Toast.makeText(this,"Nothing Selected, Error.", Toast.LENGTH_LONG).show();
+            }
 
         }
 
 //
 
-                if(requestCode == RESULT_OK && null!=data && requestCode == REQUEST_CODE_SPEECH_INPUT){
-
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    mConversionTextView.setText(result.get(0));
-
-                }
-                else {
-
-                    Toast.makeText(this,"Error",Toast.LENGTH_LONG).show();
-
-                }
-
-
-
-
 
     }
+
+
 
     private void loadMessage() {
 
@@ -523,6 +565,56 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    public void listen(){
+
+        String text = mConversionTextView.getText().toString();
+        textToSpeech.speak(text,TextToSpeech.QUEUE_FLUSH,null);
+
+    }
+
+
+    public String translate(String source,String destination,String content){
+
+// Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="https://translate.yandex.net/api/v1.5/tr.json/translate" +
+                "?key=" + getString(R.string.yandex_api_key) +
+                "&text=" + content +
+                "&lang=" + source + "-" + destination ;
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("YANDEX_RESPONSE_STRING",
+
+                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"+response+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            mConversionTextView.setText(json.getString("text"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Display the first 500 characters of the response string.
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("YANDEX_RESPONSE_STRING","\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"+error.getMessage()+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            }
+        });
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+
+
+
+        return null;
+    }
 
 
 
