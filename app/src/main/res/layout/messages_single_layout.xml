@@ -60,14 +60,7 @@
         android:layout_below="@id/sender_username"
         android:visibility="gone"
         />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/senderSeekBar"
-        android:visibility="gone"
-        android:layout_toEndOf="@id/senderbtnPlay"
-        android:layout_below="@id/sender_username"
-        />
+
 
 
 <!---->
@@ -123,14 +116,7 @@
         android:layout_below="@id/receiver_username"
         android:visibility="gone"
         />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/receiverSeekBar"
-        android:layout_toEndOf="@id/receiverbtnPlay"
-        android:layout_below="@id/sender_username"
-        android:visibility="gone"
-        />
+
 
 
 </RelativeLayout>

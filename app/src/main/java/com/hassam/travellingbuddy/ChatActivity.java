@@ -3,12 +3,14 @@ package com.hassam.travellingbuddy;
 import
         androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import
         androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -69,7 +71,8 @@ public class ChatActivity extends AppCompatActivity {
     private int mCurrentPage = 1;
     private ImageView mImage;
     private TextToSpeech textToSpeech;
-
+    private String mEnglish, mUrdu;
+    private AlertDialog.Builder builder;
 
     private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
     private EditText messageBox;
@@ -103,6 +106,9 @@ public class ChatActivity extends AppCompatActivity {
 
         mChatUser = getIntent().getStringExtra("chatScreen");
 
+        builder = new AlertDialog.Builder(this);
+
+
 //      CHAT SCREEN LAYOUT ELEMENTS
         mDisplayUserName = findViewById(R.id.custom_profile_name);
         mLastSeenView = findViewById(R.id.custom_user_last_seen);
@@ -113,6 +119,10 @@ public class ChatActivity extends AppCompatActivity {
         mChatMicButton = findViewById(R.id.btnMic);
         messageBox = findViewById(R.id.input_message);
         mConversionTextView = findViewById(R.id.converterTextView);
+
+        mEnglish = "";
+        mUrdu = "";
+
 
         mAdapter = new MessageAdapter(messagesList, mChatUser);
 
@@ -126,6 +136,8 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList.setLayoutManager(mLinearLayout);
         mMessagesList.setAdapter(mAdapter);
 
+
+//      LOAD MESSAGES IN CHAT SCREEN
         loadMessage();
 
 
@@ -201,18 +213,43 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+//      -----------------SEND MESSAGES FEATURE--------------------
         mChatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
-                listen();
-
 //                sendMessage();
 
+//                listen();
+
+                CharSequence options[] = new CharSequence[]{"English-to-Urdu","Urdu-to-English"};
+                builder.setTitle("Select Language");
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        if(i==0){
+
+                           mEnglish = "en";
+                           mUrdu = "ur";
+                           listen();
+
+                        }
+                        if(i==1){
+
+                            mEnglish = "en";
+                            mUrdu = "sv";
+                            listen();
+                        }
+
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
 
+//      -----------------SEND IMAGE FEATURE---------------
         mChatAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -225,8 +262,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-//        TEXT TO SPEECH FUNCTIONALITY
 
+//        --------------TEXT TO SPEECH FUNCTIONALITY----------------
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
@@ -241,6 +278,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
+//       ---------------PAGINATION------------------
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -253,6 +291,8 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
+//      ----------------VOICE MESSAGE SENT BUTTON---------------
         mChatMicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -260,19 +300,18 @@ public class ChatActivity extends AppCompatActivity {
                 speak();
 
 
-
-
             }
         });
 
     }
 
+//    ---------------RECORD VOICE FUNCTION----------------
     private void speak() {
 
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.ENGLISH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Hi speak something");
 
         try{
@@ -291,7 +330,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-
+//  -----------------REQUEST AND RESULT CODE---------------
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -303,7 +342,19 @@ public class ChatActivity extends AppCompatActivity {
 
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     mConversionTextView.setText(result.get(0));
-                    translate("en","ur",mConversionTextView.getText().toString());
+
+
+                    if(mEnglish.equals("en")&& mUrdu.equals("ur")) {
+                        translate(mEnglish, mUrdu, mConversionTextView.getText().toString());
+                    }else if(mEnglish.equals("en") && mUrdu.equals("sv")){
+                        translate(mEnglish, mUrdu, mConversionTextView.getText().toString());
+                    }
+                    else
+                        {
+                            Toast.makeText(this,"Error",Toast.LENGTH_LONG).show();
+                        }
+
+
                 }
                 break;
             }
@@ -398,7 +449,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-
+//  -----------------LOAD MESSAGE FUNCTION-----------------
     private void loadMessage() {
 
         DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserID).child(mChatUser);
@@ -453,10 +504,11 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+//  -----------------SEND MESSAGE FUNCTION------------------
     private void sendMessage(){
 
         String message = messageBox.getText().toString();
-
+//  ------------------SENDING TEXT MESSAGE------------------
         if(!TextUtils.isEmpty(message)){
 
             String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
@@ -500,6 +552,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+//  -----------------FIXING PAGINATION----------------------
     private void loadMoreMessage(){
 
         DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserID).child(mChatUser);
@@ -565,6 +618,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+//  -----------------PLAY VOICE MESSAGE FUNCTIONALITY----------
     public void listen(){
 
         String text = mConversionTextView.getText().toString();
@@ -572,7 +626,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-
+//  ------------------TEXT CONVERSION-----------------------
     public String translate(String source,String destination,String content){
 
 // Instantiate the RequestQueue.
@@ -616,6 +670,10 @@ public class ChatActivity extends AppCompatActivity {
         return null;
     }
 
+    public void voiceMessageSender(){
 
+
+
+    }
 
 }
