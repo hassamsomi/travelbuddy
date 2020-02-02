@@ -19,6 +19,7 @@ import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -74,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
     private String mEnglish, mUrdu;
     private AlertDialog.Builder builder;
 
-    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
+    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton,mPlayBtn;
     private EditText messageBox;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
@@ -90,6 +91,8 @@ public class ChatActivity extends AppCompatActivity {
     private String myUrl="";
     private StorageTask uploadTask;
     private Uri fileUri;
+    private Button mLanguageSelector;
+
 
 
     @Override
@@ -109,6 +112,7 @@ public class ChatActivity extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
 
 
+
 //      CHAT SCREEN LAYOUT ELEMENTS
         mDisplayUserName = findViewById(R.id.custom_profile_name);
         mLastSeenView = findViewById(R.id.custom_user_last_seen);
@@ -117,6 +121,8 @@ public class ChatActivity extends AppCompatActivity {
         mChatAddButton = findViewById(R.id.send_files_btn);
         mChatSendButton = findViewById(R.id.send_message_btn);
         mChatMicButton = findViewById(R.id.btnMic);
+        mLanguageSelector = findViewById(R.id.btnSelectLanguage);
+
         messageBox = findViewById(R.id.input_message);
         mConversionTextView = findViewById(R.id.converterTextView);
 
@@ -213,14 +219,10 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-//      -----------------SEND MESSAGES FEATURE--------------------
-        mChatSendButton.setOnClickListener(new View.OnClickListener() {
+//       ------------------RECEIVER VOICE PLAY BUTTON---------------
+        mLanguageSelector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                sendMessage();
-
-//                listen();
 
                 CharSequence options[] = new CharSequence[]{"English-to-Urdu","Urdu-to-English"};
                 builder.setTitle("Select Language");
@@ -230,22 +232,37 @@ public class ChatActivity extends AppCompatActivity {
 
                         if(i==0){
 
-                           mEnglish = "en";
-                           mUrdu = "ur";
-                           listen();
+                            mEnglish = "en";
+                            mUrdu = "ur";
+//                            listen();
 
                         }
                         if(i==1){
 
                             mEnglish = "en";
                             mUrdu = "sv";
-                            listen();
+//                            listen();
                         }
 
                     }
                 });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
+
+            }
+        });
+
+
+//      -----------------SEND MESSAGES FEATURE--------------------
+        mChatSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                sendMessage();
+
+//                listen();
+
+
             }
         });
 
@@ -346,8 +363,85 @@ public class ChatActivity extends AppCompatActivity {
 
                     if(mEnglish.equals("en")&& mUrdu.equals("ur")) {
                         translate(mEnglish, mUrdu, mConversionTextView.getText().toString());
-                    }else if(mEnglish.equals("en") && mUrdu.equals("sv")){
+
+
+                        String message = mConversionTextView.getText().toString();
+
+                        String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
+                        String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+
+                        DatabaseReference user_message_push = mRootRef.child("messages")
+                                .child(mCurrentUserID).child(mChatUser).push();
+
+                        String push_id = user_message_push.getKey();
+
+                        Map<String, Object> messageMap = new HashMap<>();
+                        messageMap.put("message",message);
+                        messageMap.put("seen",false);
+                        messageMap.put("type","con");
+                        messageMap.put("time",ServerValue.TIMESTAMP);
+                        messageMap.put("from",mCurrentUserID);
+                        messageMap.put("to",mChatUser);
+                        messageMap.put("messageID",push_id);
+
+                        Map<String, Object> messageUserMap = new HashMap<String, Object>();
+                        messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
+                        messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+
+                        mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                                if(databaseError != null){
+
+                                    Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
+                                }
+
+                            }
+                        });
+
+//                       SENDER MESSAGE TO
+                    }else if(mEnglish.equals("ur") && mUrdu.equals("en")){
                         translate(mEnglish, mUrdu, mConversionTextView.getText().toString());
+
+                        String message = mConversionTextView.getText().toString();
+
+                        String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
+                        String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+
+                        DatabaseReference user_message_push = mRootRef.child("messages")
+                                .child(mCurrentUserID).child(mChatUser).push();
+
+                        String push_id = user_message_push.getKey();
+
+                        Map<String, Object> messageMap = new HashMap<>();
+                        messageMap.put("message",message);
+                        messageMap.put("seen",false);
+                        messageMap.put("type","con");
+                        messageMap.put("time",ServerValue.TIMESTAMP);
+                        messageMap.put("from",mCurrentUserID);
+                        messageMap.put("to",mChatUser);
+                        messageMap.put("messageID",push_id);
+
+                        Map<String, Object> messageUserMap = new HashMap<String, Object>();
+                        messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
+                        messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+
+                        mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                                if(databaseError != null){
+
+                                    Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
+                                }
+
+                             }
+                        });
+
+
                     }
                     else
                         {
