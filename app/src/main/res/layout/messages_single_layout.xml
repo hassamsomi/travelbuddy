@@ -42,15 +42,17 @@
         android:src="@android:color/transparent"
         />
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5sp"
         android:src="@drawable/ic_play"
         android:id="@+id/senderbtnPlay"
         android:layout_below="@id/sender_username"
         />
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
         android:src="@drawable/ic_pause"
         android:id="@+id/senderbtnPause"
         android:layout_below="@id/sender_username"
@@ -95,8 +97,9 @@
         />
 
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
         android:src="@drawable/ic_play"
         android:id="@+id/receiverbtnPlay"
         android:layout_below="@id/receiver_username"

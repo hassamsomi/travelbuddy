@@ -41,9 +41,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 //        -----------TEXT TO SPEECH---------
 
 
-    public MessageAdapter(List<Messages>mMessageList, String receiverId){
+    public MessageAdapter(Context context, List<Messages>mMessageList, String receiverId){
         this.mMessageList = mMessageList;
         this.receiverId = receiverId;
+        this.context = context;
     }
 
     @NonNull
@@ -85,7 +86,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i) {
 
 //        --------------TEXT TO SPEECH------------
-        textToSpeech = new TextToSpeech(null, new TextToSpeech.OnInitListener() {
+        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
 
@@ -100,7 +101,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
 
-        String messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        String messageSenderID = (Objects.requireNonNull(mAuth.getCurrentUser())).getUid();
 
             Messages c = mMessageList.get(i);
 
@@ -190,6 +191,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams)holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+
+                    holder.senderText.setText(c.getMessage());
                     holder.senderPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -207,6 +210,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    holder.receiverText.setText(c.getMessage());
                     holder.receiverPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
