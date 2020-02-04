@@ -79,7 +79,7 @@ public class ChatActivity extends AppCompatActivity {
     private String mEnglish, mUrdu;
     private AlertDialog.Builder builder;
 
-    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton,mPlayBtn;
+    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
     private EditText messageBox;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
@@ -95,7 +95,6 @@ public class ChatActivity extends AppCompatActivity {
     private String myUrl="";
     private StorageTask uploadTask;
     private Uri fileUri;
-    private Button mLanguageSelector;
     final String[] mSource = {""};
     final String[] mDestination = {""};
 
@@ -198,6 +197,9 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList.setLayoutManager(mLinearLayout);
         mMessagesList.setAdapter(mAdapter);
 
+        mRootRef.child("Chat").child(mCurrentUserID).child(mChatUser).child("seen").setValue(true);
+
+
 
 //      LOAD MESSAGES IN CHAT SCREEN
         loadMessage();
@@ -270,7 +272,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                Toast.makeText(ChatActivity.this, (CharSequence) databaseError,Toast.LENGTH_LONG).show();
+                Toast.makeText(ChatActivity.this, databaseError.getMessage(),Toast.LENGTH_LONG).show();
 
             }
         });
@@ -513,6 +515,7 @@ public class ChatActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 mMessagesList.scrollToPosition(messagesList.size() - 1);
 
+
                 mRefreshLayout.setRefreshing(false);
 
             }
@@ -569,6 +572,14 @@ public class ChatActivity extends AppCompatActivity {
             messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
 
             messageBox.setText("");
+
+
+            mRootRef.child("Chat").child(mCurrentUserID).child(mChatUser).child("seen").setValue(true);
+            mRootRef.child("Chat").child(mCurrentUserID).child(mChatUser).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+            mRootRef.child("Chat").child(mChatUser).child(mCurrentUserID).child("seen").setValue(false);
+            mRootRef.child("Chat").child(mChatUser).child(mCurrentUserID).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
 
             mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
@@ -685,7 +696,7 @@ public class ChatActivity extends AppCompatActivity {
                         try {
                             JSONObject json = new JSONObject(response);
                             mConversionTextView.setText(json.getString("text"));
-                            String message = mConversionTextView.getText().toString();
+                            String voicemessage = mConversionTextView.getText().toString();
 
                             String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
                             String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
@@ -696,7 +707,7 @@ public class ChatActivity extends AppCompatActivity {
                             String push_id = user_message_push.getKey();
 
                             Map<String, Object> messageMap = new HashMap<>();
-                            messageMap.put("message",message);
+                            messageMap.put("message",voicemessage);
                             messageMap.put("seen",false);
                             messageMap.put("type","con");
                             messageMap.put("time",ServerValue.TIMESTAMP);
@@ -735,16 +746,6 @@ public class ChatActivity extends AppCompatActivity {
 
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-
-
         return null;
     }
-
-    public void voiceMessageSender(){
-
-
-
-    }
-
 }

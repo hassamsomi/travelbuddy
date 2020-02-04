@@ -20,28 +20,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private List<Messages> mMessageList;
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserDatabase;
-    String receiverId;
+    private String receiverId;
     private Context context;
     private TextToSpeech textToSpeech;
 
 //        -----------TEXT TO SPEECH---------
 
 
-    public MessageAdapter(Context context, List<Messages>mMessageList, String receiverId){
+    MessageAdapter(Context context, List<Messages> mMessageList, String receiverId){
         this.mMessageList = mMessageList;
         this.receiverId = receiverId;
         this.context = context;
@@ -61,12 +58,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder{
+    static class MessageViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView senderText, senderUserName, receiverText, receiverUserName;
-        public ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn;
+        TextView senderText, senderUserName, receiverText, receiverUserName;
+        ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn;
 
-        public MessageViewHolder (@NonNull View itemView){
+        MessageViewHolder(@NonNull View itemView){
 
             super(itemView);
 //          SENDER LAYOUT
@@ -109,15 +106,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             String fromUserType = c.getType();
 
 
-
-
-            mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
             mUserDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    String name = dataSnapshot.child("name").getValue().toString();
+                    String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                     holder.senderUserName.setText(name);
 
                 }
@@ -130,7 +125,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String name = dataSnapshot.child("name").getValue().toString();
+                    String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                     holder.receiverUserName.setText(name);
                 }
 
@@ -149,48 +144,44 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.senderUserName.setVisibility(View.GONE);
             holder.senderPlayBtn.setVisibility(View.GONE);
 
-            if(fromUserType.equals("text"))
-            {
-                if(fromUserID.equals(messageSenderID)) {
+        switch (fromUserType) {
+            case "text":
+                if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setVisibility(View.VISIBLE);
+                } else {
+                    holder.receiverText.setVisibility(View.VISIBLE);
+                    holder.receiverText.setText(c.getMessage());
+                    ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    holder.receiverUserName.setVisibility(View.VISIBLE);
+                    holder.receiverUserName.setText(c.getMessage());
+                    ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                 }
-                else
-                    {
-                        holder.receiverText.setVisibility(View.VISIBLE);
-                        holder.receiverText.setText(c.getMessage());
-                        ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                        holder.receiverUserName.setVisibility(View.VISIBLE);
-                        holder.receiverUserName.setText(c.getMessage());
-                        ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                    }
-            }
-            else if(fromUserType.equals("image")) {
+                break;
+            case "image":
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                } else {
+                    holder.receiverUserName.setVisibility(View.VISIBLE);
+                    ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    holder.receiverImage.setVisibility(View.VISIBLE);
+                    Picasso.get().load(c.getMessage()).into(holder.receiverImage);
+                    ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                 }
-                else
-                    {
-                        holder.receiverUserName.setVisibility(View.VISIBLE);
-                        ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                        holder.receiverImage.setVisibility(View.VISIBLE);
-                        Picasso.get().load(c.getMessage()).into(holder.receiverImage);
-                        ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                    }
-            }
-            else if(fromUserType.equals("con")){
-                if(fromUserID.equals(messageSenderID)){
+                break;
+            case "con":
+                if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
-                    ((RelativeLayout.LayoutParams)holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
+                    ((RelativeLayout.LayoutParams) holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
 
                     holder.senderText.setText(c.getMessage());
                     holder.senderPlayBtn.setOnClickListener(new View.OnClickListener() {
@@ -198,14 +189,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                         public void onClick(View view) {
 
                             String toSpeak = holder.senderText.getText().toString();
-                            textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
+                            textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
                         }
                     });
 
-                }
-                else
-                {
+                } else {
                     holder.receiverUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
@@ -216,23 +205,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                         public void onClick(View view) {
 
                             String toSpeak = holder.receiverText.getText().toString();
-                            textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
+                            textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
                         }
                     });
                 }
 
 
-
-            }
+                break;
+        }
 
     }
     @Override
     public int getItemCount(){
         return mMessageList.size();
     }
-
-
 
 }
 

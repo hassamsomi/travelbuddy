@@ -1,5 +1,7 @@
 package com.hassam.travellingbuddy;
 
+import android.widget.TextView;
+
 public class Conv {
 
 
@@ -15,6 +17,7 @@ public class Conv {
         return seen;
     }
 
+
     public void setSeen(boolean seen) {
         this.seen = seen;
     }
@@ -29,7 +32,6 @@ public class Conv {
 
     public Conv(){
 
-//        EMPTY CONSTRUCTOR REQUIRED
 
     }
 

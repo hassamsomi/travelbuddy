@@ -19,7 +19,7 @@
     <string name="dispay_user_name">Dispay User Name</string>
     <string name="select_language">Select Language</string>
     <string-array name="Languages">
-        <item>Select Language</item>
+        <item> </item>
         <item>Azerbaijan</item>
         <item>Albanian</item>
         <item>Amharic</item>

@@ -17,28 +17,29 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Friends"
+                android:text="@string/friends"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_centerInParent="true"
                 android:id="@+id/textaccount"
                 />
             <ImageView
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
 
                 android:scaleType="fitXY"
                 android:layout_width="20dp"
                 android:layout_height="24dp"
                 android:src="@drawable/logout_icon"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                /><ImageView
-            android:layout_marginRight="40dp"
+                />
+            <ImageView
+            android:layout_marginEnd="40dp"
             android:id="@+id/btn_Settings"
             android:scaleType="fitXY"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/account_setting_ic"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             />
         </RelativeLayout>
