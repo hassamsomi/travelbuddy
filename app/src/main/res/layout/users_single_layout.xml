@@ -44,7 +44,19 @@
         android:layout_marginTop="22dp"
         android:layout_marginStart="10dp"
         android:id="@+id/onlinePNG"
-        android:visibility="invisible"
+        android:visibility="gone"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:layout_marginTop="21dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone"
+        android:id="@+id/lastSeen"
+        />
+
 
 </RelativeLayout>

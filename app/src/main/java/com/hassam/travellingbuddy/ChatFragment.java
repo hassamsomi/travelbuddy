@@ -9,14 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.solver.widgets.Snapshot;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -68,6 +66,7 @@ public class ChatFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
+
 
         mChatList.setHasFixedSize(true);
         mChatList.setLayoutManager(linearLayoutManager);
@@ -150,6 +149,7 @@ public class ChatFragment extends Fragment {
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
 
                 final String user_list_id = getRef(position).getKey();
+                assert user_list_id != null;
                 Query lastMessageQuery = mMessageDatabase.child(user_list_id).limitToLast(1);
                 lastMessageQuery.addChildEventListener(new ChildEventListener() {
                     @Override
@@ -196,13 +196,20 @@ public class ChatFragment extends Fragment {
                 mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                         if(dataSnapshot.hasChild("image")){
 
                             String name = dataSnapshot.child("name").getValue().toString();
                             holder.userNameView.setText(name);
                             String image = dataSnapshot.child("image").getValue().toString();
                             Picasso.get().load(image).into(holder.userImageView);
+
+                            if(dataSnapshot.hasChild("online")){
+
+                                String userOnline = dataSnapshot.child("online").getValue().toString();
+                                holder.setUserOnline(userOnline);
+
+                            }
+
 
                         }
 
@@ -215,6 +222,28 @@ public class ChatFragment extends Fragment {
 
                     }
                 });
+                mConvDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild("timestamp")){
+
+                            String lastTimeSeen = dataSnapshot.child("timestamp").getValue().toString();
+                            holder.lastSeenTime.setText(lastTimeSeen);
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        Toast.makeText(getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
 
             }
 
