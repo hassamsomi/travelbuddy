@@ -18,7 +18,6 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:visibility="gone"
         />
 
     <TextView
@@ -31,7 +30,6 @@
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
-        android:visibility="gone"
         />
 
     <ImageView
@@ -42,32 +40,25 @@
         android:layout_marginTop="5sp"
         android:id="@+id/receiver_image_layout"
         android:src="@android:color/transparent"
-        android:visibility="gone"
         />
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5sp"
         android:src="@drawable/ic_play"
         android:id="@+id/senderbtnPlay"
         android:layout_below="@id/sender_username"
-        android:visibility="gone"
         />
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
         android:src="@drawable/ic_pause"
         android:id="@+id/senderbtnPause"
         android:layout_below="@id/sender_username"
         android:visibility="gone"
         />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/senderSeekBar"
-        android:visibility="gone"
-        android:layout_toEndOf="@id/senderbtnPlay"
-        android:layout_below="@id/sender_username"
-        />
+
 
 
 <!---->
@@ -82,7 +73,6 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:visibility="gone"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -94,7 +84,6 @@
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
         android:background="@drawable/message_text_background"
-        android:visibility="gone"
         />
     <ImageView
         android:layout_width="160sp"
@@ -108,12 +97,12 @@
         />
 
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
         android:src="@drawable/ic_play"
         android:id="@+id/receiverbtnPlay"
         android:layout_below="@id/receiver_username"
-        android:visibility="gone"
         />
     <ImageView
         android:layout_width="24dp"
@@ -123,14 +112,7 @@
         android:layout_below="@id/receiver_username"
         android:visibility="gone"
         />
-    <SeekBar
-        android:layout_width="180sp"
-        android:layout_height="24sp"
-        android:id="@+id/receiverSeekBar"
-        android:layout_toEndOf="@id/receiverbtnPlay"
-        android:layout_below="@id/sender_username"
-        android:visibility="gone"
-        />
+
 
 
 </RelativeLayout>

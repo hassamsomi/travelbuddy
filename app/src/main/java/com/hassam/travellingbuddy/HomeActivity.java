@@ -15,6 +15,9 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -24,6 +27,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextView appBarTitle;
     private ImageButton btnUsers;
 
+    private DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -69,6 +73,8 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
                 startActivity(intent);
                 finish();
+                mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+
             }
         });
     }

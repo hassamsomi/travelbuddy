@@ -16,10 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +30,7 @@ import java.util.Objects;
 public class ChatFragment extends Fragment {
 
     private RecyclerView mChatList;
-    private DatabaseReference  mChatDatabase, mUsersDatabase;
+    private DatabaseReference  mChatDatabase, mUsersDatabase, mConvDatabase,mMessageDatabase;
 
     String mCurrent_UserID="";
 
@@ -54,9 +56,21 @@ public class ChatFragment extends Fragment {
 
         mChatDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mCurrent_UserID);
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo");
+        mConvDatabase = FirebaseDatabase.getInstance().getReference().child("Chat").child(mCurrent_UserID);
+        mMessageDatabase = FirebaseDatabase.getInstance().getReference().child("messages").child(mCurrent_UserID);
 
+        mConvDatabase.keepSynced(true);
+        mUsersDatabase.keepSynced(true);
         mChatList = mMainView.findViewById(R.id.conv_list);
-        mChatList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+
+
+        mChatList.setHasFixedSize(true);
+        mChatList.setLayoutManager(linearLayoutManager);
+
         return mMainView;
 
     }
@@ -65,47 +79,168 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(mChatDatabase,Friends.class).build();
+//        FirebaseRecyclerOptions<Friends> options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(mChatDatabase,Friends.class).build();
+//
+//        FirebaseRecyclerAdapter<Friends,FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
+//            @Override
+//            protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull Friends model) {
+//
+//                final String usersIDs = getRef(position).getKey();
+//                final String[] retImage = {"default_image"};
+//
+//                assert usersIDs != null;
+//                mUsersDatabase.child(usersIDs).addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                        if(dataSnapshot.exists()){
+//
+//                            if(dataSnapshot.hasChild("image")){
+//
+//                                retImage[0] = dataSnapshot.child("image").getValue().toString();
+//                                Picasso.get().load(retImage[0]).into(holder.mImage);
+//
+//                            }
+//                            final String retName = dataSnapshot.child("name").getValue().toString();
+//                            holder.mName.setText(retName);
+//
+//
+//                        }
+//                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
+//                                chatIntent.putExtra("chatScreen",usersIDs);
+//                                startActivity(chatIntent);
+//                            }
+//                        });
+//                    }
+//
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        Toast.makeText(getContext(), (CharSequence) databaseError,Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//
+//
+//
+//
+//
+//            }
+//
+//            @NonNull
+//            @Override
+//            public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+//                return new FriendsViewHolder(view);
+//            }
+//        };
+//        mChatList.setAdapter(adapter);
+//        adapter.startListening();
 
-        FirebaseRecyclerAdapter<Friends,FriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
+        Query conversationQuery = mConvDatabase.orderByChild("timestamp");
+        FirebaseRecyclerOptions<Conv> options1 = new FirebaseRecyclerOptions.Builder<Conv>().setQuery(conversationQuery,Conv.class).build();
+        FirebaseRecyclerAdapter<Conv,ConvViewHolder> adapter1 = new FirebaseRecyclerAdapter<Conv, ConvViewHolder>(options1) {
+
+
             @Override
-            protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull Friends model) {
+            protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
 
-                final String usersIDs = getRef(position).getKey();
-                final String[] retImage = {"default_image"};
-
-                assert usersIDs != null;
-                mUsersDatabase.child(usersIDs).addValueEventListener(new ValueEventListener() {
+                final String user_list_id = getRef(position).getKey();
+                assert user_list_id != null;
+                Query lastMessageQuery = mMessageDatabase.child(user_list_id).limitToLast(1);
+                lastMessageQuery.addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        if(dataSnapshot.exists()){
+                        String data = dataSnapshot.child("message").getValue().toString();
+                        holder.setMessage(data,model.isSeen());
 
-                            if(dataSnapshot.hasChild("image")){
-
-                                retImage[0] = dataSnapshot.child("image").getValue().toString();
-                                Picasso.get().load(retImage[0]).into(holder.mImage);
-
-                            }
-                            final String retName = dataSnapshot.child("name").getValue().toString();
-                            holder.mName.setText(retName);
-
-                        }
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
-                                chatIntent.putExtra("chatScreen",usersIDs);
-                                startActivity(chatIntent);
-                            }
-                        });
                     }
 
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        Toast.makeText(getContext(), (CharSequence) databaseError,Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
+                                chatIntent.putExtra("chatScreen",user_list_id);
+                                startActivity(chatIntent);
+
+                    }
+                });
+
+
+                mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChild("image")){
+
+                            String name = dataSnapshot.child("name").getValue().toString();
+                            holder.userNameView.setText(name);
+                            String image = dataSnapshot.child("image").getValue().toString();
+                            Picasso.get().load(image).into(holder.userImageView);
+
+                            if(dataSnapshot.hasChild("online")){
+
+                                String userOnline = dataSnapshot.child("online").getValue().toString();
+                                holder.setUserOnline(userOnline);
+
+                            }
+
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        Toast.makeText(mMainView.getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
+                    }
+                });
+                mConvDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild("timestamp")){
+
+                            String lastTimeSeen = dataSnapshot.child("timestamp").getValue().toString();
+                            holder.lastSeenTime.setText(lastTimeSeen);
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        Toast.makeText(getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
                     }
                 });
 
@@ -114,14 +249,19 @@ public class ChatFragment extends Fragment {
 
             @NonNull
             @Override
-            public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
-                return new FriendsViewHolder(view);
+            public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+                return new ConvViewHolder(view);
             }
         };
-        mChatList.setAdapter(adapter);
-        adapter.startListening();
+        mChatList.setAdapter(adapter1);
+        adapter1.startListening();
+
 
     }
+
+
+
+
 
 }
