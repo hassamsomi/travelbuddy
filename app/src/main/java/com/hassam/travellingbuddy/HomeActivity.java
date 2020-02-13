@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,37 +18,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 
+import java.util.Objects;
+
 public class HomeActivity extends AppCompatActivity {
 
-    private ImageButton settings;
-    private ImageButton sign_out;
     private FirebaseAuth mAuth;
     private TextView appBarTitle;
-    private ImageButton btnUsers;
 
-    private DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         return true;
     }
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ChatFragment()).commit();
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navlistener);
 
-
-        settings = findViewById(R.id.btn_Settings);
-        sign_out = findViewById(R.id.logout_btn);
-        btnUsers = findViewById(R.id.btn_users);
+        ImageButton settings = findViewById(R.id.btn_Settings);
+        ImageButton sign_out = findViewById(R.id.logout_btn);
+        ImageButton btnUsers = findViewById(R.id.btn_users);
         appBarTitle = findViewById(R.id.textaccount);
         mAuth = FirebaseAuth.getInstance();
+        final DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
 
         btnUsers.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +58,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
                 startActivity(intent);
-
             }
         });
         sign_out.setOnClickListener(new View.OnClickListener() {
@@ -74,11 +68,9 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
                 mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-
             }
         });
     }
-
     public void changetitle(String title){
         appBarTitle.setText(title);
     }
@@ -87,7 +79,6 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment selectedFragment = null;
-
                     switch (menuItem.getItemId())
                     {
                         case R.id.nav_chat:
@@ -96,14 +87,7 @@ public class HomeActivity extends AppCompatActivity {
                         case R.id.nav_friend:
                             selectedFragment = new FriendsFragment();
                             break;
-//                        case R.id.nav_profiler:
-//                            selectedFragment = new ActivityFragment();
-//                            break;
-                        case R.id.nav_search:
-                            selectedFragment = new SearchFragment();
-                            break;
                     }
-
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
                     return true;
                 }

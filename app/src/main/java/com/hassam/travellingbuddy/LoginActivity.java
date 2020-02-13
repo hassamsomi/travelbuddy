@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -32,8 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     private View layout;
     private ProgressDialog mLoginProgress;
     private DatabaseReference mUserDatabase;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +49,26 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
                 startActivity(intent);
                 finish();
-
             }
         });
-        if(mAuth.getCurrentUser() != null) {
+        if(mAuth.getCurrentUser() != null)
+        {
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
-
-            mUserDatabase.addValueEventListener(new ValueEventListener() {
+            mUserDatabase.addValueEventListener(new ValueEventListener()
+            {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                {
+                    if (dataSnapshot != null)
+                    {
 
-                    if (dataSnapshot != null) {
-
-                        mUserDatabase.child("online").onDisconnect().setValue(false);
-                        mUserDatabase.child("online").setValue(true);
+                        mUserDatabase.child("online").onDisconnect().setValue(ServerValue.TIMESTAMP);
+                        mUserDatabase.child("online").setValue("true");
                     }
-
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError)
+                {
 
                 }
             });
@@ -80,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         pass = findViewById(R.id.txtPass);
         mLoginProgress = new ProgressDialog(this);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo");
-
         //Login Click Event
         LoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,25 +96,21 @@ public class LoginActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(user_name.getText().toString(),pass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-
+                        if(task.isSuccessful())
+                        {
                             mLoginProgress.dismiss();
-
-
                             String current_userID = mAuth.getCurrentUser().getUid();
                             String deviceToken = FirebaseInstanceId.getInstance().getToken();
-
-                            mUserDatabase.child(current_userID).child("device_token").setValue(deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-
-                                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            });
-
+                            mUserDatabase.child(current_userID).child("device_token").setValue(deviceToken).addOnSuccessListener(
+                                    new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    });
                         }
                         else
                         {
@@ -127,6 +121,5 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-//        getWindow().setBackgroundDrawableResource(R.drawable.logindisplay);
     }
 }

@@ -1,13 +1,13 @@
 package com.hassam.travellingbuddy;
 
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+        import android.view.View;
+        import android.widget.ImageView;
+        import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+        import androidx.annotation.NonNull;
+        import androidx.recyclerview.widget.RecyclerView;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+        import de.hdodenhof.circleimageview.CircleImageView;
 
 class UsersViewHolder extends RecyclerView.ViewHolder{
 
@@ -25,6 +25,5 @@ class UsersViewHolder extends RecyclerView.ViewHolder{
         name = itemView.findViewById(R.id.username);
         aboutMe = itemView.findViewById(R.id.status);
         image = itemView.findViewById(R.id.profileimage);
-
     }
 }

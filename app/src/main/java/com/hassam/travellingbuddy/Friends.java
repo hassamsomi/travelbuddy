@@ -6,13 +6,11 @@ public class Friends {
     public String image;
     public String online;
 
-
     public Friends(){
 
     }
-
-    public Friends(String date, String name, String image, String online) {
-
+    public Friends(String date, String name, String image, String online)
+    {
         this.date = date;
         this.name = name;
         this.image = image;
