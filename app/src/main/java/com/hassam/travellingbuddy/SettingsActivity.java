@@ -44,11 +44,12 @@ public class SettingsActivity extends AppCompatActivity {
     private DatabaseReference mUserDatabase;
     private FirebaseUser mCurrentUser;
     private CircleImageView mImage;
-    private TextView mName;
+    private EditText mName;
     private ImageView mBtnConfirmStat;
     private EditText mAbout_Me;
     private ImageView mBtnCancelStat;
     private String tempStatus;
+    private String tempName;
     private Button btnChangeImage;
     private View layout;
     private Uri ImageUri;
@@ -83,30 +84,49 @@ public class SettingsActivity extends AppCompatActivity {
                 if (mAbout_Me.isEnabled()) {
                     mBtnConfirmStat.setImageResource(R.drawable.status_edit_icon);
                     mAbout_Me.setEnabled(false);
+                    mName.setEnabled(false);
                     mBtnCancelStat.setVisibility(View.GONE);
                     mBtnCancelStat.invalidate();
                     mBtnConfirmStat.invalidate();
 //                        HashMap<String, Object> data = new HashMap();
 //                        data.put("aboutMe","I'm using Travel Assistant App.");
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                    final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                     reference.child("UserInfo").child(current_userID).child("aboutMe").setValue(mAbout_Me.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-
                             if (!task.isSuccessful()) {
                                 Snackbar.make(layout, "Connection Failed! Try again.", Snackbar.LENGTH_LONG).show();
                                 mAbout_Me.setText(tempStatus);
-                            } else {
+                            } else{
                                 Snackbar.make(layout, "Successfully Done", Snackbar.LENGTH_LONG).show();
                             }
+                            reference.child("UserInfo").child(current_userID).child("name").setValue(mName.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> pTask) {
+
+                                    if(!pTask.isSuccessful()){
+                                        Snackbar.make(layout, "Can't load name", Snackbar.LENGTH_LONG).show();
+                                        mName.setText(tempName);
+                                    }
+                                    else{
+                                        Toast.makeText(getApplicationContext(), "Successfully Done!", Toast.LENGTH_LONG).show();
+                                    }
+
+                                }
+                            });
+
                         }
                     });
+
                 } else {
                     mAbout_Me.setEnabled(true);
+                    mName.setEnabled(true);
                     mBtnConfirmStat.setImageResource(R.drawable.ic_status_confirmation);
                     tempStatus = mAbout_Me.getText().toString();
+                    tempName = mName.getText().toString();
                     mBtnCancelStat.setVisibility(View.VISIBLE);
                     mAbout_Me.requestFocus();
+                    mName.requestFocus();
                     mBtnCancelStat.invalidate();
                     mBtnConfirmStat.invalidate();
                 }
@@ -123,9 +143,11 @@ public class SettingsActivity extends AppCompatActivity {
                 String about_me = dataSnapshot.child("aboutMe").getValue().toString();
                 String thumb_image = dataSnapshot.child("thumbImage").getValue().toString();
 
+
                 mName.setText(name);
                 mAbout_Me.setText(about_me);
                 tempStatus = about_me;
+                tempName = name;
                 if (!image.equals("Default")) {
                     Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.profile_image)
                             .into(mImage, new Callback() {
@@ -156,10 +178,13 @@ public class SettingsActivity extends AppCompatActivity {
                 mBtnConfirmStat.setImageResource(R.drawable.status_edit_icon);
                 mAbout_Me.setEnabled(false);
                 mAbout_Me.setText(tempStatus);
+                mName.setEnabled(false);
+                mName.setText(tempName);
                 mBtnCancelStat.setVisibility(View.GONE);
                 mBtnCancelStat.invalidate();
                 mBtnConfirmStat.invalidate();
                 mAbout_Me.invalidate();
+                mName.invalidate();
             }
         });
         //Image Change Button

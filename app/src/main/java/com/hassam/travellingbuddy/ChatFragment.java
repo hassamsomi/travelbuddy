@@ -141,7 +141,7 @@ public class ChatFragment extends Fragment
                             String name = dataSnapshot.child("name").getValue().toString();
                             holder.userNameView.setText(name);
                             String image = dataSnapshot.child("image").getValue().toString();
-                            Picasso.get().load(image).into(holder.userImageView);
+                            Picasso.get().load(image).placeholder(R.drawable.profile_image).into(holder.userImageView);
                             if(dataSnapshot.hasChild("online"))
                             {
                                 String userOnline = dataSnapshot.child("online").getValue().toString();

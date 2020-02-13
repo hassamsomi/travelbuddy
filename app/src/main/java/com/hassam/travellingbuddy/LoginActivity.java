@@ -59,12 +59,9 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
-                    if (dataSnapshot != null)
-                    {
 
-                        mUserDatabase.child("online").onDisconnect().setValue(ServerValue.TIMESTAMP);
-                        mUserDatabase.child("online").setValue("true");
-                    }
+//                    mUserDatabase.child("online").onDisconnect().setValue(ServerValue.TIMESTAMP);
+//                    mUserDatabase.child("online").setValue("true");
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError)
@@ -74,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
         //referencing with elements
-        LoginBtn = (Button) findViewById(R.id.btnLogin);
+        LoginBtn = findViewById(R.id.btnLogin);
         user_name = findViewById(R.id.txtUsername);
         pass = findViewById(R.id.txtPass);
         mLoginProgress = new ProgressDialog(this);
@@ -114,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else
                         {
-//                            mLoginProgress.hide();
+                            mLoginProgress.dismiss();
                             Snackbar.make(layout,"Username or Password is incorrect." ,Snackbar.LENGTH_LONG).show();
                         }
                     }
