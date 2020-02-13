@@ -26,7 +26,7 @@
             android:layout_height="65pt"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/logo"
-            android:src="@drawable/applogo"
+            android:src="@drawable/message"
             android:scaleType="fitCenter"
             android:tint="@color/button_color"
             />

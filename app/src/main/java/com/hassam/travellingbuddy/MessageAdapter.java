@@ -24,9 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
-
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder>
+{
     private List<Messages> mMessageList;
     private FirebaseAuth mAuth;
     private String receiverId;
@@ -34,35 +33,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private TextToSpeech textToSpeech;
 
 //        -----------TEXT TO SPEECH---------
-
-
     MessageAdapter(Context context, List<Messages> mMessageList, String receiverId){
         this.mMessageList = mMessageList;
         this.receiverId = receiverId;
         this.context = context;
     }
-
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
     {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.messages_single_layout, viewGroup, false);
-
         mAuth = FirebaseAuth.getInstance();
-
         return new MessageViewHolder(view);
     }
 
-
-
-    static class MessageViewHolder extends RecyclerView.ViewHolder{
-
+    static class MessageViewHolder extends RecyclerView.ViewHolder
+    {
         TextView senderText, senderUserName, receiverText, receiverUserName;
         ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn;
 
-        MessageViewHolder(@NonNull View itemView){
-
+        MessageViewHolder(@NonNull View itemView)
+        {
             super(itemView);
 //          SENDER LAYOUT
             senderText = itemView.findViewById(R.id.sender_text_layout);
@@ -78,43 +70,32 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
     @Override
-    public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i) {
-
+    public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i)
+    {
 //        --------------TEXT TO SPEECH------------
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-
-                if(i!= TextToSpeech.ERROR){
-
+                if(i!= TextToSpeech.ERROR)
+                {
                     textToSpeech.setLanguage(Locale.getDefault());
-
                 }
-
             }
         });
-
-
-
         String messageSenderID = (Objects.requireNonNull(mAuth.getCurrentUser())).getUid();
-
             Messages c = mMessageList.get(i);
-
             String fromUserID = c.getFrom();
             String fromUserType = c.getType();
-
 
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
             mUserDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                {
                     String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                     holder.senderUserName.setText(name);
-
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -126,13 +107,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                     holder.receiverUserName.setText(name);
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
-
             holder.receiverImage.setVisibility(View.GONE);
             holder.receiverUserName.setVisibility(View.GONE);
             holder.receiverText.setVisibility(View.GONE);
@@ -142,15 +121,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.senderUserName.setVisibility(View.GONE);
             holder.senderPlayBtn.setVisibility(View.GONE);
 
-        switch (fromUserType) {
+        switch (fromUserType)
+        {
             case "text":
-                if (fromUserID.equals(messageSenderID)) {
+                if (fromUserID.equals(messageSenderID))
+                {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setVisibility(View.VISIBLE);
-                } else {
+                }
+                else
+                    {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
@@ -160,13 +143,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 }
                 break;
             case "image":
-                if (fromUserID.equals(messageSenderID)) {
+                if (fromUserID.equals(messageSenderID))
+                {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
-                } else {
+                }
+                else
+                    {
                     holder.receiverUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverImage.setVisibility(View.VISIBLE);
@@ -175,24 +161,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 }
                 break;
             case "con":
-                if (fromUserID.equals(messageSenderID)) {
+                if (fromUserID.equals(messageSenderID))
+                {
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
-
                     holder.senderText.setText(c.getMessage());
                     holder.senderPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
                             String toSpeak = holder.senderText.getText().toString();
                             textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
                         }
                     });
-
-                } else {
+                }
+                else
+                    {
                     holder.receiverUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
@@ -201,18 +187,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     holder.receiverPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
                             String toSpeak = holder.receiverText.getText().toString();
                             textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-
                         }
                     });
                 }
-
-
                 break;
         }
-
     }
     @Override
     public int getItemCount(){
@@ -220,23 +201,3 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -19,20 +19,14 @@ class FriendsViewHolder extends RecyclerView.ViewHolder{
     CircleImageView mImage;
     ImageView mOnline;
 
-
-    public FriendsViewHolder(@NonNull View itemView) {
+    public FriendsViewHolder(@NonNull View itemView)
+    {
         super(itemView);
-
         mView = itemView;
 
         mAboutMe = itemView.findViewById(R.id.status);
         mName = itemView.findViewById(R.id.username);
         mImage = itemView.findViewById(R.id.profileimage);
         mOnline = (ImageView) itemView.findViewById(R.id.onlinePNG);
-
-
-
-
     }
-
 }

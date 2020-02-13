@@ -22,7 +22,6 @@ import com.squareup.picasso.Picasso;
 
 public class UsersActivity extends AppCompatActivity {
 
-
     private RecyclerView mUsersList;
     private FirebaseRecyclerAdapter adapter;
     private ProgressDialog mProgressDialog;
@@ -50,18 +49,17 @@ public class UsersActivity extends AppCompatActivity {
             @NonNull
             @Override
             public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                return new User (
-
-                        snapshot.child("name").getValue(String.class),
-                        snapshot.child("image").getValue(String.class),
-                        snapshot.child("aboutMe").getValue(String.class)
-                );
+                return new User
+                        (
+                                snapshot.child("name").getValue(String.class),
+                                snapshot.child("image").getValue(String.class),
+                                snapshot.child("aboutMe").getValue(String.class)
+                        );
             }
         }).build();
-
         //------------HOLDER TO LOAD FILES
-        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options){
-
+        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options)
+        {
             @NonNull
             @Override
             public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -78,15 +76,15 @@ public class UsersActivity extends AppCompatActivity {
 
                 final String current_userID = getRef(position).getKey();
 
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
-                        profile_intent.putExtra("current_userID", current_userID);
-                        startActivity(profile_intent);
-                    }
-                });
+                holder.mView.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent profile_intent = new Intent(UsersActivity.this, ProfileActivity.class);
+                                profile_intent.putExtra("current_userID", current_userID);
+                                startActivity(profile_intent);
+                            }
+                        });
             }
         };
         mUsersList.setAdapter(adapter);

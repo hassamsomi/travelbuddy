@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -87,7 +88,6 @@ public class RegistrationActivity extends AppCompatActivity {
                                 data.put("email",E_mail);
                                 data.put("phoneNo",Phone_No);
                                 data.put("password",Pass);
-                                data.put("confirmPassword",Con_Pass);
                                 data.put("image","Default");
                                 data.put("aboutMe","I'm using Travel Assistant App.");
                                 data.put("thumbImage","Default");
@@ -99,10 +99,18 @@ public class RegistrationActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
-                                            mRegDialogue.dismiss();
-                                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                                            startActivity(intent);
-                                            finish();
+                                            if(Pass.equals(Con_Pass))
+                                            {
+                                                mRegDialogue.dismiss();
+                                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                            else
+                                                {
+                                                    mRegDialogue.dismiss();
+                                                    Toast.makeText(getApplicationContext(), "Password not Matched.", Toast.LENGTH_SHORT).show();
+                                                }
                                         }
                                         else {
                                             mRegDialogue.hide();

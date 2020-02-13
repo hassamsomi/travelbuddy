@@ -23,44 +23,38 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() != null) {
+        if(mAuth.getCurrentUser() != null)
+        {
             mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
         }
-
     }
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser == null){
-
+        if(currentUser == null)
+        {
             sendToLogin();
-
-        } else {
-
+        } else
+        {
             sendToStart();
             mUserRef.child("online").setValue("true");
-
         }
-
     }
     @Override
     protected void onStop() {
         super.onStop();
 
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser != null) {
-
+        if(currentUser != null)
+        {
             mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-
         }
-
     }
-    private void sendToLogin() {
+    private void sendToLogin()
+    {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

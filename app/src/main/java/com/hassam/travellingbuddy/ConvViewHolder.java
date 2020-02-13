@@ -11,17 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-class ConvViewHolder extends RecyclerView.ViewHolder{
-
+class ConvViewHolder extends RecyclerView.ViewHolder
+{
     View mView;
 
     TextView userStatusView,userNameView,lastSeenTime;
     CircleImageView userImageView;
-    ImageView userOnlineView;
+    ImageView userOnlineView,camera;
 
-    ConvViewHolder(@NonNull View itemView) {
+    ConvViewHolder(@NonNull View itemView)
+    {
         super(itemView);
-
         mView = itemView;
 
         userNameView = itemView.findViewById(R.id.username);
@@ -29,38 +29,30 @@ class ConvViewHolder extends RecyclerView.ViewHolder{
         userImageView = itemView.findViewById(R.id.profileimage);
         userOnlineView = itemView.findViewById(R.id.onlinePNG);
         lastSeenTime = itemView.findViewById(R.id.lastSeen);
-
+        camera = itemView.findViewById(R.id.camera);
+        camera.setVisibility(View.GONE);
     }
-    public void setMessage(String message, boolean isSeen){
-
+    public void setMessage(String message, boolean isSeen)
+    {
         userStatusView.setText(message);
-        if(!isSeen){
-
+        if(!isSeen)
+        {
             userStatusView.setTypeface(userStatusView.getTypeface(), Typeface.BOLD);
-
         }
         else
         {
-
             userStatusView.setTypeface(userStatusView.getTypeface(),Typeface.NORMAL);
-
         }
-
     }
     public void setUserOnline(String online_status)
     {
-
-        if(online_status.equals("true")){
-
-            userOnlineView.setVisibility(View.VISIBLE);
-
-        }else
+        if(online_status.equals("true"))
         {
-
-            userOnlineView.setVisibility(View.GONE);
-
+            userOnlineView.setVisibility(View.VISIBLE);
         }
-
+        else
+        {
+            userOnlineView.setVisibility(View.GONE);
+        }
     }
-
 }
