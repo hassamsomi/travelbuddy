@@ -38,6 +38,19 @@
         android:layout_marginStart="10sp"
         android:layout_toEndOf="@id/profileimage"
         />
+    <ImageView
+    android:layout_width="20sp"
+    android:layout_height="20sp"
+    android:src="@drawable/mic"
+    android:layout_below="@id/username"
+    android:layout_marginTop="7sp"
+    android:padding="3sp"
+    android:id="@+id/mic"
+    android:visibility="gone"
+    android:layout_toStartOf="@id/status"
+    android:layout_marginStart="10sp"
+    android:layout_toEndOf="@id/profileimage"
+    />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

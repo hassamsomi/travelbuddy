@@ -90,12 +90,18 @@ public class ChatFragment extends Fragment
                             holder.camera.setVisibility(View.VISIBLE);
                             holder.userStatusView.setText("Photo");
                         }
+                        else if(type.equals("con"))
+                        {
+                            holder.mic.setVisibility(View.VISIBLE);
+                            holder.userStatusView.setText("Voice Message");
+                        }
                         else
                         {
                             holder.camera.setVisibility(View.GONE);
                             String data = dataSnapshot.child("message").getValue().toString();
                             holder.setMessage(data, model.isSeen());
                         }
+
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
