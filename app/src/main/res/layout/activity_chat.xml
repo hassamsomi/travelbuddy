@@ -1,135 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatActivity"
-    android:id="@+id/grand_parent"
     >
-    <include
-        android:id="@+id/chat_toolbar"
-        layout="@layout/chat_custom_bar"
-        />
-    <Spinner
-        android:layout_width="200sp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/chat_toolbar"
-        android:id="@+id/sourceSpinner"
-        android:layout_alignParentStart="true"
-        android:textAlignment="center"
-        />
-    <Spinner
-        android:layout_width="190sp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/chat_toolbar"
-        android:layout_toEndOf="@id/sourceSpinner"
-        android:id="@+id/destinationSpinner"
-        android:textAlignment="center"
-        />
-<!---->
+
     <RelativeLayout
+        android:id="@+id/grand_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/sourceSpinner"
-        android:layout_above="@id/chatSection"
         >
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
+        <include
+            android:id="@+id/chat_toolbar"
+            layout="@layout/chat_custom_bar" />
+
+        <Spinner
+            android:id="@+id/sourceSpinner"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chat_toolbar"
+            android:layout_alignParentStart="true"
+            android:textAlignment="center" />
+
+        <Spinner
+            android:id="@+id/destinationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chat_toolbar"
+            android:layout_toEndOf="@id/sourceSpinner"
+            android:textAlignment="center" />
+        <!---->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/message_swipe_layout"
-            >
+            android:layout_above="@id/chatSection"
+            android:layout_below="@id/sourceSpinner">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/message_swipe_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/messages_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/converterTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chatSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <RelativeLayout
+                android:id="@+id/chat_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/messages_list"
-                >
+                android:layout_alignParentBottom="true"
+                android:background="@android:color/background_light"
+                android:orientation="horizontal">
 
 
-            </androidx.recyclerview.widget.RecyclerView>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <ImageButton
+                    android:id="@+id/send_files_btn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="4dp"
+                    android:backgroundTint="@android:color/white"
+                    android:padding="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/camera"
+                    android:tint="@color/colorPrimaryDark" />
+
+                <ImageButton
+                    android:id="@+id/btnMic"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="4dp"
+                    android:layout_toEndOf="@id/send_files_btn"
+                    android:backgroundTint="@android:color/white"
+                    android:padding="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/mic" />
+
+
+                <EditText
+                    android:id="@+id/input_message"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/send_message_btn"
+                    android:layout_toEndOf="@id/btnMic"
+                    android:hint="Type your message here..."
+                    android:maxLines="5"
+                    android:padding="15dp"
+                    android:textAlignment="viewStart"
+                    android:textIsSelectable="true"
+                    android:textStyle="normal"
+                    tools:ignore="HardcodedText" />
+
+
+                <ImageButton
+                    android:id="@+id/send_message_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="4dp"
+                    android:backgroundTint="@android:color/white"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_send"
+                    android:tint="@color/colorPrimaryDark" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/converterTextView"
-        android:visibility="invisible"
-        />
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/chatSection"
-        >
-        <RelativeLayout
-            android:id="@+id/chat_linear_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/background_light"
-            android:orientation="horizontal"
-            >
-
-
-            <ImageButton
-                android:id="@+id/send_files_btn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/camera"
-                android:layout_alignParentStart="true"
-                android:backgroundTint="@android:color/white"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="4dp"
-                android:tint="@color/colorPrimaryDark"
-                android:scaleType="fitXY"
-                android:padding="8dp"
-                />
-            <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/mic"
-                android:id="@+id/btnMic"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="4dp"
-                android:padding="8dp"
-                android:scaleType="fitXY"
-                android:layout_toEndOf="@id/send_files_btn"
-                android:backgroundTint="@android:color/white"
-                />
-
-
-            <EditText
-                android:id="@+id/input_message"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Type your message here..."
-                android:maxLines="5"
-                android:padding="15dp"
-                tools:ignore="HardcodedText"
-                android:layout_toEndOf="@id/btnMic"
-                android:layout_toStartOf="@id/send_message_btn"
-                android:textAlignment="viewStart"
-                android:textIsSelectable="true"
-                android:textStyle="normal"
-                />
-
-
-            <ImageButton
-                android:id="@+id/send_message_btn"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_send"
-                android:layout_alignParentEnd="true"
-                android:backgroundTint="@android:color/white"
-                android:tint="@color/colorPrimaryDark"
-                android:layout_marginTop="4dp"
-                android:padding="8dp"
-                />
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
-</RelativeLayout>
+</FrameLayout>

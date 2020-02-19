@@ -1,5 +1,6 @@
 package com.hassam.travellingbuddy;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
@@ -51,7 +52,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     static class MessageViewHolder extends RecyclerView.ViewHolder
     {
         TextView senderText, senderUserName, receiverText, receiverUserName;
-        ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn;
+        ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn,mPopImageView;
 
         MessageViewHolder(@NonNull View itemView)
         {
@@ -61,6 +62,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             senderUserName = itemView.findViewById(R.id.sender_username);
             senderImage = itemView.findViewById(R.id.sender_image_layout);
             senderPlayBtn = itemView.findViewById(R.id.senderbtnPlay);
+            mPopImageView = itemView.findViewById(R.id.alertImage);
 
 //          RECEIVER LAYOUT
             receiverText = itemView.findViewById(R.id.receiver_text_layout);
@@ -148,6 +150,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     holder.senderUserName.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
+                    holder.senderImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+
+                        }
+                    });
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                 }
@@ -159,6 +169,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     Picasso.get().load(c.getMessage()).into(holder.receiverImage);
                     ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                 }
+
                 break;
             case "con":
                 if (fromUserID.equals(messageSenderID))

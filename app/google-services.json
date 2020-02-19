@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "16014775040-ogoo7k4q0p4ummr1245cs4sj1mucg4bl.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.hassam.travellingbuddy",
-            "certificate_hash": "9bf3b1a6f28454fba5dd0d2af7d10e42c050f6ec"
-          }
-        },
-        {
           "client_id": "16014775040-ev33jb1muniuiql2c69o8nem25cimig7.apps.googleusercontent.com",
           "client_type": 3
         }

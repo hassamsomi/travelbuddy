@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
@@ -72,30 +75,31 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mRootRef;
     private CircleImageView mProfileImage;
     private FirebaseAuth mAuth;
-    private static final int TOTAL_ITEMS_TO_LOAD = 10;
+    private static final int TOTAL_ITEMS_TO_LOAD = 5;
     private int mCurrentPage = 1;
     private ImageView mImage;
     private TextToSpeech textToSpeech;
     private String mEnglish, mUrdu;
     private AlertDialog.Builder builder;
-    private ImageButton mChatAddButton, mChatSendButton,mChatMicButton;
+    private ImageButton mChatAddButton, mChatSendButton, mChatMicButton;
     private EditText messageBox;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
     private RecyclerView mMessagesList;
 
     private List<Messages> messagesList = new ArrayList<>();
-    private LinearLayoutManager mLinearLayout;
+    private SpeedyLinearLayoutManager mLinearLayout;
     private MessageAdapter mAdapter;
     private SwipeRefreshLayout mRefreshLayout;
     private String mPrevKey = "";
     private String mLastKey = "";
     private int itemPos = 0;
-    private String myUrl="";
+    private String myUrl = "";
     private StorageTask uploadTask;
     private Uri fileUri;
     final String[] mSource = {""};
     final String[] mDestination = {""};
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,9 +110,9 @@ public class ChatActivity extends AppCompatActivity {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        final String[] lang = new String[]{"","az","sq","am","en","ar","hy","af","eu","ba","be","bn","my","bg","bs","cy","hu","vi","ht","gl","nl","mrj","el","ka","gu","da","he","yi","id","ga","it","is","es"
-                ,"kk","kn","ca","ky","zh","ko","xh","km","lo","la","lv","lt","lb","mg","ms","ml","mt","mk","mi","mr","mhr","mn","de","ne","no","pa","pap","fa","pl","pt"
-                ,"ro","ru","ceb","sr","si","sk","sl","sw","su","tg","th","tl","ta","tt","te","tr","udm","uz","uk","ur","fi","fr","hi","hr","cs","sv","gd","et","eo","jv","ja"};
+        final String[] lang = new String[]{"", "az", "sq", "am", "en", "ar", "hy", "af", "eu", "ba", "be", "bn", "my", "bg", "bs", "cy", "hu", "vi", "ht", "gl", "nl", "mrj", "el", "ka", "gu", "da", "he", "yi", "id", "ga", "it", "is", "es"
+                , "kk", "kn", "ca", "ky", "zh", "ko", "xh", "km", "lo", "la", "lv", "lt", "lb", "mg", "ms", "ml", "mt", "mk", "mi", "mr", "mhr", "mn", "de", "ne", "no", "pa", "pap", "fa", "pl", "pt"
+                , "ro", "ru", "ceb", "sr", "si", "sk", "sl", "sw", "su", "tg", "th", "tl", "ta", "tt", "te", "tr", "udm", "uz", "uk", "ur", "fi", "fr", "hi", "hr", "cs", "sv", "gd", "et", "eo", "jv", "ja"};
 
         mCurrentUserID = mAuth.getCurrentUser().getUid();
         mChatUser = getIntent().getStringExtra("chatScreen");
@@ -123,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
         Spinner destinationSpinner = findViewById(R.id.destinationSpinner);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.Languages, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        destinationSpinner.setAdapter(arrayAdapter);
+        destinationSpinner.setAdapter(adapter);
 
         sourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -164,19 +168,28 @@ public class ChatActivity extends AppCompatActivity {
         messageBox = findViewById(R.id.input_message);
         mConversionTextView = findViewById(R.id.converterTextView);
 
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Please wait");
+        mProgressDialog.setMessage("Please wait we are loading user's list");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+
         mEnglish = "";
         mUrdu = "";
 
-        mAdapter = new MessageAdapter(getApplicationContext(),messagesList, mChatUser);
+        mAdapter = new MessageAdapter(getApplicationContext(), messagesList, mChatUser);
         mMessagesList = findViewById(R.id.messages_list);
         mRefreshLayout = findViewById(R.id.message_swipe_layout);
-        mLinearLayout = new LinearLayoutManager(this);
-
+        mLinearLayout = new SpeedyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+//        mLinearLayout.setReverseLayout(true);
         mMessagesList.setHasFixedSize(true);
         mMessagesList.setLayoutManager(mLinearLayout);
         mMessagesList.setAdapter(mAdapter);
 
         mRootRef.child("Chat").child(mCurrentUserID).child(mChatUser).child("seen").setValue(true);
+
+
+
 
 //      LOAD MESSAGES IN CHAT SCREEN
         loadMessage();
@@ -191,17 +204,16 @@ public class ChatActivity extends AppCompatActivity {
                 mDisplayUserName.setText(userName);
                 Picasso.get().load(image).placeholder(R.drawable.profile_image).into(mProfileImage);
 
-                if(online.equals("true")){
+                if (online.equals("true")) {
                     mLastSeenView.setText("Online");
-                }
-                else
-                    {
+                } else {
                     GetTimeAgo getTimeAgo = new GetTimeAgo();
                     long lastTime = Long.parseLong(online);
-                    String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime,getApplicationContext());
+                    String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime, getApplicationContext());
                     mLastSeenView.setText(lastSeenTime);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -210,31 +222,29 @@ public class ChatActivity extends AppCompatActivity {
         mRootRef.child("Chat").child(mCurrentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.hasChild(mChatUser))
-                {
+                if (!dataSnapshot.hasChild(mChatUser)) {
                     Map<String, Object> chatAddMap = new HashMap<>();
-                    chatAddMap.put("seen",false);
+                    chatAddMap.put("seen", false);
                     chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
 
                     Map<String, Object> chatUserMap = new HashMap<String, Object>();
-                    chatUserMap.put("Chat/"+mCurrentUserID+"/"+mChatUser,chatAddMap);
+                    chatUserMap.put("Chat/" + mCurrentUserID + "/" + mChatUser, chatAddMap);
                     mRootRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            if(databaseError != null){
-                                Log.d( "CHAT_LOG",databaseError.getMessage().toString());
+                            if (databaseError != null) {
+                                Log.d("CHAT_LOG", databaseError.getMessage().toString());
                             }
                         }
                     });
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                Toast.makeText(ChatActivity.this, databaseError.getMessage(),Toast.LENGTH_LONG).show();
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
 
 //      -----------------SEND MESSAGES FEATURE--------------------
         mChatSendButton.setOnClickListener(new View.OnClickListener() {
@@ -252,15 +262,14 @@ public class ChatActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent,"Select Image"),438);
+                startActivityForResult(Intent.createChooser(intent, "Select Image"), 438);
             }
         });
 //        --------------TEXT TO SPEECH FUNCTIONALITY----------------
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-                if(i!=TextToSpeech.ERROR)
-                {
+                if (i != TextToSpeech.ERROR) {
                     textToSpeech.setLanguage(Locale.getDefault());
                 }
             }
@@ -269,8 +278,7 @@ public class ChatActivity extends AppCompatActivity {
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mCurrentPage++;
-                itemPos = 0;
+//                mCurrentPage++;
                 loadMoreMessage();
             }
         });
@@ -283,128 +291,114 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-//    ---------------RECORD VOICE FUNCTION----------------
-    private void speak()
-    {
+    //    ---------------RECORD VOICE FUNCTION----------------
+    private void speak() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Hi speak something");
-        try
-        {
-            startActivityForResult(intent,REQUEST_CODE_SPEECH_INPUT);
-        }
-        catch(Exception e)
-        {
-            Toast.makeText(this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hi speak something");
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-//  -----------------REQUEST AND RESULT CODE---------------
+
+    //  -----------------REQUEST AND RESULT CODE---------------
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case REQUEST_CODE_SPEECH_INPUT:{
-                if(resultCode == RESULT_OK && data!=null)
-                {
+        switch (requestCode) {
+            case REQUEST_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && data != null) {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     mConversionTextView.setText(result.get(0));
-                        translate(mSource[0],mDestination[0], mConversionTextView.getText().toString());
+                    translate(mSource[0], mDestination[0], mConversionTextView.getText().toString());
                 }
                 break;
             }
 
         }
-        if(requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData()!=null)
-        {
+        if (requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             fileUri = data.getData();
             String checker = "image";
-            if(checker.equals("image"))
-            {
+            if (checker.equals("image")) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("image_files");
 
-                final String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
-                final String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+                final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+                final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
 
                 DatabaseReference user_message_push = mRootRef.child("messages")
                         .child(mCurrentUserID).child(mChatUser).push();
 
                 final String push_id = user_message_push.getKey();
-                final StorageReference filePath = storageReference.child(push_id+"."+"jpg");
+                final StorageReference filePath = storageReference.child(push_id + "." + "jpg");
                 uploadTask = filePath.putFile(fileUri);
                 uploadTask.continueWithTask(new Continuation() {
                     @Override
-                    public Object then(@NonNull Task task) throws Exception
-                    {
-                        if(!task.isSuccessful())
-                        {
+                    public Object then(@NonNull Task task) throws Exception {
+                        if (!task.isSuccessful()) {
                             throw task.getException();
                         }
+
                         return filePath.getDownloadUrl();
                     }
                 })
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
-                                if(task.isSuccessful())
-                                {
+                                if (task.isSuccessful()) {
                                     Uri downloadUrl = task.getResult();
                                     myUrl = downloadUrl.toString();
 
                                     Map<String, Object> messageMap = new HashMap<>();
-                                    messageMap.put("message",myUrl);
-                                    messageMap.put("name",fileUri.getLastPathSegment());
-                                    messageMap.put("seen",false);
-                                    messageMap.put("type","image");
-                                    messageMap.put("time",ServerValue.TIMESTAMP);
-                                    messageMap.put("from",mCurrentUserID);
-                                    messageMap.put("to",mChatUser);
-                                    messageMap.put("messageID",push_id);
+                                    messageMap.put("message", myUrl);
+                                    messageMap.put("name", fileUri.getLastPathSegment());
+                                    messageMap.put("seen", false);
+                                    messageMap.put("type", "image");
+                                    messageMap.put("time", ServerValue.TIMESTAMP);
+                                    messageMap.put("from", mCurrentUserID);
+                                    messageMap.put("to", mChatUser);
+                                    messageMap.put("messageID", push_id);
 
                                     Map<String, Object> messageUserMap = new HashMap<>();
-                                    messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
-                                    messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+                                    messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                                    messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
                                     messageBox.setText("");
 
                                     mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                            if(databaseError != null)
-                                            {
-                                                Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                                            if (databaseError != null) {
+                                                Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                                             }
                                         }
                                     });
                                 }
                             }
                         });
-            }
-            else
-            {
-                Toast.makeText(this,"Nothing Selected, Error.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Nothing Selected, Error.", Toast.LENGTH_LONG).show();
             }
         }
     }
-//  -----------------LOAD MESSAGE FUNCTION-----------------
-    private void loadMessage()
-    {
+
+    //  -----------------LOAD MESSAGE FUNCTION-----------------
+    private void loadMessage() {
         DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserID).child(mChatUser);
-        Query messageQuery = messageRef.limitToLast(mCurrentPage = TOTAL_ITEMS_TO_LOAD);
-        messageQuery.addChildEventListener(new ChildEventListener()
-        {
+        Query messageQuery = messageRef.orderByChild("timestamp").limitToLast(/* mCurrentPage * */ TOTAL_ITEMS_TO_LOAD);
+        messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Messages message = dataSnapshot.getValue(Messages.class);
                 itemPos++;
-                if(itemPos == 1)
-                {
-                    String messageKey = dataSnapshot.getKey();
-                    mLastKey = messageKey;
-                    mPrevKey = messageKey;
+                if (itemPos == 1) {
+                    mLastKey = dataSnapshot.getKey();
+//                    mPrevKey = messageKey;
                 }
-                messagesList.add(message);
+                messagesList.add(0, message);
                 mAdapter.notifyDataSetChanged();
-                mMessagesList.scrollToPosition(messagesList.size() - 1);
+                mMessagesList.smoothScrollToPosition(0);
                 mRefreshLayout.setRefreshing(false);
             }
 
@@ -428,18 +422,17 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+        mProgressDialog.dismiss();
 
     }
 
-//  -----------------SEND MESSAGE FUNCTION------------------
-    private void sendMessage()
-    {
+    //  -----------------SEND MESSAGE FUNCTION------------------
+    private void sendMessage() {
         String message = messageBox.getText().toString();
 //  ------------------SENDING TEXT MESSAGE------------------
-        if(!TextUtils.isEmpty(message))
-        {
-            String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
-            String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+        if (!TextUtils.isEmpty(message)) {
+            String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+            String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
 
             DatabaseReference user_message_push = mRootRef.child("messages")
                     .child(mCurrentUserID).child(mChatUser).push();
@@ -447,17 +440,17 @@ public class ChatActivity extends AppCompatActivity {
             String push_id = user_message_push.getKey();
 
             Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("message",message);
-            messageMap.put("seen",false);
-            messageMap.put("type","text");
-            messageMap.put("time",ServerValue.TIMESTAMP);
-            messageMap.put("from",mCurrentUserID);
-            messageMap.put("to",mChatUser);
-            messageMap.put("messageID",push_id);
+            messageMap.put("message", message);
+            messageMap.put("seen", false);
+            messageMap.put("type", "text");
+            messageMap.put("time", ServerValue.TIMESTAMP);
+            messageMap.put("from", mCurrentUserID);
+            messageMap.put("to", mChatUser);
+            messageMap.put("messageID", push_id);
 
-            Map<String, Object> messageUserMap = new HashMap<String, Object>();
-            messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
-            messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+            Map<String, Object> messageUserMap = new HashMap<>();
+            messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+            messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
 
             messageBox.setText("");
 
@@ -469,42 +462,43 @@ public class ChatActivity extends AppCompatActivity {
             mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    if(databaseError != null)
-                    {
-                        Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                    if (databaseError != null) {
+                        Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
             });
         }
     }
-//  -----------------FIXING PAGINATION----------------------
-    private void loadMoreMessage(){
+
+    //  -----------------FIXING PAGINATION----------------------
+    private void loadMoreMessage() {
 
         DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserID).child(mChatUser);
-        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
-        messageQuery.addChildEventListener(new ChildEventListener()
-        {
+        final Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(TOTAL_ITEMS_TO_LOAD);
+        final int[] tempItemPosiion = {itemPos};
+        final ChildEventListener childEventListener = new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-            {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Messages message = dataSnapshot.getValue(Messages.class);
                 String messageKey = dataSnapshot.getKey();
-                if(!mPrevKey.equals(messageKey))
-                {
-                    messagesList.add(itemPos++,message);
+                message.key = messageKey;
+
+                if (!mLastKey.equals(messageKey)) {
+                    messagesList.add(tempItemPosiion[0], message);
+                    itemPos++;
                 }
-                else
-                    {
-                    mPrevKey = mLastKey;
+                else {
+                    mLastKey = messagesList.get(messagesList.size()-1).key;
                 }
-                if(itemPos == 1)
-                {
-                    mLastKey = messageKey;
-                }
-                Log.d( "TOTALKEYS","Last Key"+mLastKey+"| Prev Key"+ mPrevKey+"| Message Key"+ messageKey);
-                mAdapter.notifyDataSetChanged();
-                mRefreshLayout.setRefreshing(false);
-                mLinearLayout.scrollToPositionWithOffset(10,0);
+//                else
+//                    {
+//                    mPrevKey = mLastKey;
+//                }
+
+                Log.d("TOTALKEYS", "Last Key" + mLastKey + "| Prev Key" + mPrevKey + "| Message Key" + messageKey);
+//                mAdapter.notifyDataSetChanged();
+//                mRefreshLayout.setRefreshing(false);
+//                mLinearLayout.scrollToPositionWithOffset(0, 0);
             }
 
             @Override
@@ -526,24 +520,48 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+        };
+        messageQuery.addChildEventListener(childEventListener);
+
+        messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                mAdapter.notifyDataSetChanged();
+                if(dataSnapshot.getChildrenCount() > 1) {
+                    mLinearLayout.smoothScrollToPosition(mMessagesList, null, Long.valueOf(messagesList.size() - 1 - dataSnapshot.getChildrenCount() + 2).intValue());
+//                    Handler handler = new Handler(Looper.getMainLooper());
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            mMessagesList.smoothScrollToPosition(Long.valueOf(messagesList.size() - 1 - dataSnapshot.getChildrenCount() + 2).intValue());
+//                        }
+//                    }, 2000);
+                }
+                messageQuery.removeEventListener(childEventListener);
+                mRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
     }
-//  -----------------PLAY VOICE MESSAGE FUNCTIONALITY----------
-    public void listen()
-    {
+
+    //  -----------------PLAY VOICE MESSAGE FUNCTIONALITY----------
+    public void listen() {
         String text = mConversionTextView.getText().toString();
-        textToSpeech.speak(text,TextToSpeech.QUEUE_FLUSH,null);
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 
-//  ------------------TEXT CONVERSION-----------------------
-    public String translate(String source,String destination,String content)
-    {
+    //  ------------------TEXT CONVERSION-----------------------
+    public String translate(String source, String destination, String content) {
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://translate.yandex.net/api/v1.5/tr.json/translate" +
-//                "?key=" + getString(R.string.yandex_api_key) +
+        String url = "https://translate.yandex.net/api/v1.5/tr.json/translate" +
+                "?key=" + getString(R.string.yandex_api_key) +
                 "&text=" + content +
-                "&lang=" + source + "-" + destination ;
+                "&lang=" + source + "-" + destination;
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -551,15 +569,15 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("YANDEX_RESPONSE_STRING",
-                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"+response+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + response + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
                         try {
                             JSONObject json = new JSONObject(response);
                             mConversionTextView.setText(json.getString("text"));
                             String voicemessage = mConversionTextView.getText().toString();
 
-                            String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
-                            String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+                            String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+                            String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
 
                             DatabaseReference user_message_push = mRootRef.child("messages")
                                     .child(mCurrentUserID).child(mChatUser).push();
@@ -567,31 +585,28 @@ public class ChatActivity extends AppCompatActivity {
                             String push_id = user_message_push.getKey();
 
                             Map<String, Object> messageMap = new HashMap<>();
-                            messageMap.put("message",voicemessage);
-                            messageMap.put("seen",false);
-                            messageMap.put("type","con");
-                            messageMap.put("time",ServerValue.TIMESTAMP);
-                            messageMap.put("from",mCurrentUserID);
-                            messageMap.put("to",mChatUser);
-                            messageMap.put("messageID",push_id);
+                            messageMap.put("message", voicemessage);
+                            messageMap.put("seen", false);
+                            messageMap.put("type", "con");
+                            messageMap.put("time", ServerValue.TIMESTAMP);
+                            messageMap.put("from", mCurrentUserID);
+                            messageMap.put("to", mChatUser);
+                            messageMap.put("messageID", push_id);
 
                             Map<String, Object> messageUserMap = new HashMap<String, Object>();
-                            messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
-                            messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+                            messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                            messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
 
                             mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
-                                    if(databaseError != null)
-                                    {
-                                        Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                                    if (databaseError != null) {
+                                        Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
-                        }
-                        catch (JSONException e)
-                        {
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         // Display the first 500 characters of the response string.
@@ -599,7 +614,7 @@ public class ChatActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("YANDEX_RESPONSE_STRING","\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"+error.getMessage()+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                Log.d("YANDEX_RESPONSE_STRING", "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + error.getMessage() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
             }
         });
 // Add the request to the RequestQueue.

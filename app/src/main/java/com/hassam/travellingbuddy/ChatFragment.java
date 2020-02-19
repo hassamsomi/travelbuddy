@@ -1,5 +1,8 @@
 package com.hassam.travellingbuddy;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +28,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.Sinch;
+import com.sinch.android.rtc.SinchClient;
+import com.sinch.android.rtc.calling.Call;
+import com.sinch.android.rtc.calling.CallClient;
+import com.sinch.android.rtc.calling.CallClientListener;
+import com.sinch.android.rtc.calling.CallListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ChatFragment extends Fragment
@@ -34,12 +46,20 @@ public class ChatFragment extends Fragment
     private DatabaseReference  mChatDatabase, mUsersDatabase, mConvDatabase,mMessageDatabase;
     String mCurrent_UserID="";
 
+    private SinchClient sinchClient;
+    private Call call;
+
     private FirebaseAuth mAuth;
     private View mMainView;
+    String currentUser;
+    public Context context = this.getContext();
+
+
     public ChatFragment()
     {
 
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,9 +74,13 @@ public class ChatFragment extends Fragment
         mConvDatabase = FirebaseDatabase.getInstance().getReference().child("Chat").child(mCurrent_UserID);
         mMessageDatabase = FirebaseDatabase.getInstance().getReference().child("messages").child(mCurrent_UserID);
 
+
         mConvDatabase.keepSynced(true);
         mUsersDatabase.keepSynced(true);
         mChatList = mMainView.findViewById(R.id.conv_list);
+
+
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
@@ -66,9 +90,15 @@ public class ChatFragment extends Fragment
 
         return mMainView;
     }
+
+
     @Override
     public void onStart() {
         super.onStart();
+
+//
+
+
 
         Query conversationQuery = mConvDatabase.orderByChild("timestamp");
         FirebaseRecyclerOptions<Conv> options1 = new FirebaseRecyclerOptions.Builder<Conv>().setQuery(conversationQuery,Conv.class).build();
@@ -77,6 +107,16 @@ public class ChatFragment extends Fragment
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model)
             {
                 final String user_list_id = getRef(position).getKey();
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent chatIntent = new Intent(getContext(),ChatActivity.class);
+                        chatIntent.putExtra("chatScreen",user_list_id);
+                        startActivity(chatIntent);
+
+                    }
+                });
                 assert user_list_id != null;
                 Query lastMessageQuery = mMessageDatabase.child(user_list_id).limitToLast(1);
                 lastMessageQuery.addChildEventListener(new ChildEventListener() {
@@ -123,14 +163,95 @@ public class ChatFragment extends Fragment
 
                     }
                 });
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final Intent chatIntent = new Intent(getContext(),ChatActivity.class);
-                        chatIntent.putExtra("chatScreen",user_list_id);
-                        startActivity(chatIntent);
-                    }
-                });
+
+//                holder.mView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//
+//
+//                        CharSequence option[] = new CharSequence[] {"Send Message","Call"};
+//
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+//                                .setTitle("Pick One");
+//                        builder.setItems(option, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                                if(i==1)
+//                                {
+//
+//
+//                                }
+//                                else if(i==2)
+//                                {
+//
+//
+//                sinchClient = Sinch.getSinchClientBuilder().context(context).applicationKey("")
+//                        .applicationSecret("").environmentHost("clientapi.sinch.com").userId(mCurrent_UserID)
+//                        .build();
+//
+//
+//                sinchClient.setSupportCalling(true);
+//                sinchClient.startListeningOnActiveConnection();
+//
+//
+//
+//                class SinchCallListener implements CallListener
+//                {
+//
+//
+//                    @Override
+//                    public void onCallProgressing(Call call) {
+//
+//                        Snackbar.make(mMainView,"Ringing...",Snackbar.LENGTH_LONG).show();
+//
+//                    }
+//
+//                    @Override
+//                    public void onCallEstablished(Call call) {
+//
+//                        Snackbar.make(mMainView,"Call Established",Snackbar.LENGTH_LONG).show();
+//
+//                    }
+//
+//                    @Override
+//                    public void onCallEnded(Call endcall) {
+//
+//                        Snackbar.make(mMainView,"Call Ended",Snackbar.LENGTH_LONG).show();
+//                        call = null;
+//                        endcall.hangup();
+//
+//                    }
+//
+//                    @Override
+//                    public void onShouldSendPushNotification(Call call, List<PushPair> list) {
+//
+//
+//
+//                    }
+//                }
+//
+//                sinchClient.getCallClient().addCallClientListener(new CallClientListener() {
+//                    @Override
+//                    public void onIncomingCall(CallClient callClient, Call call) {
+//
+//
+//
+//                    }
+//                });
+//
+//                sinchClient.start();
+//
+//
+//
+//                                }
+//
+//                            }
+//                        });
+//
+//
+//                    }
+//                });
                 mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener()
                 {
                     @Override
@@ -149,6 +270,7 @@ public class ChatFragment extends Fragment
                             }
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError)
                     {
@@ -172,16 +294,19 @@ public class ChatFragment extends Fragment
                     {
                         Toast.makeText(getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
                     }
+
                 });
             }
             @NonNull
             @Override
             public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
-                View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+               View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+
                 return new ConvViewHolder(view);
             }
         };
+
         mChatList.setAdapter(adapter1);
         adapter1.startListening();
     }

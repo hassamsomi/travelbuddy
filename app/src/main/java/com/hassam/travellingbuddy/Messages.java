@@ -4,6 +4,7 @@ import com.google.firebase.database.DatabaseReference;
 
 public class Messages
 {
+    public String key;
     public String message,type;
     public DatabaseReference mUserDatabase;
     long time;

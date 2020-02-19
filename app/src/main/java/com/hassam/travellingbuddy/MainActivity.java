@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(startIntent);
                 finish();
             }
-        }, 2000);
+        }, 20);
     }
     private void sendToStart() {
         Handler handler = new Handler();
@@ -76,6 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(startIntent);
                 finish();
             }
-        }, 2000);
+        }, 20);
     }
 }
