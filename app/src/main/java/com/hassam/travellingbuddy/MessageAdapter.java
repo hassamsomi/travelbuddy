@@ -2,10 +2,15 @@ package com.hassam.travellingbuddy;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,12 +37,29 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private String receiverId;
     private Context context;
     private TextToSpeech textToSpeech;
+    private AlertDialog dialog;
+    private ImageView imageView;
 
-//        -----------TEXT TO SPEECH---------
+    //        -----------TEXT TO SPEECH---------
     MessageAdapter(Context context, List<Messages> mMessageList, String receiverId){
         this.mMessageList = mMessageList;
         this.receiverId = receiverId;
         this.context = context;
+
+
+        imageView = new ImageView(context);
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(context);
+        FrameLayout frameLayout = new FrameLayout(context);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        frameLayout.setBackgroundColor(Color.parseColor("#BB000000"));
+        imageView.setLayoutParams(layoutParams);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setAdjustViewBounds(true);
+        frameLayout.addView(imageView);
+        builder.setView(frameLayout);
+        dialog = builder.create();
+
     }
     @NonNull
     @Override
@@ -122,13 +144,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.senderText.setVisibility(View.GONE);
             holder.senderUserName.setVisibility(View.GONE);
             holder.senderPlayBtn.setVisibility(View.GONE);
+            holder.mPopImageView.setVisibility(View.GONE);
 
         switch (fromUserType)
         {
             case "text":
                 if (fromUserID.equals(messageSenderID))
                 {
-                    holder.senderUserName.setVisibility(View.VISIBLE);
+                    holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
@@ -138,8 +161,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
+                    holder.receiverText.setTextColor(Color.parseColor("#000000"));
                     ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                    holder.receiverUserName.setVisibility(View.VISIBLE);
+                    holder.receiverUserName.setVisibility(View.INVISIBLE);
                     holder.receiverUserName.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                 }
@@ -147,15 +171,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             case "image":
                 if (fromUserID.equals(messageSenderID))
                 {
-                    holder.senderUserName.setVisibility(View.VISIBLE);
+                    holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
-                    holder.senderImage.setOnClickListener(new View.OnClickListener() {
+
+                    holder.mPopImageView.setVisibility(View.VISIBLE);
+
+                    holder.mPopImageView = holder.senderImage;
+
+
+
+                    holder.senderImage.setOnClickListener(new View.OnClickListener()
+
+                    {
                         @Override
                         public void onClick(View view) {
-
-
-
+                            Drawable drawable = holder.senderImage.getDrawable();
+                            imageView.setImageDrawable(drawable);
+                            dialog.show();
                         }
                     });
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
@@ -163,7 +196,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 }
                 else
                     {
-                    holder.receiverUserName.setVisibility(View.VISIBLE);
+                    holder.receiverUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.receiverImage);
@@ -174,7 +207,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             case "con":
                 if (fromUserID.equals(messageSenderID))
                 {
-                    holder.senderUserName.setVisibility(View.VISIBLE);
+                    holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
@@ -190,7 +223,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 }
                 else
                     {
-                    holder.receiverUserName.setVisibility(View.VISIBLE);
+                    holder.receiverUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);

@@ -177,7 +177,7 @@ public class ChatActivity extends AppCompatActivity {
         mEnglish = "";
         mUrdu = "";
 
-        mAdapter = new MessageAdapter(getApplicationContext(), messagesList, mChatUser);
+        mAdapter = new MessageAdapter(ChatActivity.this, messagesList, mChatUser);
         mMessagesList = findViewById(R.id.messages_list);
         mRefreshLayout = findViewById(R.id.message_swipe_layout);
         mLinearLayout = new SpeedyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
