@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RequestFragment extends Fragment {
 
@@ -287,5 +290,25 @@ public class RequestFragment extends Fragment {
         };
         mReqList.setAdapter(adapter);
         adapter.startListening();
+    }
+    public static class RequestViewHolder extends RecyclerView.ViewHolder {
+
+
+        TextView userName, userStatus;
+        Button AcceptBtn, CancelBtn;
+        CircleImageView profileImage;
+
+
+        public RequestViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+
+            userName = itemView.findViewById(R.id.username);
+            userStatus = itemView.findViewById(R.id.status);
+            profileImage = itemView.findViewById(R.id.profileimage);
+            AcceptBtn = itemView.findViewById(R.id.btnAccept);
+            CancelBtn = itemView.findViewById(R.id.btnCancel);
+
+        }
     }
 }
