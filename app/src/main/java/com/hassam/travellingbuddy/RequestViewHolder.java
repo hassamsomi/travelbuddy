@@ -25,7 +25,7 @@ public class RequestViewHolder extends RecyclerView.ViewHolder {
         userStatus = itemView.findViewById(R.id.status);
         profileImage = itemView.findViewById(R.id.profileimage);
         AcceptBtn = itemView.findViewById(R.id.btnAccept);
-        CancelBtn = itemView.findViewById(R.id.btnDecline);
+        CancelBtn = itemView.findViewById(R.id.btnCancel);
 
     }
 }
