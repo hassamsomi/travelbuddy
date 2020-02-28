@@ -9,4 +9,8 @@
         android:id="@+id/nav_friend"
         android:icon="@drawable/friend_icon"
         android:title="@string/friends"/>
+    <item
+        android:id="@+id/nav_request"
+        android:icon="@drawable/request"
+        android:title="@string/friends_request"/>
 </menu>

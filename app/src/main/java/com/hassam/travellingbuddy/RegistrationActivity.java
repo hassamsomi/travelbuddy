@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -81,7 +82,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 String userID = mAuth.getCurrentUser().getUid();
 
                                 String deviceToken = FirebaseInstanceId.getInstance().getToken();
-
+                                FirebaseUser user = mAuth.getCurrentUser();
 
                                 HashMap<String,Object> data=new HashMap<>();
                                 data.put("name",full_name);
@@ -89,7 +90,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 data.put("phoneNo",Phone_No);
                                 data.put("password",Pass);
                                 data.put("image","Default");
-                                data.put("aboutMe","I'm using Travel Assistant App.");
+                                data.put("aboutMe","Hi there!");
                                 data.put("thumbImage","Default");
                                 data.put("device_token",deviceToken);
 
@@ -101,19 +102,19 @@ public class RegistrationActivity extends AppCompatActivity {
                                         if(task.isSuccessful()){
                                             if(Pass.equals(Con_Pass))
                                             {
-                                                mRegDialogue.dismiss();
-                                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();
+                                                mRegDialogue.dismiss();
                                             }
                                             else
                                                 {
                                                     mRegDialogue.dismiss();
-                                                    Toast.makeText(getApplicationContext(), "Password not Matched.", Toast.LENGTH_SHORT).show();
+                                                    Snackbar.make(layout, "Password not Matched.", Snackbar.LENGTH_SHORT).show();
                                                 }
                                         }
                                         else {
-                                            mRegDialogue.hide();
+                                            mRegDialogue.dismiss();
                                             CreateAccount.setEnabled(true);
                                             Snackbar.make(layout,"Connection Failed.",Snackbar.LENGTH_LONG).show();
                                         }

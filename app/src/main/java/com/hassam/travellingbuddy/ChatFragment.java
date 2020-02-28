@@ -1,5 +1,6 @@
 package com.hassam.travellingbuddy;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -111,19 +112,24 @@ public class ChatFragment extends Fragment
                     @Override
                     public void onClick(View view) {
 
+
                         Intent chatIntent = new Intent(getContext(),ChatActivity.class);
                         chatIntent.putExtra("chatScreen",user_list_id);
                         startActivity(chatIntent);
 
+
                     }
                 });
+
+
                 assert user_list_id != null;
                 Query lastMessageQuery = mMessageDatabase.child(user_list_id).limitToLast(1);
                 lastMessageQuery.addChildEventListener(new ChildEventListener() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
                     {
-                        String type = dataSnapshot.child("type").getValue().toString().toLowerCase();
+                        String type = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString().toLowerCase();
                         holder.camera.setVisibility(View.GONE);
                         if(type.equals("image"))
                         {
@@ -138,7 +144,7 @@ public class ChatFragment extends Fragment
                         else
                         {
                             holder.camera.setVisibility(View.GONE);
-                            String data = dataSnapshot.child("message").getValue().toString();
+                            String data = Objects.requireNonNull(dataSnapshot.child("message").getValue()).toString();
                             holder.setMessage(data, model.isSeen());
                         }
 
@@ -164,94 +170,7 @@ public class ChatFragment extends Fragment
                     }
                 });
 
-//                holder.mView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//
-//
-//                        CharSequence option[] = new CharSequence[] {"Send Message","Call"};
-//
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-//                                .setTitle("Pick One");
-//                        builder.setItems(option, new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                                if(i==1)
-//                                {
-//
-//
-//                                }
-//                                else if(i==2)
-//                                {
-//
-//
-//                sinchClient = Sinch.getSinchClientBuilder().context(context).applicationKey("")
-//                        .applicationSecret("").environmentHost("clientapi.sinch.com").userId(mCurrent_UserID)
-//                        .build();
-//
-//
-//                sinchClient.setSupportCalling(true);
-//                sinchClient.startListeningOnActiveConnection();
-//
-//
-//
-//                class SinchCallListener implements CallListener
-//                {
-//
-//
-//                    @Override
-//                    public void onCallProgressing(Call call) {
-//
-//                        Snackbar.make(mMainView,"Ringing...",Snackbar.LENGTH_LONG).show();
-//
-//                    }
-//
-//                    @Override
-//                    public void onCallEstablished(Call call) {
-//
-//                        Snackbar.make(mMainView,"Call Established",Snackbar.LENGTH_LONG).show();
-//
-//                    }
-//
-//                    @Override
-//                    public void onCallEnded(Call endcall) {
-//
-//                        Snackbar.make(mMainView,"Call Ended",Snackbar.LENGTH_LONG).show();
-//                        call = null;
-//                        endcall.hangup();
-//
-//                    }
-//
-//                    @Override
-//                    public void onShouldSendPushNotification(Call call, List<PushPair> list) {
-//
-//
-//
-//                    }
-//                }
-//
-//                sinchClient.getCallClient().addCallClientListener(new CallClientListener() {
-//                    @Override
-//                    public void onIncomingCall(CallClient callClient, Call call) {
-//
-//
-//
-//                    }
-//                });
-//
-//                sinchClient.start();
-//
-//
-//
-//                                }
-//
-//                            }
-//                        });
-//
-//
-//                    }
-//                });
+
                 mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener()
                 {
                     @Override
@@ -259,13 +178,13 @@ public class ChatFragment extends Fragment
                     {
                         if(dataSnapshot.hasChild("image"))
                         {
-                            String name = dataSnapshot.child("name").getValue().toString();
+                            String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                             holder.userNameView.setText(name);
-                            String image = dataSnapshot.child("image").getValue().toString();
+                            String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
                             Picasso.get().load(image).placeholder(R.drawable.profile_image).into(holder.userImageView);
                             if(dataSnapshot.hasChild("online"))
                             {
-                                String userOnline = dataSnapshot.child("online").getValue().toString();
+                                String userOnline = Objects.requireNonNull(dataSnapshot.child("online").getValue()).toString();
                                 holder.setUserOnline(userOnline);
                             }
                         }
@@ -281,7 +200,7 @@ public class ChatFragment extends Fragment
                 {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String online = dataSnapshot.child("seen").getValue().toString();
+                        String online = Objects.requireNonNull(dataSnapshot.child("seen").getValue()).toString();
                         if(online.equals("seen"))
                         {
                             long lastTime = Long.parseLong(online);

@@ -1,6 +1,5 @@
 package com.hassam.travellingbuddy;
 
-import androidx.annotation.ArrayRes;
 import
         androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,12 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
@@ -25,7 +24,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -42,6 +40,8 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -59,6 +59,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,10 +99,11 @@ public class ChatActivity extends AppCompatActivity {
     private int itemPos = 0;
     private String myUrl = "";
     private StorageTask uploadTask;
-    private Uri fileUri;
+    private Uri mImageUri;
     final String[] mSource = {""};
     final String[] mDestination = {""};
     private ProgressDialog mProgressDialog;
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +121,8 @@ public class ChatActivity extends AppCompatActivity {
         mCurrentUserID = mAuth.getCurrentUser().getUid();
         mChatUser = getIntent().getStringExtra("chatScreen");
         builder = new AlertDialog.Builder(this);
+
+        view = findViewById(R.id.parent);
 
 //      -------------SOURCE SPINNER-----------------
         final Spinner sourceSpinner = findViewById(R.id.sourceSpinner);
@@ -187,8 +193,6 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList.setAdapter(mAdapter);
 
         mRootRef.child("Chat").child(mCurrentUserID).child(mChatUser).child("seen").setValue(true);
-
-
 
 
 //      LOAD MESSAGES IN CHAT SCREEN
@@ -308,78 +312,88 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && data != null) {
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    mConversionTextView.setText(result.get(0));
-                    translate(mSource[0], mDestination[0], mConversionTextView.getText().toString());
-                }
-                break;
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && data != null) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                mConversionTextView.setText(result.get(0));
+                translate(mSource[0], mDestination[0], mConversionTextView.getText().toString());
             }
-
         }
-        if (requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            fileUri = data.getData();
-            String checker = "image";
-            if (checker.equals("image")) {
+        if(requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData()!=null)
+        {
+            mImageUri = data.getData();
+            Bitmap bitmap = null,decoded = null;
+            try {
+
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,50,out);
+                byte[] mdata = out.toByteArray();
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("image_files");
 
-                final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
-                final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
+                final String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
+                final String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
 
                 DatabaseReference user_message_push = mRootRef.child("messages")
                         .child(mCurrentUserID).child(mChatUser).push();
 
                 final String push_id = user_message_push.getKey();
-                final StorageReference filePath = storageReference.child(push_id + "." + "jpg");
-                uploadTask = filePath.putFile(fileUri);
+                final StorageReference filePath = storageReference.child(push_id+"."+"jpg");
+                uploadTask = filePath.putBytes(mdata);
+
                 uploadTask.continueWithTask(new Continuation() {
                     @Override
-                    public Object then(@NonNull Task task) throws Exception {
-                        if (!task.isSuccessful()) {
+                    public Object then(@NonNull Task task) throws Exception
+                    {
+                        if(!task.isSuccessful())
+                        {
                             throw task.getException();
                         }
-
                         return filePath.getDownloadUrl();
                     }
                 })
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
+                                if(task.isSuccessful())
+                                {
                                     Uri downloadUrl = task.getResult();
                                     myUrl = downloadUrl.toString();
 
                                     Map<String, Object> messageMap = new HashMap<>();
-                                    messageMap.put("message", myUrl);
-                                    messageMap.put("name", fileUri.getLastPathSegment());
-                                    messageMap.put("seen", false);
-                                    messageMap.put("type", "image");
-                                    messageMap.put("time", ServerValue.TIMESTAMP);
-                                    messageMap.put("from", mCurrentUserID);
-                                    messageMap.put("to", mChatUser);
-                                    messageMap.put("messageID", push_id);
+                                    messageMap.put("message",myUrl);
+                                    messageMap.put("name", mImageUri.getLastPathSegment());
+                                    messageMap.put("seen",false);
+                                    messageMap.put("type","image");
+                                    messageMap.put("time",ServerValue.TIMESTAMP);
+                                    messageMap.put("from",mCurrentUserID);
+                                    messageMap.put("to",mChatUser);
+                                    messageMap.put("messageID",push_id);
 
                                     Map<String, Object> messageUserMap = new HashMap<>();
-                                    messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
-                                    messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+                                    messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
+                                    messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
                                     messageBox.setText("");
 
                                     mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                            if (databaseError != null) {
-                                                Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                            if(databaseError != null)
+                                            {
+                                                Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
                                             }
                                         }
                                     });
                                 }
                             }
                         });
-            } else {
-                Toast.makeText(this, "Nothing Selected, Error.", Toast.LENGTH_LONG).show();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(ChatActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
             }
+
         }
     }
 
@@ -486,9 +500,8 @@ public class ChatActivity extends AppCompatActivity {
                 if (!mLastKey.equals(messageKey)) {
                     messagesList.add(tempItemPosiion[0], message);
                     itemPos++;
-                }
-                else {
-                    mLastKey = messagesList.get(messagesList.size()-1).key;
+                } else {
+                    mLastKey = messagesList.get(messagesList.size() - 1).key;
                 }
 //                else
 //                    {
@@ -527,7 +540,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 mAdapter.notifyDataSetChanged();
-                if(dataSnapshot.getChildrenCount() > 1) {
+                if (dataSnapshot.getChildrenCount() > 1) {
                     mLinearLayout.smoothScrollToPosition(mMessagesList, null, Long.valueOf(messagesList.size() - 1 - dataSnapshot.getChildrenCount() + 2).intValue());
 //                    Handler handler = new Handler(Looper.getMainLooper());
 //                    handler.postDelayed(new Runnable() {

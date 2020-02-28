@@ -1,11 +1,15 @@
 package com.hassam.travellingbuddy;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,8 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder>
-{
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private List<Messages> mMessageList;
     private FirebaseAuth mAuth;
     private String receiverId;
@@ -41,7 +46,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private ImageView imageView;
 
     //        -----------TEXT TO SPEECH---------
-    MessageAdapter(Context context, List<Messages> mMessageList, String receiverId){
+    MessageAdapter(Context context, List<Messages> mMessageList, String receiverId) {
         this.mMessageList = mMessageList;
         this.receiverId = receiverId;
         this.context = context;
@@ -61,23 +66,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         dialog = builder.create();
 
     }
+
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
-    {
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.messages_single_layout, viewGroup, false);
         mAuth = FirebaseAuth.getInstance();
         return new MessageViewHolder(view);
     }
 
-    static class MessageViewHolder extends RecyclerView.ViewHolder
-    {
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView senderText, senderUserName, receiverText, receiverUserName;
-        ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn,mPopImageView;
+        ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn, mPopImageView;
 
-        MessageViewHolder(@NonNull View itemView)
-        {
+        MessageViewHolder(@NonNull View itemView) {
             super(itemView);
 //          SENDER LAYOUT
             senderText = itemView.findViewById(R.id.sender_text_layout);
@@ -93,72 +96,72 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             receiverPlayBtn = itemView.findViewById(R.id.receiverbtnPlay);
         }
     }
+
     @Override
-    public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i)
-    {
+    public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i) {
 //        --------------TEXT TO SPEECH------------
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-                if(i!= TextToSpeech.ERROR)
-                {
+                if (i != TextToSpeech.ERROR) {
                     textToSpeech.setLanguage(Locale.getDefault());
                 }
             }
         });
         String messageSenderID = (Objects.requireNonNull(mAuth.getCurrentUser())).getUid();
-            Messages c = mMessageList.get(i);
-            String fromUserID = c.getFrom();
-            String fromUserType = c.getType();
+        Messages c = mMessageList.get(i);
+        String fromUserID = c.getFrom();
+        String fromUserType = c.getType();
 
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
-            mUserDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                {
-                    String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
-                    holder.senderUserName.setText(name);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
+        mUserDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
+                holder.senderUserName.setText(name);
+            }
 
-                }
-            });
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
-                    holder.receiverUserName.setText(name);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
-            holder.receiverImage.setVisibility(View.GONE);
-            holder.receiverUserName.setVisibility(View.GONE);
-            holder.receiverText.setVisibility(View.GONE);
-            holder.receiverPlayBtn.setVisibility(View.GONE);
-            holder.senderImage.setVisibility(View.GONE);
-            holder.senderText.setVisibility(View.GONE);
-            holder.senderUserName.setVisibility(View.GONE);
-            holder.senderPlayBtn.setVisibility(View.GONE);
-            holder.mPopImageView.setVisibility(View.GONE);
+            }
+        });
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
+                holder.receiverUserName.setText(name);
+            }
 
-        switch (fromUserType)
-        {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        holder.receiverImage.setVisibility(View.GONE);
+        holder.receiverUserName.setVisibility(View.GONE);
+        holder.receiverText.setVisibility(View.GONE);
+        holder.receiverPlayBtn.setVisibility(View.GONE);
+        holder.senderImage.setVisibility(View.GONE);
+        holder.senderText.setVisibility(View.GONE);
+        holder.senderUserName.setVisibility(View.GONE);
+        holder.senderPlayBtn.setVisibility(View.GONE);
+        holder.mPopImageView.setVisibility(View.GONE);
+
+
+        switch (fromUserType) {
             case "text":
-                if (fromUserID.equals(messageSenderID))
-                {
+
+
+                if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setVisibility(View.VISIBLE);
-                }
-                else
-                    {
+
+                } else {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
                     holder.receiverText.setTextColor(Color.parseColor("#000000"));
@@ -166,11 +169,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     holder.receiverUserName.setVisibility(View.INVISIBLE);
                     holder.receiverUserName.setText(c.getMessage());
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+
+                    createNotificationChannel();
+
+                    String msg = c.getMessage();
+
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1");
+                    builder.setSmallIcon(R.drawable.logo)
+                            .setContentTitle("New Message")
+                            .setContentText(msg)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                    int notificationID = 1;
+
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                    notificationManager.notify(notificationID, builder.build());
+
                 }
                 break;
             case "image":
-                if (fromUserID.equals(messageSenderID))
-                {
+                if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
@@ -180,10 +198,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     holder.mPopImageView = holder.senderImage;
 
 
-
-                    holder.senderImage.setOnClickListener(new View.OnClickListener()
-
-                    {
+                    holder.senderImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Drawable drawable = holder.senderImage.getDrawable();
@@ -193,9 +208,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     });
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
-                }
-                else
-                    {
+                } else {
                     holder.receiverUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverImage.setVisibility(View.VISIBLE);
@@ -205,8 +218,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 break;
             case "con":
-                if (fromUserID.equals(messageSenderID))
-                {
+                if (fromUserID.equals(messageSenderID)) {
                     holder.senderUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
@@ -220,9 +232,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                         }
                     });
-                }
-                else
-                    {
+                } else {
                     holder.receiverUserName.setVisibility(View.INVISIBLE);
                     ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
@@ -239,9 +249,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 break;
         }
     }
+
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return mMessageList.size();
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Messages_Notification";
+            String description = "This notification is using for receiving messages";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 }
