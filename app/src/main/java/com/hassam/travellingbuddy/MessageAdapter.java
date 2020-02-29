@@ -172,7 +172,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                     createNotificationChannel();
 
-                    String msg = c.getMessage();
+                    String msg = "You have a new message";
 
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1");
                     builder.setSmallIcon(R.drawable.logo)

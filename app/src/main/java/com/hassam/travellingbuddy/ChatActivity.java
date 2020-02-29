@@ -572,7 +572,7 @@ public class ChatActivity extends AppCompatActivity {
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://translate.yandex.net/api/v1.5/tr.json/translate" +
-                "?key=" + getString(R.string.yandex_api_key) +
+//                "?key=" + getString(R.string.yandex_api_key) +
                 "&text=" + content +
                 "&lang=" + source + "-" + destination;
 

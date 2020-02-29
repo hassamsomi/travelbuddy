@@ -80,7 +80,7 @@ public class RequestFragment extends Fragment {
                 .setQuery(mFriendRequestDatabase.child(mCurrent_UserID), Friends.class).build();
         FirebaseRecyclerAdapter<Friends, RequestViewHolder> adapter = new FirebaseRecyclerAdapter<Friends, RequestViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull RequestViewHolder holder, int position, @NonNull Friends model) {
+            protected void onBindViewHolder(@NonNull final RequestViewHolder holder, int position, @NonNull Friends model) {
 
 
                 final String list_user_id = getRef(position).getKey();
@@ -99,9 +99,12 @@ public class RequestFragment extends Fragment {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                         if (dataSnapshot.hasChild("image")) {
+                                            holder.profileImage.setVisibility(View.VISIBLE);
                                             final String requestProfileImage = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
                                             Picasso.get().load(requestProfileImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
                                         }
+                                        holder.userName.setVisibility(View.VISIBLE);
+                                        holder.userStatus.setVisibility(View.VISIBLE);
                                         final String requestUserName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                                         final String requestUserStatus = Objects.requireNonNull(dataSnapshot.child("aboutMe").getValue()).toString();
                                         holder.userName.setText(requestUserName);
@@ -316,7 +319,9 @@ public class RequestFragment extends Fragment {
             profileImage = itemView.findViewById(R.id.profileimage);
             AcceptBtn = itemView.findViewById(R.id.btnAccept);
             CancelBtn = itemView.findViewById(R.id.btnCancel);
-
+            profileImage.setVisibility(View.GONE);
+            userName.setVisibility(View.GONE);
+            userStatus.setVisibility(View.GONE);
         }
     }
 }
