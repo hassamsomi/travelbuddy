@@ -246,7 +246,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                Snackbar.make(view, databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -304,7 +304,7 @@ public class ChatActivity extends AppCompatActivity {
         try {
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
         } catch (Exception e) {
-            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "" + e.getMessage(), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -319,34 +319,31 @@ public class ChatActivity extends AppCompatActivity {
                 translate(mSource[0], mDestination[0], mConversionTextView.getText().toString());
             }
         }
-        if(requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData()!=null)
-        {
+        if (requestCode == 438 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             mImageUri = data.getData();
-            Bitmap bitmap = null,decoded = null;
+            Bitmap bitmap = null, decoded = null;
             try {
 
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG,50,out);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, out);
                 byte[] mdata = out.toByteArray();
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("image_files");
 
-                final String current_user_ref = "messages/"+mCurrentUserID+"/"+mChatUser;
-                final String chat_user_ref = "messages/"+mChatUser+"/"+mCurrentUserID;
+                final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+                final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
 
                 DatabaseReference user_message_push = mRootRef.child("messages")
                         .child(mCurrentUserID).child(mChatUser).push();
 
                 final String push_id = user_message_push.getKey();
-                final StorageReference filePath = storageReference.child(push_id+"."+"jpg");
+                final StorageReference filePath = storageReference.child(push_id + "." + "jpg");
                 uploadTask = filePath.putBytes(mdata);
 
                 uploadTask.continueWithTask(new Continuation() {
                     @Override
-                    public Object then(@NonNull Task task) throws Exception
-                    {
-                        if(!task.isSuccessful())
-                        {
+                    public Object then(@NonNull Task task) throws Exception {
+                        if (!task.isSuccessful()) {
                             throw task.getException();
                         }
                         return filePath.getDownloadUrl();
@@ -355,32 +352,30 @@ public class ChatActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
-                                if(task.isSuccessful())
-                                {
+                                if (task.isSuccessful()) {
                                     Uri downloadUrl = task.getResult();
                                     myUrl = downloadUrl.toString();
 
                                     Map<String, Object> messageMap = new HashMap<>();
-                                    messageMap.put("message",myUrl);
+                                    messageMap.put("message", myUrl);
                                     messageMap.put("name", mImageUri.getLastPathSegment());
-                                    messageMap.put("seen",false);
-                                    messageMap.put("type","image");
-                                    messageMap.put("time",ServerValue.TIMESTAMP);
-                                    messageMap.put("from",mCurrentUserID);
-                                    messageMap.put("to",mChatUser);
-                                    messageMap.put("messageID",push_id);
+                                    messageMap.put("seen", false);
+                                    messageMap.put("type", "image");
+                                    messageMap.put("time", ServerValue.TIMESTAMP);
+                                    messageMap.put("from", mCurrentUserID);
+                                    messageMap.put("to", mChatUser);
+                                    messageMap.put("messageID", push_id);
 
                                     Map<String, Object> messageUserMap = new HashMap<>();
-                                    messageUserMap.put(current_user_ref+"/"+push_id,messageMap);
-                                    messageUserMap.put(chat_user_ref+"/"+push_id,messageMap);
+                                    messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                                    messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
                                     messageBox.setText("");
 
                                     mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                            if(databaseError != null)
-                                            {
-                                                Toast.makeText(ChatActivity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                                            if (databaseError != null) {
+                                                Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
                                             }
                                         }
                                     });
@@ -391,7 +386,8 @@ public class ChatActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(ChatActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+                String msg = e.getMessage();
+                Snackbar.make(view, msg + "", Snackbar.LENGTH_LONG).show();
             }
 
         }
@@ -477,7 +473,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                     if (databaseError != null) {
-                        Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
                     }
                 }
             });
@@ -615,12 +611,14 @@ public class ChatActivity extends AppCompatActivity {
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
                                     if (databaseError != null) {
-                                        Toast.makeText(ChatActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                        Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            String msg = e.getMessage();
+                            Snackbar.make(view, "" + msg, Snackbar.LENGTH_LONG).show();
                         }
                         // Display the first 500 characters of the response string.
                     }

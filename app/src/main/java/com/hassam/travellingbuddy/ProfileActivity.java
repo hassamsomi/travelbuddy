@@ -1,33 +1,20 @@
 package com.hassam.travellingbuddy;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button mBtnDeclineReq;
     private DatabaseReference mRootRef;
     private TextView mTotalFriends;
+    private View layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
         mCurrentState = "not_friends";
         mTotalFriends = findViewById(R.id.profile_totalFriends);
 
+        layout = findViewById(R.id.grand_parent);
         mProfileName = findViewById(R.id.profile_name);
         mProfileStatus = findViewById(R.id.profile_status);
         mBtnSendReq = findViewById(R.id.btnSendReq);
@@ -175,9 +164,6 @@ public class ProfileActivity extends AppCompatActivity {
                 if (mCurrentState.equals("not_friends")) {
                     DatabaseReference newNotificationRef = mRootRef.child("notification").child(current_userID).push();
                     String newNotificationID = newNotificationRef.getKey();
-
-//                    DatabaseReference name = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("name");
-//                    DatabaseReference mImage = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(current_userID).child("image");
                     HashMap<String, String> notificationData = new HashMap<>();
                     notificationData.put("from", mCurrentUser.getUid());
                     notificationData.put("type", "request");
@@ -192,7 +178,8 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
                             if (databaseError != null) {
-                                Toast.makeText(ProfileActivity.this, "There was some error in sending request", Toast.LENGTH_LONG).show();
+                                String e = databaseError.getMessage();
+                                Snackbar.make(layout, e, Snackbar.LENGTH_LONG).show();
                             } else {
                                 mCurrentState = "req_sent";
                                 mBtnSendReq.setText("Cancel Friend Request");
@@ -253,7 +240,7 @@ public class ProfileActivity extends AppCompatActivity {
                                                                 mBtnDeclineReq.setEnabled(false);
                                                             } else {
                                                                 Objects.requireNonNull(task.getException()).printStackTrace();
-                                                                Toast.makeText(ProfileActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                                                Snackbar.make(layout, task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
                                                             }
 
                                                         }
@@ -270,25 +257,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                     String totalFriends = FirebaseDatabase.getInstance().getReference().child("Friends").child(mCurrentUser.getUid()).child(current_userID).getRef().getKey();
                     mTotalFriends.setText(totalFriends);
-
-
-//                    mRootRef.setValue(friendsMap, new DatabaseReference.CompletionListener() {
-//                        @Override
-//                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//                            if(databaseError == null){
-////                                mBtnSendReq.setEnabled(true);
-////                                mCurrentState = "friends";
-////                                mBtnSendReq.setText("Unfriend this person");
-////
-////                                mBtnDeclineReq.setVisibility(View.INVISIBLE);
-////                                mBtnDeclineReq.setEnabled(false);
-//                            }
-//                            else {
-//                                String error = databaseError.getMessage();
-//                                Toast.makeText(ProfileActivity.this,error,Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//                    });
                 }
 //                ------------------------UNFRIENDS STATE-----------------
                 if (mCurrentState.equals("friends")) {
@@ -308,7 +276,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 mBtnDeclineReq.setEnabled(false);
                             } else {
                                 String error = databaseError.getMessage();
-                                Toast.makeText(ProfileActivity.this, error, Toast.LENGTH_LONG).show();
+                                Snackbar.make(layout, error, Snackbar.LENGTH_LONG).show();
                             }
                             mBtnSendReq.setEnabled(true);
                         }

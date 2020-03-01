@@ -4,16 +4,16 @@
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileimage"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/profile_image"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        android:id="@+id/profileimage"
-        />
+        android:src="@drawable/profile_image" />
 
     <TextView
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -21,96 +21,101 @@
         android:layout_toEndOf="@id/profileimage"
         android:text="@string/display_name"
         android:textColor="@color/button_color"
-        android:textStyle="normal"
         android:textSize="18sp"
-        android:id="@+id/username"
-        />
+        android:textStyle="normal" />
+
     <ImageView
+        android:id="@+id/camera"
         android:layout_width="20sp"
         android:layout_height="20sp"
-        android:src="@drawable/ic_camera_alt_black_24dp"
         android:layout_below="@id/username"
-        android:layout_marginTop="7sp"
-        android:padding="3sp"
-        android:id="@+id/camera"
-        android:visibility="gone"
-        android:layout_toLeftOf="@id/status"
         android:layout_marginStart="10sp"
+        android:layout_marginTop="7sp"
+        android:layout_toLeftOf="@id/status"
         android:layout_toEndOf="@id/profileimage"
-        />
+        android:padding="3sp"
+        android:src="@drawable/ic_camera_alt_black_24dp"
+        android:visibility="gone" />
+
     <ImageView
-    android:layout_width="20sp"
-    android:layout_height="20sp"
-    android:src="@drawable/mic"
-    android:layout_below="@id/username"
-    android:layout_marginTop="7sp"
-    android:padding="3sp"
-    android:id="@+id/mic"
-    android:visibility="gone"
-    android:layout_toStartOf="@id/status"
-    android:layout_marginStart="10sp"
-    android:layout_toEndOf="@id/profileimage"
-    />
+        android:id="@+id/mic"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:layout_below="@id/username"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="7sp"
+        android:layout_toStartOf="@id/status"
+        android:layout_toEndOf="@id/profileimage"
+        android:padding="3sp"
+        android:src="@drawable/mic"
+        android:visibility="gone" />
+
     <TextView
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
         android:layout_below="@id/username"
-        android:text="@string/hey_there"
-        android:textColor="@color/button_color"
-        android:layout_toEndOf="@id/camera"
-        android:id="@+id/status"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="7dp"
-        />
+        android:layout_toEndOf="@id/camera"
+        android:text="@string/hey_there"
+        android:textColor="@color/button_color" />
+
     <ImageView
+        android:id="@+id/onlinePNG"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/online_icon"
-        android:layout_toEndOf="@id/username"
-        android:layout_marginTop="22dp"
         android:layout_marginStart="10dp"
-        android:id="@+id/onlinePNG"
-        android:visibility="gone"
-        />
+        android:layout_marginTop="22dp"
+        android:layout_toEndOf="@id/username"
+        android:src="@drawable/online_icon"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/lastSeen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="20sp"
+        android:text="00:00"
+        android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="5sp"
+        android:background="@drawable/button_color"
+        android:padding="2sp"
+        android:text="@string/cancel"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnAccept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="10sp"
+        android:layout_toStartOf="@id/btnCancel"
+        android:background="@drawable/button_color"
+        android:padding="2sp"
+        android:text="@string/accept"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
-        android:layout_marginTop="21dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20sp"
-        android:textColor="@color/colorPrimaryDark"
-        android:visibility="gone"
-        android:id="@+id/lastSeen"
+        android:text="@string/dash"
+        android:layout_below="@id/status"
+        android:layout_marginStart="15sp"
+        android:id="@+id/endingLine"
         />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:id="@+id/btnCancel"
-        android:layout_marginEnd="5sp"
-        android:background="@drawable/button_color"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:padding="2sp"
-        android:visibility="gone"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/accept"
-        android:layout_toStartOf="@id/btnCancel"
-        android:layout_centerInParent="true"
-        android:id="@+id/btnAccept"
-        android:layout_marginEnd="10sp"
-        android:background="@drawable/button_color"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:padding="2sp"
-        android:visibility="gone"
-        />
-
 
 </RelativeLayout>

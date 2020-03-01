@@ -13,7 +13,7 @@
 
 
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".LoginActivity"
 
         >
@@ -21,14 +21,11 @@
         <ImageView
             android:layout_marginTop="40pt"
             android:layout_width="match_parent"
-            android:layout_marginLeft="140dp"
-            android:layout_marginRight="140dp"
             android:layout_height="65pt"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/logo"
-            android:src="@drawable/message"
-            android:scaleType="fitCenter"
-            android:tint="@color/button_color"
+            android:src="@drawable/logo"
+            android:scaleType="centerCrop"
             />
         <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="20pt"

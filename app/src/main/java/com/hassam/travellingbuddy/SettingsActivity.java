@@ -1,17 +1,21 @@
 package com.hassam.travellingbuddy;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -51,6 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
     private String tempStatus;
     private String tempName;
     private Button btnChangeImage;
+    private ImageButton mLogoutBtn;
     private View layout;
     private Uri ImageUri;
     private static final int GALLERY_PICK = 1;
@@ -72,10 +79,15 @@ public class SettingsActivity extends AppCompatActivity {
         mBtnCancelStat = findViewById(R.id.btn_cancel_status);
         mAbout_Me = findViewById(R.id.about_text);
         btnChangeImage = findViewById(R.id.btnChange_image);
+        mLogoutBtn = findViewById(R.id.logout_btn);
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String current_userID = mCurrentUser.getUid();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        final DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+
 
         //---------------EDIT STATUS BUTTON----------------
         mBtnConfirmStat.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +100,6 @@ public class SettingsActivity extends AppCompatActivity {
                     mBtnCancelStat.setVisibility(View.GONE);
                     mBtnCancelStat.invalidate();
                     mBtnConfirmStat.invalidate();
-//                        HashMap<String, Object> data = new HashMap();
-//                        data.put("aboutMe","I'm using Travel Assistant App.");
                     final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                     reference.child("UserInfo").child(current_userID).child("aboutMe").setValue(mAbout_Me.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -97,19 +107,18 @@ public class SettingsActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Snackbar.make(layout, "Connection Failed! Try again.", Snackbar.LENGTH_LONG).show();
                                 mAbout_Me.setText(tempStatus);
-                            } else{
+                            } else {
                                 Snackbar.make(layout, "Successfully Done", Snackbar.LENGTH_LONG).show();
                             }
                             reference.child("UserInfo").child(current_userID).child("name").setValue(mName.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> pTask) {
 
-                                    if(!pTask.isSuccessful()){
+                                    if (!pTask.isSuccessful()) {
                                         Snackbar.make(layout, "Can't load name", Snackbar.LENGTH_LONG).show();
                                         mName.setText(tempName);
-                                    }
-                                    else{
-                                        Toast.makeText(getApplicationContext(), "Successfully Done!", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(layout, "Successfully Done!", Snackbar.LENGTH_LONG).show();
                                     }
 
                                 }
@@ -197,6 +206,39 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(gallery_intent, "Select Image"), GALLERY_PICK);
             }
         });
+        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+            }
+        });
+        ImageView imageView = new ImageView(getApplicationContext());
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(getApplicationContext());
+        FrameLayout frameLayout = new FrameLayout(getApplicationContext());
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        frameLayout.setBackgroundColor(Color.parseColor("#BB000000"));
+        imageView.setLayoutParams(layoutParams);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setAdjustViewBounds(true);
+        frameLayout.addView(imageView);
+        builder.setView(frameLayout);
+        AlertDialog dialog = builder.create();
+
+        mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Drawable drawable = mImage.getDrawable();
+                imageView.setImageDrawable(drawable);
+                dialog.show();
+
+            }
+        });
     }
 
     @Override
@@ -242,14 +284,14 @@ public class SettingsActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 mProgressDialogue.dismiss();
-                                                Toast.makeText(SettingsActivity.this, "Successfully uploaded.", Toast.LENGTH_LONG).show();
+                                                Snackbar.make(layout, "Successfully uploaded.", Snackbar.LENGTH_LONG).show();
                                             }
                                         });
                                     }
                                 }
                             });
                         } else {
-                            Toast.makeText(SettingsActivity.this, "Error in uploading.", Toast.LENGTH_LONG).show();
+                            Snackbar.make(layout, "Error in uploading.", Snackbar.LENGTH_LONG).show();
                             mProgressDialogue.dismiss();
                         }
                     }

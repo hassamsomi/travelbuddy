@@ -53,6 +53,7 @@ public class ChatFragment extends Fragment
     private FirebaseAuth mAuth;
     private View mMainView;
     String currentUser;
+    private View view;
     public Context context = this.getContext();
 
 
@@ -75,6 +76,7 @@ public class ChatFragment extends Fragment
         mConvDatabase = FirebaseDatabase.getInstance().getReference().child("Chat").child(mCurrent_UserID);
         mMessageDatabase = FirebaseDatabase.getInstance().getReference().child("messages").child(mCurrent_UserID);
 
+        view = mMainView.findViewById(R.id.childparent);
 
         mConvDatabase.keepSynced(true);
         mUsersDatabase.keepSynced(true);
@@ -83,12 +85,8 @@ public class ChatFragment extends Fragment
 
 
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
+        mChatList.setLayoutManager(new LinearLayoutManager(getContext()));
         mChatList.setHasFixedSize(true);
-        mChatList.setLayoutManager(linearLayoutManager);
-
         return mMainView;
     }
 
@@ -193,7 +191,7 @@ public class ChatFragment extends Fragment
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError)
                     {
-                        Toast.makeText(mMainView.getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                        Snackbar.make(view,""+databaseError.getMessage(),Snackbar.LENGTH_LONG).show();
                     }
                 });
                 mConvDatabase.child(user_list_id).addValueEventListener(new ValueEventListener()
@@ -211,7 +209,7 @@ public class ChatFragment extends Fragment
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError)
                     {
-                        Toast.makeText(getContext(),databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                        Snackbar.make(view,""+databaseError.getMessage(),Snackbar.LENGTH_LONG).show();
                     }
 
                 });

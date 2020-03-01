@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,21 +16,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 public class UsersActivity extends AppCompatActivity {
 
     private RecyclerView mUsersList;
     private FirebaseRecyclerAdapter adapter;
     private ProgressDialog mProgressDialog;
+    private ImageButton mBtnSettings, mBtnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
+
+        mBtnLogout = findViewById(R.id.logout_btn);
+        mBtnSettings = findViewById(R.id.btn_Settings);
 
         //------------RECYCLER VIEW IDENTITY
         mUsersList = findViewById(R.id.userslist);
@@ -42,6 +52,28 @@ public class UsersActivity extends AppCompatActivity {
         mProgressDialog.setMessage("Please wait we are loading user's list");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
+
+
+        mBtnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UsersActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+        mBtnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(UsersActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+            }
+        });
 
         //------------INSERTING DATA IN FIREBASE STORAGE
         Query query = FirebaseDatabase.getInstance().getReference().child("UserInfo");
@@ -58,12 +90,11 @@ public class UsersActivity extends AppCompatActivity {
             }
         }).build();
         //------------HOLDER TO LOAD FILES
-        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options)
-        {
+        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options) {
             @NonNull
             @Override
             public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.users_single_layout,parent,false);
+                View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.users_single_layout, parent, false);
                 return new UsersViewHolder(view);
             }
 

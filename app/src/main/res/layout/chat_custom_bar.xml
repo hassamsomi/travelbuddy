@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/chat_bar_color"
+        android:background="@android:color/black"
         android:layout_marginTop="5sp"
         >
 
@@ -20,6 +20,7 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/profile_image"
             android:cropToPadding="true"
+            android:tint="@android:color/white"
             android:layout_marginStart="15sp"
             />
 
@@ -31,7 +32,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
             android:text="@string/display_username"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
             android:textSize="17sp"
             />
 
@@ -44,9 +46,10 @@
             android:layout_marginStart="10dp"
             android:layout_toEndOf="@id/custom_profile_image"
             android:text="@string/last_seen"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@android:color/white"
             android:textSize="13sp"
             android:layout_marginTop="3sp"
+            android:textStyle="bold"
             />
         <ImageButton
             android:layout_width="50sp"

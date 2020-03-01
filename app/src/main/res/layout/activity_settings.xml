@@ -1,137 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/grand_parent"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/upper_title_section"
+        style="@style/ThemeOverlay.AppCompat.ActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:id="@+id/upper_title_section"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
+
         <RelativeLayout
+            android:id="@+id/titlebar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:padding="4dp"
-            android:id="@+id/titlebar"
-            >
+            android:background="@color/colorPrimaryDark"
+            android:padding="4dp">
+
             <TextView
+                android:id="@+id/textaccount"
+                style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Account"
-                style="@style/TextAppearance.AppCompat.Title"
                 android:layout_centerInParent="true"
-                android:id="@+id/textaccount"
+                android:text="Account"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
 
                 />
-            <ImageView
-                android:layout_marginRight="8dp"
+
+            <ImageButton
                 android:id="@+id/logout_btn"
-                android:scaleType="fitXY"
                 android:layout_width="20dp"
                 android:layout_height="24dp"
-                android:src="@drawable/logout_icon"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                />
+                android:layout_marginRight="8dp"
+                android:background="@android:color/white"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:scaleType="fitXY"
+                android:src="@drawable/logout_icon"
+                android:tint="@android:color/white" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/display_image"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:src="@drawable/profile_image"
-        android:nestedScrollingEnabled="false"
-        android:longClickable="false"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/upper_title_section"
         android:layout_marginTop="30dp"
-        android:id="@+id/display_image"
+        android:longClickable="false"
+        android:nestedScrollingEnabled="false"
+        android:src="@drawable/profile_image"
         app:civ_border_color="@color/colorAccent"
         app:civ_border_width="0dp"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/upper_title_section" />
+
     <EditText
+        android:id="@+id/display_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/display_image"
+        android:layout_marginTop="25dp"
+        android:background="@android:color/transparent"
+        android:enabled="false"
         android:text="@string/default_name"
+        android:textColor="@color/cardview_dark_background"
         android:textSize="23dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="25dp"
-        android:background="@android:color/transparent"
-        android:id="@+id/display_text"
-        android:textColor="@color/cardview_dark_background"
-        android:enabled="false"
-        />
+        app:layout_constraintTop_toBottomOf="@id/display_image" />
+
     <LinearLayout
-        android:layout_marginTop="10dp"
+        android:id="@+id/edit_status_section"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/display_text"
-        android:orientation="horizontal"
-        android:id="@+id/edit_status_section"
-        android:animateLayoutChanges="true"
 
         >
+
         <EditText
+            android:id="@+id/about_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/status"
-            android:gravity="right"
-            android:textSize="18sp"
-            android:textColor="@color/cardview_dark_background"
-            android:background="@android:color/transparent"
             android:layout_marginRight="8dp"
-            android:padding="8dp"
-            android:maxWidth="200dp"
-            android:id="@+id/about_text"
+            android:background="@android:color/transparent"
             android:enabled="false"
-            />
+            android:gravity="right"
+            android:maxWidth="200dp"
+            android:padding="8dp"
+            android:text="@string/status"
+            android:textColor="@color/cardview_dark_background"
+            android:textSize="18sp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/status_edit_icon"
             android:id="@+id/btn_confirm_status"
-            android:padding="8dp"
-            />
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_cancel_status"
-            android:id="@+id/btn_cancel_status"
-            android:visibility="gone"
             android:padding="8dp"
+            android:src="@drawable/status_edit_icon" />
+
+        <ImageView
+            android:id="@+id/btn_cancel_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            />
+            android:padding="8dp"
+            android:src="@drawable/ic_cancel_status"
+            android:visibility="gone" />
     </LinearLayout>
+
     <Button
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
+        android:id="@+id/btnChange_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Change Image"
-        android:background="@drawable/button_color"
-        android:textColor="@color/cardview_light_background"
-        android:padding="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_status_section"
+        android:layout_marginLeft="80dp"
         android:layout_marginTop="60dp"
-        android:id="@+id/btnChange_image"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="140sp"
+        android:background="@drawable/button_color"
+        android:padding="10dp"
+        android:text="Change Image"
+        android:textColor="@color/cardview_light_background"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="140sp"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_status_section" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

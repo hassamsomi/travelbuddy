@@ -4,83 +4,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity"
     android:background="@color/background_color"
+    tools:context=".ProfileActivity"
+    android:id="@+id/grand_parent"
     >
 
     <ImageView
-        android:background="#000"
+        android:id="@+id/profile_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:background="#000"
         android:maxHeight="300dp"
-        android:src="@drawable/profile_avatar"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/profile_image"
-        />
+        android:src="@drawable/profile_image"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="25dp"
-        android:text="Display Name"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_image"
         android:id="@+id/profile_name"
-        android:layout_marginTop="15dp"
-        />
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:text="Current user status"
+        android:layout_marginTop="15dp"
+        android:text="Display Name"
+        android:textSize="25dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_name"
-        android:id="@+id/profile_status"
-        android:layout_marginTop="5dp"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:text="Total Friends"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_status"
-        android:id="@+id/profile_totalFriends"
-        android:layout_marginTop="60dp"
-        />
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Send Request"
-        android:textSize="15dp"
-        android:background="@drawable/button_color"
-        android:textColor="@color/cardview_light_background"
-        app:layout_constraintLeft_toLeftOf="@id/profile_totalFriends"
-        app:layout_constraintRight_toRightOf="@id/profile_totalFriends"
-        app:layout_constraintTop_toBottomOf="@id/profile_totalFriends"
-        android:layout_marginTop="15dp"
-        android:padding="5dp"
-        android:id="@+id/btnSendReq"
-        />
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Decline Request"
-        android:textSize="15dp"
-        android:background="@drawable/button_color"
-        android:textColor="@color/cardview_light_background"
-        app:layout_constraintLeft_toLeftOf="@id/profile_totalFriends"
-        app:layout_constraintRight_toRightOf="@id/profile_totalFriends"
-        app:layout_constraintTop_toBottomOf="@id/btnSendReq"
-        android:layout_marginTop="15dp"
-        android:padding="5dp"
-        android:id="@+id/btnDeclineReq"
-        />
+        app:layout_constraintTop_toBottomOf="@id/profile_image" />
 
+    <TextView
+        android:id="@+id/profile_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Current user status"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_name" />
+
+    <TextView
+        android:id="@+id/profile_totalFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:text="Total Friends"
+        android:textSize="15dp"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_status" />
+
+    <Button
+        android:id="@+id/btnSendReq"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_color"
+        android:padding="5dp"
+        android:text="Send Request"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toLeftOf="@id/profile_totalFriends"
+        app:layout_constraintRight_toRightOf="@id/profile_totalFriends"
+        app:layout_constraintTop_toBottomOf="@id/profile_totalFriends" />
+
+    <Button
+        android:id="@+id/btnDeclineReq"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_color"
+        android:padding="5dp"
+        android:text="Decline Request"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toLeftOf="@id/profile_totalFriends"
+        app:layout_constraintRight_toRightOf="@id/profile_totalFriends"
+        app:layout_constraintTop_toBottomOf="@id/btnSendReq" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

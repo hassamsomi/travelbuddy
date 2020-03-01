@@ -22,6 +22,8 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="cancel">Cancel</string>
+    <string name="travelling_buddy">Travelling Buddy</string>
+    <string name="dash">_____________________________________________________</string>
     <string-array name="Languages">
         <item> </item>
         <item>Azerbaijan</item>

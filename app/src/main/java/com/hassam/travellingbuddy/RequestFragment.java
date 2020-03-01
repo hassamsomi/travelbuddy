@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +43,7 @@ public class RequestFragment extends Fragment {
     private FirebaseAuth mAuth;
     private String mCurrent_UserID;
     private DatabaseReference mUsersDatabase, mFriendsDatabase, mFriendRequestDatabase, mRootRef;
+    private View view;
 
 
     public RequestFragment() {
@@ -56,10 +57,11 @@ public class RequestFragment extends Fragment {
 
         mMainView = inflater.inflate(R.layout.fragment_request, container, false);
 
-        mReqList = (RecyclerView) mMainView.findViewById(R.id.request_list);
+        mReqList = mMainView.findViewById(R.id.request_list);
         mReqList.setLayoutManager(new LinearLayoutManager(getContext()));
         mReqList.setHasFixedSize(true);
 
+        view = mMainView.findViewById(R.id.childparent);
         mAuth = FirebaseAuth.getInstance();
         mCurrent_UserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo");
@@ -152,7 +154,7 @@ public class RequestFragment extends Fragment {
                                                                                                                 public void onComplete(@NonNull Task<Void> task) {
 
                                                                                                                     if (task.isSuccessful()) {
-                                                                                                                        Toast.makeText(getContext(), "New Friend Added", Toast.LENGTH_SHORT).show();
+                                                                                                                        Snackbar.make(view, "New Friend Added", Snackbar.LENGTH_SHORT).show();
                                                                                                                     }
 
                                                                                                                 }
@@ -181,7 +183,7 @@ public class RequestFragment extends Fragment {
                                                                                 public void onComplete(@NonNull Task<Void> task) {
 
                                                                                     if (task.isSuccessful()) {
-                                                                                        Toast.makeText(getContext(), "You have cancelled the friend request.", Toast.LENGTH_SHORT).show();
+                                                                                        Snackbar.make(view, "You have cancelled the friend request.", Snackbar.LENGTH_SHORT).show();
                                                                                     }
 
                                                                                 }
@@ -205,80 +207,6 @@ public class RequestFragment extends Fragment {
 
                                     }
                                 });
-
-//                            } else if (type.equals("Sent")) {
-//
-//                                Button req_sent_btn = holder.itemView.findViewById(R.id.btnAccept);
-//                                req_sent_btn.setText("Send Request");
-//
-//                                holder.itemView.findViewById(R.id.btnCancel).setVisibility(View.GONE);
-//                                assert list_user_id != null;
-//                                mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                                        if (dataSnapshot.hasChild("image")) {
-//
-//                                            final String requestProfileImage = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
-//
-//                                            Picasso.get().load(requestProfileImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
-//                                        }
-//                                        final String requestUserName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
-//                                        final String requestUserStatus = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
-//                                        holder.userName.setText(requestUserName);
-//                                        holder.userStatus.setText(requestUserStatus);
-//
-//                                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(View view) {
-//
-//                                                CharSequence options[] = new CharSequence[]{"Send Friend Request"};
-//                                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                                                builder.setTitle("Send Request");
-//                                                builder.setItems(options, new DialogInterface.OnClickListener() {
-//                                                    @Override
-//                                                    public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                                                        if (i == 0) {
-//                                                            DatabaseReference newNotificationRef = mRootRef.child("notification").child(list_user_id).push();
-//                                                            String newNotificationID = newNotificationRef.getKey();
-//
-//                                                            HashMap<String, String> notificationData = new HashMap<>();
-//                                                            notificationData.put("from", mCurrent_UserID);
-//                                                            notificationData.put("type", "request");
-//
-//                                                            Map requestMap = new HashMap();
-//                                                            requestMap.put("Friend_Req/" + mCurrent_UserID+ "/" + list_user_id+ "/request_type", "Sent");
-//                                                            requestMap.put("Friend_Req/" + list_user_id+ "/" + mCurrent_UserID+ "/request_type", "Received");
-//                                                            requestMap.put("notification/" + list_user_id+ "/" + newNotificationID, notificationData);
-//
-//                                                            mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
-//                                                                @Override
-//                                                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//
-//                                                                    if (databaseError != null) {
-//                                                                        Toast.makeText(getContext(), "There was some error in sending request", Toast.LENGTH_LONG).show();
-//                                                                    }
-//
-//                                                                }
-//                                                            });
-//
-//                                                        }
-//
-//
-//                                                    }
-//                                                });
-//
-//                                            }
-//                                        });
-//
-//                                    }
-
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
                             }
                         }
                     }
@@ -302,6 +230,7 @@ public class RequestFragment extends Fragment {
         mReqList.setAdapter(adapter);
         adapter.startListening();
     }
+
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
 
@@ -309,10 +238,8 @@ public class RequestFragment extends Fragment {
         Button AcceptBtn, CancelBtn;
         CircleImageView profileImage;
 
-
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
-
 
             userName = itemView.findViewById(R.id.username);
             userStatus = itemView.findViewById(R.id.status);
