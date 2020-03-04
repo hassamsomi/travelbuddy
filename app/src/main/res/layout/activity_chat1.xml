@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity"
-    android:id="@+id/parent"
-    >
+    tools:context=".ChatActivity">
 
     <RelativeLayout
         android:id="@+id/grand_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/chat_toolbar"
@@ -68,9 +66,7 @@
                 android:id="@+id/chat_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:background="@android:color/background_light"
-                android:orientation="horizontal">
+                android:layout_alignParentBottom="true">
 
 
                 <ImageButton
@@ -79,6 +75,8 @@
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginTop="4dp"
                     android:backgroundTint="@android:color/white"
                     android:padding="8dp"
@@ -91,6 +89,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginTop="4dp"
                     android:layout_toEndOf="@id/send_files_btn"
                     android:backgroundTint="@android:color/white"
@@ -101,18 +101,15 @@
 
                 <EditText
                     android:id="@+id/input_message"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/send_message_btn"
                     android:layout_toEndOf="@id/btnMic"
                     android:hint="Type your message here..."
-                    android:maxLines="5"
-                    android:padding="15dp"
-                    android:textAlignment="viewStart"
-                    android:textIsSelectable="true"
-                    android:textStyle="normal"
-                    tools:ignore="HardcodedText" />
+                    android:maxLines="1" />
 
 
                 <ImageButton
@@ -120,6 +117,8 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginTop="4dp"
                     android:backgroundTint="@android:color/white"
                     android:padding="8dp"

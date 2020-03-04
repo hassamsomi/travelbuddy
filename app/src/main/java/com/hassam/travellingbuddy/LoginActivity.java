@@ -89,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
                 mLoginProgress.setMessage("Please wait while we check your information.");
                 mLoginProgress.setCanceledOnTouchOutside(false);
                 mLoginProgress.show();
+
+                LoginBtn.setEnabled(false);
+
                 //Authorization and checking user login
                 mAuth.signInWithEmailAndPassword(user_name.getText().toString(),pass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -111,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else
                         {
+                            LoginBtn.setEnabled(true);
                             mLoginProgress.dismiss();
                             Snackbar.make(layout,"Username or Password is incorrect." ,Snackbar.LENGTH_LONG).show();
                         }

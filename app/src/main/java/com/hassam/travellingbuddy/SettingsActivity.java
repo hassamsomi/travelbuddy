@@ -229,16 +229,7 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setView(frameLayout);
         AlertDialog dialog = builder.create();
 
-        mImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Drawable drawable = mImage.getDrawable();
-                imageView.setImageDrawable(drawable);
-                dialog.show();
-
-            }
-        });
     }
 
     @Override

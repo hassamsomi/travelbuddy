@@ -62,6 +62,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 mRegDialogue .setCanceledOnTouchOutside(false);
                 mRegDialogue.show();
 
+                CreateAccount.setEnabled(false);
+
                 try
                 {
                     final String full_name=Fullname.getText().toString();
@@ -104,18 +106,21 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();
+                                                CreateAccount.setEnabled(false);
                                                 mRegDialogue.dismiss();
                                             }
                                             else
                                                 {
                                                     mRegDialogue.dismiss();
                                                     Snackbar.make(layout, "Password not Matched.", Snackbar.LENGTH_SHORT).show();
+                                                    CreateAccount.setEnabled(true);
                                                 }
                                         }
                                         else {
                                             mRegDialogue.dismiss();
                                             CreateAccount.setEnabled(true);
                                             Snackbar.make(layout,"Connection Failed.",Snackbar.LENGTH_LONG).show();
+                                            CreateAccount.setEnabled(true);
                                         }
                                     }
                                 });
@@ -123,6 +128,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             else {
                                 CreateAccount.setEnabled(true);
                                 Snackbar.make(layout,"Task Not Successful",Snackbar.LENGTH_LONG).show();
+                                CreateAccount.setEnabled(true);
                             }
                         }
                     });
@@ -130,6 +136,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 catch (Exception e){
                     e.printStackTrace();
                     Snackbar.make(layout,"Something is missing.",Snackbar.LENGTH_LONG).show();
+                    CreateAccount.setEnabled(true);
                 }
             }
 

@@ -1,69 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    android:layout_width="match_parent"
-    android:layout_height="60dp"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/ThemeOverlay.AppCompat.ActionBar"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/black"
-        android:layout_marginTop="5sp"
-        >
+        android:layout_height="60dp"
+        android:background="@android:color/black">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/custom_profile_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/profile_image"
-            android:cropToPadding="true"
-            android:tint="@android:color/white"
             android:layout_marginStart="15sp"
+            android:cropToPadding="true"
+            android:src="@drawable/profile_image"
+            android:tint="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:layout_width="45sp"
+            android:layout_height="45dp"
+            android:layout_marginTop="4sp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="8dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/location"
+            android:tint="@android:color/white"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/btnLocation"
             />
 
         <TextView
             android:id="@+id/custom_profile_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/custom_profile_image"
-            android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
             android:text="@string/display_username"
             android:textColor="@android:color/white"
-            android:textStyle="bold"
             android:textSize="17sp"
-            />
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/custom_profile_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
             android:id="@+id/custom_user_last_seen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/custom_profile_name"
             android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/custom_profile_image"
+            android:layout_marginTop="3sp"
             android:text="@string/last_seen"
             android:textColor="@android:color/white"
             android:textSize="13sp"
-            android:layout_marginTop="3sp"
             android:textStyle="bold"
-            />
+            app:layout_constraintStart_toEndOf="@id/custom_profile_image"
+            app:layout_constraintTop_toBottomOf="@+id/custom_profile_name" />
+
         <ImageButton
+            android:id="@+id/btnCall"
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:src="@drawable/call"
-            android:scaleType="fitXY"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:background="@android:color/transparent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_marginEnd="10sp"
+            android:background="@android:color/transparent"
             android:padding="10sp"
-            android:id="@+id/btnCall"
+            android:scaleType="fitXY"
+            android:src="@drawable/call"
             android:visibility="gone"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

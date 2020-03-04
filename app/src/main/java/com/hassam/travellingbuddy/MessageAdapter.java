@@ -1,5 +1,6 @@
 package com.hassam.travellingbuddy;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
@@ -18,23 +20,42 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import pl.droidsonroids.gif.GifImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private List<Messages> mMessageList;
@@ -44,6 +65,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private TextToSpeech textToSpeech;
     private AlertDialog dialog;
     private ImageView imageView;
+    private FusedLocationProviderClient fusedLocationClient;
+    private String maptoken;// = String.valueOf(R.string.map_view_key);
+    private static String MAP_ACCESS_TOKEN;
 
     //        -----------TEXT TO SPEECH---------
     MessageAdapter(Context context, List<Messages> mMessageList, String receiverId) {
@@ -51,6 +75,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         this.receiverId = receiverId;
         this.context = context;
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
         imageView = new ImageView(context);
         AlertDialog.Builder builder;
@@ -64,6 +89,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         frameLayout.addView(imageView);
         builder.setView(frameLayout);
         dialog = builder.create();
+
+        maptoken = context.getString(R.string.map_view_key);
+
 
     }
 
@@ -79,6 +107,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView senderText, senderUserName, receiverText, receiverUserName;
         ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn, mPopImageView;
+        GifImageView receiverGif, senderGif;
 
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,12 +117,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             senderImage = itemView.findViewById(R.id.sender_image_layout);
             senderPlayBtn = itemView.findViewById(R.id.senderbtnPlay);
             mPopImageView = itemView.findViewById(R.id.alertImage);
+            senderGif = itemView.findViewById(R.id.senderGif);
 
 //          RECEIVER LAYOUT
             receiverText = itemView.findViewById(R.id.receiver_text_layout);
             receiverUserName = itemView.findViewById(R.id.receiver_username);
             receiverImage = itemView.findViewById(R.id.receiver_image_layout);
             receiverPlayBtn = itemView.findViewById(R.id.receiverbtnPlay);
+            receiverGif = itemView.findViewById(R.id.receiverGif);
         }
     }
 
@@ -112,6 +143,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         Messages c = mMessageList.get(i);
         String fromUserID = c.getFrom();
         String fromUserType = c.getType();
+
+        MapboxNavigation navigation = new MapboxNavigation(context, MAP_ACCESS_TOKEN);
 
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
@@ -155,46 +188,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
                 if (fromUserID.equals(messageSenderID)) {
-                    holder.senderUserName.setVisibility(View.INVISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
-                    ((RelativeLayout.LayoutParams) holder.senderText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setVisibility(View.VISIBLE);
 
                 } else {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
                     holder.receiverText.setTextColor(Color.parseColor("#000000"));
-                    ((RelativeLayout.LayoutParams) holder.receiverText.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-                    holder.receiverUserName.setVisibility(View.INVISIBLE);
-                    holder.receiverUserName.setText(c.getMessage());
-                    ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
-
-                    createNotificationChannel();
-
-                    String msg = "You have a new message";
-
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1");
-                    builder.setSmallIcon(R.drawable.logo)
-                            .setContentTitle("New Message")
-                            .setContentText(msg)
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                    int notificationID = 1;
-
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-                    notificationManager.notify(notificationID, builder.build());
-
                 }
                 break;
             case "image":
                 if (fromUserID.equals(messageSenderID)) {
-                    holder.senderUserName.setVisibility(View.INVISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderImage.setVisibility(View.VISIBLE);
-
                     holder.mPopImageView.setVisibility(View.VISIBLE);
-
                     holder.mPopImageView = holder.senderImage;
 
 
@@ -207,22 +213,23 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                         }
                     });
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
-                    ((RelativeLayout.LayoutParams) holder.senderImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                 } else {
-                    holder.receiverUserName.setVisibility(View.INVISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.receiverImage);
-                    ((RelativeLayout.LayoutParams) holder.receiverImage.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
+                    holder.receiverImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Drawable drawable = holder.receiverImage.getDrawable();
+                            imageView.setImageDrawable(drawable);
+                            dialog.show();
+                        }
+                    });
                 }
 
                 break;
             case "con":
                 if (fromUserID.equals(messageSenderID)) {
-                    holder.senderUserName.setVisibility(View.INVISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.senderUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.senderPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_END);
                     holder.senderText.setText(c.getMessage());
                     holder.senderPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -233,10 +240,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                         }
                     });
                 } else {
-                    holder.receiverUserName.setVisibility(View.INVISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.receiverUserName.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
-                    ((RelativeLayout.LayoutParams) holder.receiverPlayBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_START);
                     holder.receiverText.setText(c.getMessage());
                     holder.receiverPlayBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -247,6 +251,82 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     });
                 }
                 break;
+            case "location":
+                if (fromUserID.equals(messageSenderID)) {
+
+                    holder.senderGif.setVisibility(View.VISIBLE);
+
+                }
+                else
+                {
+                    holder.receiverGif.setVisibility(View.VISIBLE);
+                    double latitude = c.getLatitude();
+                    double longitude = c.getLatitude();
+                    Mapbox.getInstance(context,context.getString(R.string.map_view_key));
+
+                    holder.receiverGif.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+
+                                    double longi = location.getLongitude();
+                                    double lati = location.getLatitude();
+
+                                    Point origin = Point.fromLngLat(longitude,latitude);
+                                    Point destination = Point.fromLngLat(longi,lati);
+
+                                    NavigationRoute.builder(context).accessToken(MAP_ACCESS_TOKEN)
+                                            .origin(origin)
+                                            .destination(destination)
+                                            .build()
+                                            .getRoute(new Callback<DirectionsResponse>()
+                                            {
+                                                @Override
+                                                public void onResponse(Call<DirectionsResponse> call,Response<DirectionsResponse> response) {
+                                                    MAP_ACCESS_TOKEN = context.getString(R.string.map_view_key);
+
+                                                    DirectionsRoute route = response.body().routes().get(0);
+                                                    boolean simulateRoute = false;
+                                                    if(route!=null) {
+                                                        // Create a NavigationLauncherOptions object to package everything together
+                                                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                                                                .directionsRoute(route)
+                                                                .shouldSimulateRoute(simulateRoute)
+                                                                .build();
+
+                                                        // Call this method with Context from within an Activity
+                                                        if(options!=null) {
+                                                            NavigationLauncher.startNavigation((Activity) context, options);
+                                                        }
+                                                        else
+                                                            {
+                                                                Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show();
+                                                            }
+                                                    }
+                                                    else {
+
+                                                        Toast.makeText(context,"Route not found",Toast.LENGTH_LONG).show();
+
+                                                    }
+
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+
+                                                }
+                                            });
+
+                                }
+                            });
+
+                        }
+                    });
+                }
+
         }
     }
 
@@ -255,19 +335,4 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         return mMessageList.size();
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Messages_Notification";
-            String description = "This notification is using for receiving messages";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 }

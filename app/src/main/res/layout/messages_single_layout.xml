@@ -1,57 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message_single_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:id="@+id/message_single_layout"
-    >
-<!--CURRENT USER LAYOUT-->
+    android:orientation="vertical"
+    android:padding="10dp">
+    <!--CURRENT USER LAYOUT-->
     <TextView
+
         android:id="@+id/receiver_username"
-        android:layout_width="160sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="2dp"
         android:text="@string/dispay_user_name"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/receiverGif"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/location_marker"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receiver_username" />
 
     <TextView
+        android:id="@+id/receiver_text_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/receiver_username"
-        android:id="@+id/receiver_text_layout"
+        android:background="@drawable/message_text_background_2"
         android:padding="10sp"
-        android:textSize="14sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
-        android:background="@drawable/message_text_background_2"
-        />
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receiver_username" />
 
     <ImageView
+        android:id="@+id/receiver_image_layout"
         android:layout_width="160sp"
         android:layout_height="160sp"
-        android:layout_below="@id/receiver_text_layout"
         android:scaleType="centerCrop"
-        android:id="@+id/receiver_image_layout"
         android:src="@android:color/transparent"
         android:visibility="gone"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receiver_text_layout" />
+
     <ImageView
+        android:id="@+id/senderbtnPlay"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:padding="5sp"
         android:src="@drawable/ic_play"
-        android:id="@+id/senderbtnPlay"
-        android:layout_below="@id/sender_username"
-        />
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sender_username" />
 
 
-<!---->
+    <!---->
 
     <!--RECEIVER USER LAYOUT-->
     <TextView
@@ -63,70 +75,82 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
         android:textStyle="bold"
-        />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/senderGif"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/location_marker"
+        android:visibility="gone"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sender_username" />
+
     <TextView
+        android:id="@+id/sender_text_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sender_username"
-        android:id="@+id/sender_text_layout"
+        android:background="@drawable/message_text_background"
         android:padding="10sp"
-        android:textSize="14sp"
         android:text="@string/display_text"
         android:textColor="@color/chat_bar_color"
-        android:background="@drawable/message_text_background"
-        />
-    <ImageView
-        android:layout_width="160sp"
-        android:layout_height="160sp"
-        android:layout_below="@id/sender_text_layout"
-        android:scaleType="centerCrop"
-        android:id="@+id/sender_image_layout"
-        android:src="@android:color/transparent"
-        android:visibility="gone"
-        />
+        android:textSize="14sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sender_username" />
 
     <ImageView
+        android:id="@+id/sender_image_layout"
+        android:layout_width="160sp"
+        android:layout_height="160sp"
+        android:scaleType="centerCrop"
+        android:src="@android:color/transparent"
+        android:visibility="gone"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sender_text_layout" />
+
+    <ImageView
+        android:id="@+id/receiverbtnPlay"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:padding="5dp"
         android:src="@drawable/ic_play"
-        android:id="@+id/receiverbtnPlay"
-        android:layout_below="@id/receiver_username"
         android:visibility="gone"
-        />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receiver_username" />
+
     <ImageView
+        android:id="@+id/receiverbtnPause"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_pause"
-        android:id="@+id/receiverbtnPause"
-        android:layout_below="@id/receiver_username"
         android:visibility="gone"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receiver_username" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/childlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/childlayout"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <ImageView
+            android:id="@+id/alertImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="40sp"
+            android:layout_marginTop="80sp"
+            android:layout_marginEnd="40sp"
+            android:layout_marginBottom="80sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="80sp"
-            android:layout_marginBottom="80sp"
-            android:layout_marginStart="40sp"
-            android:layout_marginEnd="40sp"
-            android:id="@+id/alertImage"
-            android:visibility="gone"
-            />
-
-
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

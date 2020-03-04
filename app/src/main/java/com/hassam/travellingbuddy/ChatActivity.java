@@ -13,7 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +22,7 @@ import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -37,10 +38,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -59,7 +62,6 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,12 +106,15 @@ public class ChatActivity extends AppCompatActivity {
     final String[] mDestination = {""};
     private ProgressDialog mProgressDialog;
     private View view;
+    private ImageButton mLocationBtn;
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_chat1);
 
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -123,6 +128,9 @@ public class ChatActivity extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
 
         view = findViewById(R.id.parent);
+
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
 //      -------------SOURCE SPINNER-----------------
         final Spinner sourceSpinner = findViewById(R.id.sourceSpinner);
@@ -179,6 +187,11 @@ public class ChatActivity extends AppCompatActivity {
         mProgressDialog.setMessage("Please wait we are loading user's list");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+
+        mLocationBtn = findViewById(R.id.btnLocation);
 
         mEnglish = "";
         mUrdu = "";
@@ -223,6 +236,79 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+        mLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(ChatActivity.this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+
+                                if (location != null) {
+                                    // Logic to handle location object
+                                    double longitude = location.getLongitude();
+                                    double latitute = location.getLatitude();
+
+
+                                    final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+                                    final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
+
+                                    DatabaseReference user_message_push = mRootRef.child("messages")
+                                            .child(mCurrentUserID).child(mChatUser).push();
+
+                                    String push_id = user_message_push.getKey();
+
+
+                                    Map<String, Object> messageMap = new HashMap<>();
+                                    messageMap.put("longitude",longitude );
+                                    messageMap.put("latitude",latitute);
+                                    messageMap.put("seen", false);
+                                    messageMap.put("type", "location");
+                                    messageMap.put("time", ServerValue.TIMESTAMP);
+                                    messageMap.put("from", mCurrentUserID);
+                                    messageMap.put("to", mChatUser);
+                                    messageMap.put("messageID", push_id);
+
+                                    Map<String, Object> messageUserMap = new HashMap<String, Object>();
+                                    messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                                    messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+
+                                    mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                                            if (databaseError != null) {
+                                                Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+
+
+                                }
+                            }
+                        });
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         mRootRef.child("Chat").child(mCurrentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,7 +12,9 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        android:src="@drawable/profile_image" />
+        android:src="@drawable/profile_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/username"
@@ -18,48 +22,51 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="17dp"
-        android:layout_toEndOf="@id/profileimage"
         android:text="@string/display_name"
         android:textColor="@color/button_color"
         android:textSize="18sp"
-        android:textStyle="normal" />
+        android:textStyle="normal"
+        app:layout_constraintStart_toEndOf="@id/profileimage"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/camera"
         android:layout_width="20sp"
         android:layout_height="20sp"
-        android:layout_below="@id/username"
         android:layout_marginStart="10sp"
         android:layout_marginTop="7sp"
-        android:layout_toLeftOf="@id/status"
-        android:layout_toEndOf="@id/profileimage"
+        android:layout_marginEnd="5dp"
         android:padding="3sp"
         android:src="@drawable/ic_camera_alt_black_24dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintRight_toLeftOf="@id/status"
+        app:layout_constraintStart_toEndOf="@id/profileimage"
+        app:layout_constraintTop_toBottomOf="@id/username" />
 
     <ImageView
         android:id="@+id/mic"
         android:layout_width="20sp"
         android:layout_height="20sp"
-        android:layout_below="@id/username"
         android:layout_marginStart="10sp"
         android:layout_marginTop="7sp"
-        android:layout_toStartOf="@id/status"
-        android:layout_toEndOf="@id/profileimage"
+        android:layout_marginEnd="5dp"
         android:padding="3sp"
         android:src="@drawable/mic"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/status"
+        app:layout_constraintStart_toEndOf="@id/profileimage"
+        app:layout_constraintTop_toBottomOf="@id/username" />
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/username"
         android:layout_marginStart="5dp"
         android:layout_marginTop="7dp"
-        android:layout_toEndOf="@id/camera"
         android:text="@string/hey_there"
-        android:textColor="@color/button_color" />
+        android:textColor="@color/button_color"
+        app:layout_constraintStart_toEndOf="@id/camera"
+        app:layout_constraintTop_toBottomOf="@id/username" />
 
     <ImageView
         android:id="@+id/onlinePNG"
@@ -67,55 +74,67 @@
         android:layout_height="16dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="22dp"
-        android:layout_toEndOf="@id/username"
         android:src="@drawable/online_icon"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/username"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/lastSeen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_marginTop="21dp"
         android:layout_marginEnd="20sp"
         android:text="00:00"
         android:textColor="@color/colorPrimaryDark"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="5sp"
         android:background="@drawable/button_color"
         android:padding="2sp"
         android:text="@string/cancel"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnAccept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="10sp"
-        android:layout_toStartOf="@id/btnCancel"
         android:background="@drawable/button_color"
         android:padding="2sp"
         android:text="@string/accept"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:visibility="gone" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/dash"
-        android:layout_below="@id/status"
-        android:layout_marginStart="15sp"
-        android:id="@+id/endingLine"
-        />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnCancel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="@string/dash"-->
+    <!--        android:layout_below="@id/status"-->
+    <!--        android:layout_marginStart="15sp"-->
+    <!--        android:id="@+id/endingLine"-->
+    <!--        />-->
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ public class Messages
     public String key;
     public String message,type;
     public DatabaseReference mUserDatabase;
+    double longitude,latitude;
     long time;
     boolean seen;
 
@@ -33,12 +34,30 @@ public class Messages
 
     String to;
 
-    public Messages(String pMessage, String pType, long pTime, boolean pSeen)
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Messages(String pMessage, String pType, long pTime, boolean pSeen, double pLatitude, double pLongitude)
     {
         message = pMessage;
         type = pType;
         time = pTime;
         seen = pSeen;
+        latitude = pLatitude;
+        longitude = pLongitude;
     }
     public String getMessage() {
         return message;

@@ -24,8 +24,8 @@
             android:layout_height="65pt"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/logo"
-            android:src="@drawable/logo"
-            android:scaleType="centerCrop"
+            android:src="@drawable/communication"
+            android:scaleType="centerInside"
             />
         <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="20pt"

@@ -29,26 +29,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sinch.android.rtc.PushPair;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.calling.Call;
-import com.sinch.android.rtc.calling.CallClient;
-import com.sinch.android.rtc.calling.CallClientListener;
-import com.sinch.android.rtc.calling.CallListener;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Objects;
 
-public class ChatFragment extends Fragment
-{
+public class ChatFragment extends Fragment {
     private RecyclerView mChatList;
-    private DatabaseReference  mChatDatabase, mUsersDatabase, mConvDatabase,mMessageDatabase;
-    String mCurrent_UserID="";
+    private DatabaseReference mChatDatabase, mUsersDatabase, mConvDatabase, mMessageDatabase;
+    String mCurrent_UserID = "";
 
-    private SinchClient sinchClient;
-    private Call call;
 
     private FirebaseAuth mAuth;
     private View mMainView;
@@ -57,17 +48,16 @@ public class ChatFragment extends Fragment
     public Context context = this.getContext();
 
 
-    public ChatFragment()
-    {
+    public ChatFragment() {
 
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ( (HomeActivity) Objects.requireNonNull(getActivity())).changetitle("Chat");
+        ((HomeActivity) Objects.requireNonNull(getActivity())).changetitle("Chat");
 
-        mMainView =  inflater.inflate(R.layout.fragment_chat,container,false);
+        mMainView = inflater.inflate(R.layout.fragment_chat, container, false);
         mAuth = FirebaseAuth.getInstance();
 
         mCurrent_UserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -83,8 +73,6 @@ public class ChatFragment extends Fragment
         mChatList = mMainView.findViewById(R.id.conv_list);
 
 
-
-
         mChatList.setLayoutManager(new LinearLayoutManager(getContext()));
         mChatList.setHasFixedSize(true);
         return mMainView;
@@ -98,21 +86,19 @@ public class ChatFragment extends Fragment
 //
 
 
-
         Query conversationQuery = mConvDatabase.orderByChild("timestamp");
-        FirebaseRecyclerOptions<Conv> options1 = new FirebaseRecyclerOptions.Builder<Conv>().setQuery(conversationQuery,Conv.class).build();
-        FirebaseRecyclerAdapter<Conv,ConvViewHolder> adapter1 = new FirebaseRecyclerAdapter<Conv, ConvViewHolder>(options1) {
+        FirebaseRecyclerOptions<Conv> options1 = new FirebaseRecyclerOptions.Builder<Conv>().setQuery(conversationQuery, Conv.class).build();
+        FirebaseRecyclerAdapter<Conv, ConvViewHolder> adapter1 = new FirebaseRecyclerAdapter<Conv, ConvViewHolder>(options1) {
             @Override
-            protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model)
-            {
+            protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
                 final String user_list_id = getRef(position).getKey();
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
 
-                        Intent chatIntent = new Intent(getContext(),ChatActivity.class);
-                        chatIntent.putExtra("chatScreen",user_list_id);
+                        Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                        chatIntent.putExtra("chatScreen", user_list_id);
                         startActivity(chatIntent);
 
 
@@ -125,28 +111,23 @@ public class ChatFragment extends Fragment
                 lastMessageQuery.addChildEventListener(new ChildEventListener() {
                     @SuppressLint("SetTextI18n")
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-                    {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         String type = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString().toLowerCase();
                         holder.camera.setVisibility(View.GONE);
-                        if(type.equals("image"))
-                        {
+                        if (type.equals("image")) {
                             holder.camera.setVisibility(View.VISIBLE);
                             holder.userStatusView.setText("Photo");
-                        }
-                        else if(type.equals("con"))
-                        {
+                        } else if (type.equals("con")) {
                             holder.mic.setVisibility(View.VISIBLE);
                             holder.userStatusView.setText("Voice Message");
-                        }
-                        else
-                        {
+                        } else {
                             holder.camera.setVisibility(View.GONE);
-                            String data = Objects.requireNonNull(dataSnapshot.child("message").getValue()).toString();
+                            String data = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString();
                             holder.setMessage(data, model.isSeen());
                         }
 
                     }
+
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
@@ -169,19 +150,15 @@ public class ChatFragment extends Fragment
                 });
 
 
-                mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener()
-                {
+                mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        if(dataSnapshot.hasChild("image"))
-                        {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild("image")) {
                             String name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
                             holder.userNameView.setText(name);
                             String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
                             Picasso.get().load(image).placeholder(R.drawable.profile_image).into(holder.userImageView);
-                            if(dataSnapshot.hasChild("online"))
-                            {
+                            if (dataSnapshot.hasChild("online")) {
                                 String userOnline = Objects.requireNonNull(dataSnapshot.child("online").getValue()).toString();
                                 holder.setUserOnline(userOnline);
                             }
@@ -189,36 +166,37 @@ public class ChatFragment extends Fragment
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-                        Snackbar.make(view,""+databaseError.getMessage(),Snackbar.LENGTH_LONG).show();
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
                     }
                 });
-                mConvDatabase.child(user_list_id).addValueEventListener(new ValueEventListener()
-                {
+                mConvDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String online = Objects.requireNonNull(dataSnapshot.child("seen").getValue()).toString();
-                        if(online.equals("seen"))
-                        {
-                            long lastTime = Long.parseLong(online);
-                            String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime,getContext());
-                            holder.lastSeenTime.setText(lastSeenTime);
+                        if (dataSnapshot.hasChild("seen")) {
+                            String online = dataSnapshot.child("seen").getValue().toString();
+                            if (online.equals("seen")) {
+                                long lastTime = Long.parseLong(online);
+                                String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime, getContext());
+                                holder.lastSeenTime.setText(lastSeenTime);
+                            }
+                        } else {
+                           Toast.makeText(getContext(),"Object not found.",Toast.LENGTH_LONG).show();
                         }
                     }
+
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-                        Snackbar.make(view,""+databaseError.getMessage(),Snackbar.LENGTH_LONG).show();
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
                     }
 
                 });
             }
+
             @NonNull
             @Override
-            public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-               View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout,parent,false);
+            public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout, parent, false);
 
                 return new ConvViewHolder(view);
             }

@@ -89,6 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 mProfileName.setText(profile_name);
                 Picasso.get().load(profile_image).placeholder(R.drawable.profile_avatar).into(mProfileImage);
+
                 mProfileStatus.setText(user_status);
 
                 if (mCurrentUser.getUid().equals(current_userID)) {

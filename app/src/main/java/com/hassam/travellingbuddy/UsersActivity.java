@@ -51,7 +51,7 @@ public class UsersActivity extends AppCompatActivity {
         mProgressDialog.setTitle("Please wait");
         mProgressDialog.setMessage("Please wait we are loading user's list");
         mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
+//        mProgressDialog.show();
 
 
         mBtnSettings.setOnClickListener(new View.OnClickListener() {

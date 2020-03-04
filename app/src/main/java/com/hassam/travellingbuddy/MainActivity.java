@@ -1,8 +1,13 @@
 package com.hassam.travellingbuddy;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -76,7 +81,35 @@ public class MainActivity extends AppCompatActivity {
                 Intent startIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(startIntent);
                 finish();
+//                createNotificationChannel();
             }
         }, 20);
     }
+
+//    private void createNotificationChannel() {
+//
+//        Context context = getApplicationContext();
+//        // Create the NotificationChannel, but only on API 26+ because
+//        // the NotificationChannel class is new and not in the support library
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            String channelID = "com.hassam.travellingbuddy#messageChannel";
+//            CharSequence name = "Messages_Notification";
+//            String description = "This notification is using for receiving messages";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel(channelID, name, importance);
+//            channel.setDescription(description);
+//            // Register the channel with the system; you can't change the importance
+//            // or other notification behaviors after this
+//            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
+//            if (notificationManager != null) {
+//                notificationManager.createNotificationChannel(channel);
+//            }
+//            else
+//                {
+//                    Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+//                }
+//        }
+//    }
+
+
 }
