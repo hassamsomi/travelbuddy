@@ -139,15 +139,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromUserID = c.getFrom();
         String fromUserType = c.getType();
 
-        locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
 
-        ProgressDialog mProgressDialog;
+        ProgressDialog mProgressDialog,mProgressDialogg;
         mProgressDialog = new ProgressDialog(context);
-        mProgressDialog.setTitle("Navigating");
-        mProgressDialog.setMessage("Please wait while we checking the your location.");
+        mProgressDialog.setTitle("Please wait");
+        mProgressDialog.setMessage("We wait while we are setting up settings.");
         mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
 
+        mProgressDialogg = new ProgressDialog(context);
+        mProgressDialogg.setTitle("Please wait");
+        mProgressDialogg.setMessage("We wait while we are setting up settings.");
+        mProgressDialogg.setCanceledOnTouchOutside(false);
 
 
         mapboxNavigation = new MapboxNavigation(context, context.getString(R.string.map_view_key));
@@ -190,29 +195,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         holder.senderGif.setVisibility(View.GONE);
         holder.receiverGif.setVisibility(View.GONE);
 
-
-
         switch (fromUserType) {
             case "text":
-
-
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderText.setText(c.getMessage());
                     holder.senderText.setVisibility(View.VISIBLE);
+                    mProgressDialog.dismiss();
 
                 } else {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
                     holder.receiverText.setTextColor(Color.parseColor("#000000"));
+                    mProgressDialog.dismiss();
                 }
                 break;
             case "image":
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderImage.setVisibility(View.VISIBLE);
                     holder.mPopImageView.setVisibility(View.VISIBLE);
+                    Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     holder.mPopImageView = holder.senderImage;
-
-
                     holder.senderImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -221,7 +223,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                             dialog.show();
                         }
                     });
-                    Picasso.get().load(c.getMessage()).into(holder.senderImage);
+                    mProgressDialog.dismiss();
                 } else {
                     holder.receiverImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.receiverImage);
@@ -233,6 +235,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                             dialog.show();
                         }
                     });
+                    mProgressDialog.dismiss();
                 }
 
                 break;
@@ -248,6 +251,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                         }
                     });
+                    mProgressDialog.dismiss();
                 } else {
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
@@ -258,32 +262,36 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                             textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
                         }
                     });
+                    mProgressDialog.dismiss();
                 }
                 break;
             case "location":
                 if (fromUserID.equals(messageSenderID)) {
-
                     holder.senderGif.setVisibility(View.VISIBLE);
-                    mProgressDialog.show();
-                    holder.senderGif.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                    mProgressDialog.dismiss();
+                        holder.senderGif.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                             if(holder.senderGif.isClickable()) {
 
-                            Intent intent = new Intent(context,CurrentLocationActivity.class);
-                            context.startActivity(intent);
-                            mProgressDialog.dismiss();
-                        }
-                    });
+                                 Intent intent = new Intent(context, CurrentLocationActivity.class);
+                                 context.startActivity(intent);
+                                 mProgressDialogg.show();
+                             }
+                            }
+                        });
+                        mProgressDialogg.dismiss();
 
                 } else {
                     holder.receiverGif.setVisibility(View.VISIBLE);
+                    mProgressDialog.dismiss();
                     double latitude = c.getLatitude();
                     double longitude = c.getLatitude();
                     Mapbox.getInstance(context, context.getString(R.string.map_view_key));
                     holder.receiverGif.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            mProgressDialog.show();
+                            mProgressDialogg.show();
                             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                                 @Override
                                 public void onSuccess(Location location) {
@@ -317,7 +325,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                                                             // Call this method with Context from within an Activity
                                                             if (options != null) {
                                                                 NavigationLauncher.startNavigation((Activity) context, options);
-                                                                mProgressDialog.dismiss();
+                                                                mProgressDialogg.dismiss();
                                                             } else {
                                                                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                                                             }
