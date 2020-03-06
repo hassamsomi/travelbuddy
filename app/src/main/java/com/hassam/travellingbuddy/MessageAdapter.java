@@ -2,29 +2,24 @@ package com.hassam.travellingbuddy;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
-import android.os.Build;
+import android.location.LocationManager;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -46,8 +41,6 @@ import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -68,6 +61,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private FusedLocationProviderClient fusedLocationClient;
     private String maptoken;// = String.valueOf(R.string.map_view_key);
     private static String MAP_ACCESS_TOKEN;
+    private LocationManager locationManager;
+    private MapboxNavigation mapboxNavigation;
 
     //        -----------TEXT TO SPEECH---------
     MessageAdapter(Context context, List<Messages> mMessageList, String receiverId) {
@@ -144,7 +139,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromUserID = c.getFrom();
         String fromUserType = c.getType();
 
-        MapboxNavigation navigation = new MapboxNavigation(context, MAP_ACCESS_TOKEN);
+        locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+
+        ProgressDialog mProgressDialog;
+        mProgressDialog = new ProgressDialog(context);
+        mProgressDialog.setTitle("Navigating");
+        mProgressDialog.setMessage("Please wait while we checking the your location.");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+
+
+
+        mapboxNavigation = new MapboxNavigation(context, context.getString(R.string.map_view_key));
 
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(fromUserID);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(receiverId);
@@ -181,6 +187,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         holder.senderUserName.setVisibility(View.GONE);
         holder.senderPlayBtn.setVisibility(View.GONE);
         holder.mPopImageView.setVisibility(View.GONE);
+        holder.senderGif.setVisibility(View.GONE);
+        holder.receiverGif.setVisibility(View.GONE);
+
 
 
         switch (fromUserType) {
@@ -255,71 +264,79 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 if (fromUserID.equals(messageSenderID)) {
 
                     holder.senderGif.setVisibility(View.VISIBLE);
-
-                }
-                else
-                {
-                    holder.receiverGif.setVisibility(View.VISIBLE);
-                    double latitude = c.getLatitude();
-                    double longitude = c.getLatitude();
-                    Mapbox.getInstance(context,context.getString(R.string.map_view_key));
-
-                    holder.receiverGif.setOnClickListener(new View.OnClickListener() {
+                    mProgressDialog.show();
+                    holder.senderGif.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
+                            Intent intent = new Intent(context,CurrentLocationActivity.class);
+                            context.startActivity(intent);
+                            mProgressDialog.dismiss();
+                        }
+                    });
+
+                } else {
+                    holder.receiverGif.setVisibility(View.VISIBLE);
+                    double latitude = c.getLatitude();
+                    double longitude = c.getLatitude();
+                    Mapbox.getInstance(context, context.getString(R.string.map_view_key));
+                    holder.receiverGif.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mProgressDialog.show();
                             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                                 @Override
                                 public void onSuccess(Location location) {
 
-                                    double longi = location.getLongitude();
-                                    double lati = location.getLatitude();
 
-                                    Point origin = Point.fromLngLat(longitude,latitude);
-                                    Point destination = Point.fromLngLat(longi,lati);
+                                    if (location != null) {
+                                        final double longi = location.getLongitude();
+                                        final double lati = location.getLatitude();
 
-                                    NavigationRoute.builder(context).accessToken(MAP_ACCESS_TOKEN)
-                                            .origin(origin)
-                                            .destination(destination)
-                                            .build()
-                                            .getRoute(new Callback<DirectionsResponse>()
-                                            {
-                                                @Override
-                                                public void onResponse(Call<DirectionsResponse> call,Response<DirectionsResponse> response) {
-                                                    MAP_ACCESS_TOKEN = context.getString(R.string.map_view_key);
+                                        Point origin = Point.fromLngLat(longitude, latitude);
+                                        Point destination = Point.fromLngLat(longi, lati);
 
-                                                    DirectionsRoute route = response.body().routes().get(0);
-                                                    boolean simulateRoute = false;
-                                                    if(route!=null) {
-                                                        // Create a NavigationLauncherOptions object to package everything together
-                                                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                                                .directionsRoute(route)
-                                                                .shouldSimulateRoute(simulateRoute)
-                                                                .build();
+                                        NavigationRoute.builder(context).accessToken(context.getString(R.string.map_view_key))
+                                                .origin(origin)
+                                                .destination(destination)
+                                                .build()
+                                                .getRoute(new Callback<DirectionsResponse>() {
+                                                    @Override
+                                                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                                                        MAP_ACCESS_TOKEN = context.getString(R.string.map_view_key);
 
-                                                        // Call this method with Context from within an Activity
-                                                        if(options!=null) {
-                                                            NavigationLauncher.startNavigation((Activity) context, options);
-                                                        }
-                                                        else
-                                                            {
-                                                                Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show();
+                                                        DirectionsRoute route = response.body().routes().get(0);
+                                                        boolean simulateRoute = false;
+                                                        if (route != null) {
+                                                            // Create a NavigationLauncherOptions object to package everything together
+                                                            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                                                                    .directionsRoute(route)
+                                                                    .shouldSimulateRoute(simulateRoute)
+                                                                    .build();
+
+                                                            // Call this method with Context from within an Activity
+                                                            if (options != null) {
+                                                                NavigationLauncher.startNavigation((Activity) context, options);
+                                                                mProgressDialog.dismiss();
+                                                            } else {
+                                                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                                                             }
+                                                        } else {
+
+                                                            Toast.makeText(context, "Route not found", Toast.LENGTH_LONG).show();
+
+                                                        }
+
                                                     }
-                                                    else {
 
-                                                        Toast.makeText(context,"Route not found",Toast.LENGTH_LONG).show();
+                                                    @Override
+                                                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
 
                                                     }
+                                                });
+                                    } else {
 
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-
-                                                }
-                                            });
-
+                                    }
                                 }
                             });
 

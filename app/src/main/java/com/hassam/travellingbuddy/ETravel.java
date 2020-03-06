@@ -24,6 +24,10 @@ public class ETravel extends Application
         super.onCreate();
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
+
+
+
+
         //PICASSO
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttp3Downloader(this ,Integer.MAX_VALUE));
