@@ -1,11 +1,8 @@
 package com.hassam.travellingbuddy;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ChatFragment extends Fragment {
@@ -92,17 +87,14 @@ public class ChatFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
                 final String user_list_id = getRef(position).getKey();
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                holder.mView.setOnClickListener(view -> {
 
 
-                        Intent chatIntent = new Intent(getContext(), ChatActivity.class);
-                        chatIntent.putExtra("chatScreen", user_list_id);
-                        startActivity(chatIntent);
+                    Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                    chatIntent.putExtra("chatScreen", user_list_id);
+                    startActivity(chatIntent);
 
 
-                    }
                 });
 
 
@@ -114,18 +106,25 @@ public class ChatFragment extends Fragment {
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         String type = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString().toLowerCase();
                         holder.camera.setVisibility(View.GONE);
+                        holder.location.setVisibility(View.GONE);
+                        holder.mic.setVisibility(View.GONE);
                         if (type.equals("image")) {
                             holder.camera.setVisibility(View.VISIBLE);
                             holder.userStatusView.setText("Photo");
                         } else if (type.equals("con")) {
                             holder.mic.setVisibility(View.VISIBLE);
                             holder.userStatusView.setText("Voice Message");
+                        } else if(type.equals("location")){
+                            holder.location.setVisibility(View.VISIBLE);
+                            holder.userStatusView.setText("Location");
+                        } else if(type.equals("text")) {
+                            String message = dataSnapshot.child("message").getValue().toString();
+                            holder.userStatusView.setText(message);
                         } else {
-                            holder.camera.setVisibility(View.GONE);
-                            String data = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString();
-                            holder.setMessage(data, model.isSeen());
-                        }
 
+                            Toast.makeText(context, "Loading Error.", Toast.LENGTH_SHORT).show();
+
+                        }
                     }
 
                     @Override
@@ -161,6 +160,10 @@ public class ChatFragment extends Fragment {
                             if (dataSnapshot.hasChild("online")) {
                                 String userOnline = Objects.requireNonNull(dataSnapshot.child("online").getValue()).toString();
                                 holder.setUserOnline(userOnline);
+                                if(dataSnapshot.child("online").child("true").exists()) {
+                                    holder.userOnlineView.setVisibility(View.VISIBLE);
+                                }
+
                             }
                         }
                     }
@@ -174,7 +177,7 @@ public class ChatFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild("seen")) {
-                            String online = dataSnapshot.child("seen").getValue().toString();
+                            String online = Objects.requireNonNull(dataSnapshot.child("seen").getValue()).toString();
                             if (online.equals("seen")) {
                                 long lastTime = Long.parseLong(online);
                                 String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime, getContext());
@@ -196,7 +199,7 @@ public class ChatFragment extends Fragment {
             @NonNull
             @Override
             public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = getLayoutInflater().from(parent.getContext()).inflate(R.layout.users_single_layout, parent, false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_single_layout, parent, false);
 
                 return new ConvViewHolder(view);
             }

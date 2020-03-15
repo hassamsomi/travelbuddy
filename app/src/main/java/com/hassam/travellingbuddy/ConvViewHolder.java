@@ -17,7 +17,7 @@ class ConvViewHolder extends RecyclerView.ViewHolder
 
     TextView userStatusView,userNameView,lastSeenTime;
     CircleImageView userImageView;
-    ImageView userOnlineView,camera,mic;
+    ImageView userOnlineView,camera,mic,location;
 
     ConvViewHolder(@NonNull View itemView)
     {
@@ -33,6 +33,8 @@ class ConvViewHolder extends RecyclerView.ViewHolder
         camera.setVisibility(View.GONE);
         mic = itemView.findViewById(R.id.mic);
         mic.setVisibility(View.GONE);
+        location = itemView.findViewById(R.id.location);
+        location.setVisibility(View.GONE);
     }
     public void setMessage(String message, boolean isSeen)
     {

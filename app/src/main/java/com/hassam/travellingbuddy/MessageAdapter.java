@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationManager;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
@@ -24,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +37,8 @@ import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -126,12 +125,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int i) {
 //        --------------TEXT TO SPEECH------------
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int i) {
-                if (i != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.getDefault());
-                }
+        textToSpeech = new TextToSpeech(context, i1 -> {
+            if (i1 != TextToSpeech.ERROR) {
+                textToSpeech.setLanguage(Locale.getDefault());
             }
         });
         String messageSenderID = (Objects.requireNonNull(mAuth.getCurrentUser())).getUid();
@@ -140,19 +136,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromUserType = c.getType();
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
 
-        ProgressDialog mProgressDialog,mProgressDialogg;
+        ProgressDialog mProgressDialog;
         mProgressDialog = new ProgressDialog(context);
-        mProgressDialog.setTitle("Please wait");
-        mProgressDialog.setMessage("We wait while we are setting up settings.");
+        mProgressDialog.setTitle("Loading Route");
+        mProgressDialog.setMessage("Please wait while we gather information of route.");
         mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
-
-        mProgressDialogg = new ProgressDialog(context);
-        mProgressDialogg.setTitle("Please wait");
-        mProgressDialogg.setMessage("We wait while we are setting up settings.");
-        mProgressDialogg.setCanceledOnTouchOutside(false);
 
 
         mapboxNavigation = new MapboxNavigation(context, context.getString(R.string.map_view_key));
@@ -200,13 +189,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderText.setText(c.getMessage());
                     holder.senderText.setVisibility(View.VISIBLE);
-                    mProgressDialog.dismiss();
 
                 } else {
                     holder.receiverText.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
                     holder.receiverText.setTextColor(Color.parseColor("#000000"));
-                    mProgressDialog.dismiss();
                 }
                 break;
             case "image":
@@ -215,27 +202,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     holder.mPopImageView.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.senderImage);
                     holder.mPopImageView = holder.senderImage;
-                    holder.senderImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Drawable drawable = holder.senderImage.getDrawable();
-                            imageView.setImageDrawable(drawable);
-                            dialog.show();
-                        }
+                    holder.senderImage.setOnClickListener(view -> {
+                        Drawable drawable = holder.senderImage.getDrawable();
+                        imageView.setImageDrawable(drawable);
+                        dialog.show();
                     });
-                    mProgressDialog.dismiss();
                 } else {
                     holder.receiverImage.setVisibility(View.VISIBLE);
                     Picasso.get().load(c.getMessage()).into(holder.receiverImage);
-                    holder.receiverImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Drawable drawable = holder.receiverImage.getDrawable();
-                            imageView.setImageDrawable(drawable);
-                            dialog.show();
-                        }
+                    holder.receiverImage.setOnClickListener(view -> {
+                        Drawable drawable = holder.receiverImage.getDrawable();
+                        imageView.setImageDrawable(drawable);
+                        dialog.show();
                     });
-                    mProgressDialog.dismiss();
                 }
 
                 break;
@@ -243,112 +222,92 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderPlayBtn.setVisibility(View.VISIBLE);
                     holder.senderText.setText(c.getMessage());
-                    holder.senderPlayBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String toSpeak = holder.senderText.getText().toString();
-                            textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+                    holder.senderPlayBtn.setOnClickListener(view -> {
+                        String toSpeak = holder.senderText.getText().toString();
+                        textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
-                        }
                     });
-                    mProgressDialog.dismiss();
                 } else {
                     holder.receiverPlayBtn.setVisibility(View.VISIBLE);
                     holder.receiverText.setText(c.getMessage());
-                    holder.receiverPlayBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String toSpeak = holder.receiverText.getText().toString();
-                            textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-                        }
+                    holder.receiverPlayBtn.setOnClickListener(view -> {
+                        String toSpeak = holder.receiverText.getText().toString();
+                        textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
                     });
-                    mProgressDialog.dismiss();
                 }
                 break;
             case "location":
                 if (fromUserID.equals(messageSenderID)) {
                     holder.senderGif.setVisibility(View.VISIBLE);
-                    mProgressDialog.dismiss();
-                        holder.senderGif.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                             if(holder.senderGif.isClickable()) {
+                    holder.senderGif.setOnClickListener(view -> {
+                        if (holder.senderGif.isClickable()) {
 
-                                 Intent intent = new Intent(context, CurrentLocationActivity.class);
-                                 context.startActivity(intent);
-                                 mProgressDialogg.show();
-                             }
-                            }
-                        });
-                        mProgressDialogg.dismiss();
+                            Intent intent = new Intent(context, CurrentLocationActivity.class);
+                            context.startActivity(intent);
+                        }
+                    });
 
                 } else {
                     holder.receiverGif.setVisibility(View.VISIBLE);
-                    mProgressDialog.dismiss();
                     double latitude = c.getLatitude();
                     double longitude = c.getLatitude();
                     Mapbox.getInstance(context, context.getString(R.string.map_view_key));
-                    holder.receiverGif.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mProgressDialogg.show();
-                            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                                @Override
-                                public void onSuccess(Location location) {
+                    holder.receiverGif.setOnClickListener(view -> {
+                        mProgressDialog.show();
+                        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
 
 
-                                    if (location != null) {
-                                        final double longi = location.getLongitude();
-                                        final double lati = location.getLatitude();
+                            if (location != null) {
+                                final double longi = location.getLongitude();
+                                final double lati = location.getLatitude();
 
-                                        Point origin = Point.fromLngLat(longitude, latitude);
-                                        Point destination = Point.fromLngLat(longi, lati);
+                                Point origin = Point.fromLngLat(longitude, latitude);
+                                Point destination = Point.fromLngLat(longi, lati);
 
-                                        NavigationRoute.builder(context).accessToken(context.getString(R.string.map_view_key))
-                                                .origin(origin)
-                                                .destination(destination)
-                                                .build()
-                                                .getRoute(new Callback<DirectionsResponse>() {
-                                                    @Override
-                                                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                                                        MAP_ACCESS_TOKEN = context.getString(R.string.map_view_key);
+                                NavigationRoute.builder(context).accessToken(context.getString(R.string.map_view_key))
+                                        .origin(origin)
+                                        .destination(destination)
+                                        .build()
+                                        .getRoute(new Callback<DirectionsResponse>() {
+                                            @Override
+                                            public void onResponse(@NotNull Call<DirectionsResponse> call,
+                                                                   @NotNull Response<DirectionsResponse> response) {
+                                                MAP_ACCESS_TOKEN = context.getString(R.string.map_view_key);
 
-                                                        DirectionsRoute route = response.body().routes().get(0);
-                                                        boolean simulateRoute = false;
-                                                        if (route != null) {
-                                                            // Create a NavigationLauncherOptions object to package everything together
-                                                            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                                                    .directionsRoute(route)
-                                                                    .shouldSimulateRoute(simulateRoute)
-                                                                    .build();
+                                                assert response.body() != null;
+                                                DirectionsRoute route = response.body().routes().get(0);
+                                                if (route != null) {
+                                                    // Create a NavigationLauncherOptions object to package everything together
+                                                    NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                                                            .directionsRoute(route)
+                                                            .shouldSimulateRoute(false)
+                                                            .build();
 
-                                                            // Call this method with Context from within an Activity
-                                                            if (options != null) {
-                                                                NavigationLauncher.startNavigation((Activity) context, options);
-                                                                mProgressDialogg.dismiss();
-                                                            } else {
-                                                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        } else {
-
-                                                            Toast.makeText(context, "Route not found", Toast.LENGTH_LONG).show();
-
-                                                        }
-
+                                                    // Call this method with Context from within an Activity
+                                                    if (options != null) {
+                                                        NavigationLauncher.startNavigation((Activity) context, options);
+                                                        mProgressDialog.dismiss();
+                                                    } else {
+                                                        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+                                                        mProgressDialog.dismiss();
                                                     }
+                                                } else {
 
-                                                    @Override
-                                                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                                                    mProgressDialog.dismiss();
+                                                    Toast.makeText(context, "Route not found", Toast.LENGTH_LONG).show();
 
-                                                    }
-                                                });
-                                    } else {
+                                                }
 
-                                    }
-                                }
-                            });
+                                            }
 
-                        }
+                                            @Override
+                                            public void onFailure(@NotNull Call<DirectionsResponse> call, @NotNull Throwable t) {
+
+                                            }
+                                        });
+                            }
+                        });
+
                     });
                 }
 

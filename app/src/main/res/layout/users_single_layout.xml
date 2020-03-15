@@ -44,6 +44,20 @@
         app:layout_constraintTop_toBottomOf="@id/username" />
 
     <ImageView
+        android:id="@+id/location"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="7sp"
+        android:layout_marginEnd="5dp"
+        android:padding="3sp"
+        android:src="@drawable/ic_my_location_black_24dp"
+        android:visibility="gone"
+        app:layout_constraintRight_toLeftOf="@id/status"
+        app:layout_constraintStart_toEndOf="@id/profileimage"
+        app:layout_constraintTop_toBottomOf="@id/username" />
+
+    <ImageView
         android:id="@+id/mic"
         android:layout_width="20sp"
         android:layout_height="20sp"
@@ -128,13 +142,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <!--    <TextView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="@string/dash"-->
-    <!--        android:layout_below="@id/status"-->
-    <!--        android:layout_marginStart="15sp"-->
-    <!--        android:id="@+id/endingLine"-->
-    <!--        />-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

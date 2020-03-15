@@ -1,17 +1,9 @@
 package com.hassam.travellingbuddy;
 
-import
-        androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import
-        androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.app.ProgressDialog;
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
@@ -31,6 +23,16 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -74,6 +76,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private static final int LOCATION_PERMISSION_REQ_CODE = 1;
     private String mChatUser, mCurrentUserID;
     private TextView mDisplayUserName, mLastSeenView;
     private EditText mConversionTextView;
@@ -89,6 +92,7 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton mChatAddButton, mChatSendButton, mChatMicButton;
     private EditText messageBox;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
+    public String locationstate = "";
 
     private RecyclerView mMessagesList;
 
@@ -104,7 +108,6 @@ public class ChatActivity extends AppCompatActivity {
     private Uri mImageUri;
     final String[] mSource = {""};
     final String[] mDestination = {""};
-    private ProgressDialog mProgressDialog;
     private View view;
     private ImageButton mLocationBtn;
     private FusedLocationProviderClient fusedLocationClient;
@@ -182,13 +185,8 @@ public class ChatActivity extends AppCompatActivity {
         messageBox = findViewById(R.id.input_message);
         mConversionTextView = findViewById(R.id.converterTextView);
 
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle("Please wait");
-        mProgressDialog.setMessage("Please wait we are loading user's list");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         mLocationBtn = findViewById(R.id.btnLocation);
@@ -236,77 +234,70 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
+
         mLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(ChatActivity.this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                // Got last known location. In some rare situations this can be null.
 
-                                if (location != null) {
-                                    // Logic to handle location object
-                                    double longitude = location.getLongitude();
-                                    double latitute = location.getLatitude();
+                fetchlocation();
 
+                if (locationstate.equals("granted")) {
 
-                                    final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
-                                    final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
+                    fusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(ChatActivity.this, new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    // Got last known location. In some rare situations this can be null.
 
-                                    DatabaseReference user_message_push = mRootRef.child("messages")
-                                            .child(mCurrentUserID).child(mChatUser).push();
-
-                                    String push_id = user_message_push.getKey();
+                                    if (location != null) {
+                                        // Logic to handle location object
+                                        double longitude = location.getLongitude();
+                                        double latitute = location.getLatitude();
 
 
-                                    Map<String, Object> messageMap = new HashMap<>();
-                                    messageMap.put("longitude",longitude );
-                                    messageMap.put("latitude",latitute);
-                                    messageMap.put("seen", false);
-                                    messageMap.put("type", "location");
-                                    messageMap.put("time", ServerValue.TIMESTAMP);
-                                    messageMap.put("from", mCurrentUserID);
-                                    messageMap.put("to", mChatUser);
-                                    messageMap.put("messageID", push_id);
+                                        final String current_user_ref = "messages/" + mCurrentUserID + "/" + mChatUser;
+                                        final String chat_user_ref = "messages/" + mChatUser + "/" + mCurrentUserID;
 
-                                    Map<String, Object> messageUserMap = new HashMap<String, Object>();
-                                    messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
-                                    messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+                                        DatabaseReference user_message_push = mRootRef.child("messages")
+                                                .child(mCurrentUserID).child(mChatUser).push();
 
-                                    mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        String push_id = user_message_push.getKey();
 
-                                            if (databaseError != null) {
-                                                Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
+
+                                        Map<String, Object> messageMap = new HashMap<>();
+                                        messageMap.put("longitude", longitude);
+                                        messageMap.put("latitude", latitute);
+                                        messageMap.put("seen", false);
+                                        messageMap.put("type", "location");
+                                        messageMap.put("time", ServerValue.TIMESTAMP);
+                                        messageMap.put("from", mCurrentUserID);
+                                        messageMap.put("to", mChatUser);
+                                        messageMap.put("messageID", push_id);
+
+                                        Map<String, Object> messageUserMap = new HashMap<String, Object>();
+                                        messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                                        messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+
+                                        mRootRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                                                if (databaseError != null) {
+                                                    Snackbar.make(view, "" + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
 
 
+                                    }
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    Toast.makeText(ChatActivity.this, "Grant your permission from app properties.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         mRootRef.child("Chat").child(mCurrentUserID).addValueEventListener(new ValueEventListener() {
@@ -381,6 +372,85 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void fetchlocation() {
+
+        if (ContextCompat.checkSelfPermission(ChatActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Required Location Permission")
+                        .setMessage("You have to give the permission to use location feature.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
+                                        {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
+
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                dialogInterface.dismiss();
+
+                            }
+                        })
+                        .create().show();
+            } else {
+
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
+                        {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
+
+            }
+
+        }
+
+        if (ContextCompat.checkSelfPermission(ChatActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Required Location Permission")
+                        .setMessage("You have to give the permission to use location feature.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
+                                        {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                dialogInterface.dismiss();
+
+                            }
+                        })
+                        .create().show();
+            } else {
+
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
+                        {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
+
+            }
+
+        }
+
+
+    }
+
     //    ---------------RECORD VOICE FUNCTION----------------
     private void speak() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -393,6 +463,7 @@ public class ChatActivity extends AppCompatActivity {
             Snackbar.make(view, "" + e.getMessage(), Snackbar.LENGTH_LONG).show();
         }
     }
+
 
     //  -----------------REQUEST AND RESULT CODE---------------
     @Override
@@ -518,7 +589,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-        mProgressDialog.dismiss();
 
     }
 
@@ -717,5 +787,17 @@ public class ChatActivity extends AppCompatActivity {
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
         return null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(ChatActivity.this, "Location Permission is Granted.", Toast.LENGTH_SHORT).show();
+                locationstate = "granted";
+            } else {
+                Toast.makeText(ChatActivity.this, "Location Permission is not Granted.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

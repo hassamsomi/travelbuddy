@@ -11,7 +11,7 @@
     android:layout_height="match_parent"
     android:src="@drawable/background_pic"
     android:scaleType="fitXY"
-    />
+    android:contentDescription="@string/todo" />
 
 
 

@@ -8,15 +8,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-
     >
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
         <!--    android:padding="10dp"-->
         <androidx.constraintlayout.widget.ConstraintLayout
 
@@ -27,9 +25,9 @@
             <ImageView
                 android:id="@+id/applogo"
                 android:layout_width="wrap_content"
-                android:layout_height="65pt"
-                android:scaleType="centerInside"
-                android:src="@drawable/communication"
+                android:layout_height="75pt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo"
                 app:layout_constraintBottom_toTopOf="@id/fullname"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -50,7 +48,7 @@
                     android:id="@+id/txtFullName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Full Name"
+                    android:hint="@string/full_name"
                     android:maxLines="1"
                     android:text="" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -71,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10pt"
-                    android:hint="Email"
+                    android:hint="@string/email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:text="" />
@@ -92,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10pt"
-                    android:hint="Phone Number"
+                    android:hint="@string/phone_number"
                     android:inputType="phone"
                     android:maxLines="1"
                     android:text="" />
@@ -113,7 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10pt"
-                    android:hint="Password"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:text="" />
@@ -134,7 +132,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10pt"
-                    android:hint="Confirm Password"
+                    android:hint="@string/confirm_password"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:text="" />
@@ -150,12 +148,26 @@
                 android:background="@drawable/button_color"
                 android:paddingLeft="10pt"
                 android:paddingRight="10pt"
-                android:text="Create Account"
+                android:text="@string/create_account"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/confirmpassword" />
+
+            <TextView
+                android:id="@+id/alreadytext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5sp"
+                android:text="@string/already_has_an_account_click_here"
+                android:textColor="@color/holo_blue_light"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnCreateAccount" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

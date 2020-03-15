@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso;
 
 public class ETravel extends Application
 {
-    private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
     @Override
     public void onCreate()
@@ -35,7 +34,7 @@ public class ETravel extends Application
         built.setIndicatorsEnabled(true);
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null)
         {
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(mAuth.getCurrentUser().getUid());
