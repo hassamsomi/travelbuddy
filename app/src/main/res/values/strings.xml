@@ -41,7 +41,7 @@
     <string name="create_account">Create Account</string>
     <string name="already_has_an_account_click_here">Already Has An Account? Click Here!</string>
     <string-array name="Languages">
-        <item> </item>
+        <item>Select Language</item>
         <item>Azerbaijan</item>
         <item>Albanian</item>
         <item>Amharic</item>

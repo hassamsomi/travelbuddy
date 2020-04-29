@@ -108,22 +108,30 @@ public class ChatFragment extends Fragment {
                         holder.camera.setVisibility(View.GONE);
                         holder.location.setVisibility(View.GONE);
                         holder.mic.setVisibility(View.GONE);
-                        if (type.equals("image")) {
-                            holder.camera.setVisibility(View.VISIBLE);
-                            holder.userStatusView.setText("Photo");
-                        } else if (type.equals("con")) {
-                            holder.mic.setVisibility(View.VISIBLE);
-                            holder.userStatusView.setText("Voice Message");
-                        } else if(type.equals("location")){
-                            holder.location.setVisibility(View.VISIBLE);
-                            holder.userStatusView.setText("Location");
-                        } else if(type.equals("text")) {
-                            String message = dataSnapshot.child("message").getValue().toString();
-                            holder.userStatusView.setText(message);
-                        } else {
+                        holder.chat.setVisibility(View.GONE);
+                        switch (type) {
+                            case "image":
+                                holder.camera.setVisibility(View.VISIBLE);
+                                holder.userStatusView.setText("Photo");
+                                break;
+                            case "con":
+                                holder.mic.setVisibility(View.VISIBLE);
+                                holder.userStatusView.setText("Voice Message");
+                                break;
+                            case "location":
+                                holder.location.setVisibility(View.VISIBLE);
+                                holder.userStatusView.setText("Location");
+                                break;
+                            case "text":
+                                holder.chat.setVisibility(View.VISIBLE);
+                                String message = Objects.requireNonNull(dataSnapshot.child("message").getValue()).toString();
+                                holder.userStatusView.setText(message);
+                                break;
+                            default:
 
-                            Toast.makeText(context, "Loading Error.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Loading Error.", Toast.LENGTH_SHORT).show();
 
+                                break;
                         }
                     }
 
@@ -148,7 +156,6 @@ public class ChatFragment extends Fragment {
                     }
                 });
 
-
                 mUsersDatabase.child(user_list_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -160,7 +167,7 @@ public class ChatFragment extends Fragment {
                             if (dataSnapshot.hasChild("online")) {
                                 String userOnline = Objects.requireNonNull(dataSnapshot.child("online").getValue()).toString();
                                 holder.setUserOnline(userOnline);
-                                if(dataSnapshot.child("online").child("true").exists()) {
+                                if (dataSnapshot.child("online").child("true").exists()) {
                                     holder.userOnlineView.setVisibility(View.VISIBLE);
                                 }
 
@@ -184,7 +191,7 @@ public class ChatFragment extends Fragment {
                                 holder.lastSeenTime.setText(lastSeenTime);
                             }
                         } else {
-                           Toast.makeText(getContext(),"Object not found.",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Object not found.", Toast.LENGTH_LONG).show();
                         }
                     }
 

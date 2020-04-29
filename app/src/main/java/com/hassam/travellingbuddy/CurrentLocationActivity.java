@@ -26,7 +26,6 @@ public class CurrentLocationActivity extends AppCompatActivity implements OnMapR
 
     private MapView mapView;
     private MapboxMap map;
-    private PermissionsManager permissionsManager;
 
 
     @Override
@@ -100,7 +99,7 @@ public class CurrentLocationActivity extends AppCompatActivity implements OnMapR
 // Set the component's render mode
             locationComponent.setRenderMode(RenderMode.COMPASS);
         } else {
-            permissionsManager = new PermissionsManager(this);
+            PermissionsManager permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
     }

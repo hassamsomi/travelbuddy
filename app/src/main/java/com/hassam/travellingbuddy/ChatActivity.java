@@ -1,6 +1,5 @@
 package com.hassam.travellingbuddy;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,7 +21,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,6 +72,8 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public class ChatActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQ_CODE = 1;
@@ -119,6 +119,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat1);
 
+        requestPermission();
+
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -131,6 +133,8 @@ public class ChatActivity extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
 
         view = findViewById(R.id.parent);
+
+
 
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -240,7 +244,18 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                fetchlocation();
+//                if (ContextCompat.checkSelfPermission(ChatActivity.this,
+//                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                    Toast.makeText(ChatActivity.this, "You have already granted this permission", Toast.LENGTH_SHORT).show();
+//                    fetchLocation();
+//                }
+//                else {
+//                    fetchLocation();
+//                }
+
+                if(ActivityCompat.checkSelfPermission(ChatActivity.this, ACCESS_FINE_LOCATION )!= PackageManager.PERMISSION_GRANTED){
+                    return;
+                }
 
                 if (locationstate.equals("granted")) {
 
@@ -294,7 +309,7 @@ public class ChatActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    Toast.makeText(ChatActivity.this, "Grant your permission from app properties.", Toast.LENGTH_SHORT).show();
+//                    fetchLocation();
                 }
             }
         });
@@ -372,25 +387,23 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchlocation() {
+    private void fetchLocation() {
 
         if (ContextCompat.checkSelfPermission(ChatActivity.this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
+                    ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this)
                         .setTitle("Required Location Permission")
-                        .setMessage("You have to give the permission to use location feature.")
+                        .setMessage("This permission is needed to use location feature.")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 ActivityCompat.requestPermissions(ChatActivity.this, new String[]
-                                        {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
-
+                                        {ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
 
                             }
                         })
@@ -406,43 +419,7 @@ public class ChatActivity extends AppCompatActivity {
             } else {
 
                 ActivityCompat.requestPermissions(ChatActivity.this, new String[]
-                        {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
-
-            }
-
-        }
-
-        if (ContextCompat.checkSelfPermission(ChatActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Required Location Permission")
-                        .setMessage("You have to give the permission to use location feature.")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
-                                        {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
-
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                dialogInterface.dismiss();
-
-                            }
-                        })
-                        .create().show();
-            } else {
-
-                ActivityCompat.requestPermissions(ChatActivity.this, new String[]
-                        {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
+                        {ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQ_CODE);
 
             }
 
@@ -724,7 +701,7 @@ public class ChatActivity extends AppCompatActivity {
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://translate.yandex.net/api/v1.5/tr.json/translate" +
-//                "?key=" + getString(R.string.yandex_api_key) +
+                "?key=" + getString(R.string.yandex_api_key) +
                 "&text=" + content +
                 "&lang=" + source + "-" + destination;
 
@@ -788,16 +765,21 @@ public class ChatActivity extends AppCompatActivity {
         queue.add(stringRequest);
         return null;
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQ_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(ChatActivity.this, "Location Permission is Granted.", Toast.LENGTH_SHORT).show();
-                locationstate = "granted";
-            } else {
-                Toast.makeText(ChatActivity.this, "Location Permission is not Granted.", Toast.LENGTH_SHORT).show();
-            }
-        }
+    private void requestPermission(){
+        ActivityCompat.requestPermissions(this,new String[]{ACCESS_FINE_LOCATION},1);
+        locationstate = "granted";
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == LOCATION_PERMISSION_REQ_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(ChatActivity.this, "Location Permission is Granted.", Toast.LENGTH_SHORT).show();
+//                locationstate = "granted";
+//            } else {
+//                Toast.makeText(ChatActivity.this, "Location Permission is not Granted.", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//        ActivityCompat.requestPermissions(this,);
+//    }
 }

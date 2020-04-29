@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -101,7 +100,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView senderText, senderUserName, receiverText, receiverUserName;
         ImageView senderImage, senderPlayBtn, receiverImage, receiverPlayBtn, mPopImageView;
-        GifImageView receiverGif, senderGif;
+        ImageView receiverGif, senderGif;
 
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
