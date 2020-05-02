@@ -52,12 +52,14 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/receiver_text_layout" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/receiverbtnPlay"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:padding="5dp"
-        android:src="@drawable/ic_play"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:src="@drawable/play"
         android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/receiver_username" />
@@ -111,10 +113,11 @@
         app:layout_constraintTop_toBottomOf="@id/sender_text_layout" />
     <ImageView
         android:id="@+id/senderbtnPlay"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:padding="5sp"
-        android:src="@drawable/ic_play"
+        android:scaleType="fitXY"
+        android:src="@drawable/play"
         android:visibility="gone"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sender_username" />

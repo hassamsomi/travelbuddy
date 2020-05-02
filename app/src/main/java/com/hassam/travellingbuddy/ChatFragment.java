@@ -87,14 +87,17 @@ public class ChatFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
                 final String user_list_id = getRef(position).getKey();
-                holder.mView.setOnClickListener(view -> {
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
 
-                    Intent chatIntent = new Intent(getContext(), ChatActivity.class);
-                    chatIntent.putExtra("chatScreen", user_list_id);
-                    startActivity(chatIntent);
+                        Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                        chatIntent.putExtra("chatScreen", user_list_id);
+                        startActivity(chatIntent);
 
 
+                    }
                 });
 
 

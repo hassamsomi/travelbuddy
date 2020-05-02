@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
 
-        String username = "", password = "";
+        final String username = "", password = "";
 
 
         //referencing with elements
@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
         builder.setTitle("Recover Password");
 
         LinearLayout linearLayout = new LinearLayout(this);
-        EditText emailRec = new EditText(this);
+        final EditText emailRec = new EditText(this);
         emailRec.setHint("Email");
         emailRec.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         emailRec.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);

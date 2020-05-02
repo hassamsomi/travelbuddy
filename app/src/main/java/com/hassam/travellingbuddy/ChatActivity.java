@@ -71,6 +71,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import timber.log.Timber;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -242,7 +243,7 @@ public class ChatActivity extends AppCompatActivity {
 
         mLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
 
 //                if (ContextCompat.checkSelfPermission(ChatActivity.this,
 //                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -710,8 +711,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("YANDEX_RESPONSE_STRING",
-                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + response + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                        Timber.d("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + response + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
                         try {
                             JSONObject json = new JSONObject(response);
